@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/icon16x16.png">
+    <title>My Little Shop</title>
+    <link href="css/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="header">
+            <nav class="navbar top-navbar navbar-expand-md navbar-light">
+                <!-- Logo -->
+                <div class="navbar-header">
+                    <a class="navbar-brand " href="index.html">
+                        <!-- Logo icon -->
+                        <b><img src="img/logo.png" alt="homepage" class="dark-logo" /></b>
+                        <!-- Logo text -->
+                        <span><img src="images/logo-text.png" alt="My Little Shop" class="dark-logo" /></span>
+                    </a>
+
+                </div>
+       
+               
+            </nav>
+        </div>
+        <div class="left-sidebar">
+                <nav class="sidebar-nav">
+                       <ul id="sidebarnav">
+                           <li class="nav-devider"></li>
+                           <li class="nav-label">Home</li>
+                           <li> <a class="has-no-arrow " href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a>
+                               <li> <a class="has-no-arrow " href="index1.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard Manager</span></a>
+                              
+                           </li>
+                           <li class="nav-label">User</li>
+                           <li> <a class="has-no-arrow active " href="user-add.html" aria-expanded="false"><i class="fa fa-user-plus"></i><span class="hide-menu">Add User</span></a>
+                               
+                               
+                           </li>
+                           <li> <a class="has-no-arrow  " href="user-manage.html" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Modify User</span></a>
+                           <li class="nav-label">Product</li>
+                           <li> <a class="has-no-arrow  " href="manage-product-add.html" aria-expanded="false"><i class="fa fa-plus"></i><span class="hide-menu">Add Product</span></a>
+                           <li> <a class="has-no-arrow  " href="manage-product.html" aria-expanded="false"><i class="fa fa-houzz"></i><span class="hide-menu">Modify Product</span></a>
+                           <li> <a class="has-no-arrow  " href="manage-product-check.html" aria-expanded="false"><i class="fa fa-qrcode"></i><span class="hide-menu">Check Out</span></a>  
+                       </ul>
+                   </nav>
+                   </div>
+        <div class="page-wrapper bg-light">
+            <div class="container-fluid ">
+                <div class="row">
+                     <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-title form-title">
+                                <h4>Add User</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="basic-form">
+                                    <form>
+                                        <div class="form-group col-lg-12">
+                                            <p class="text-muted m-b-15 f-s-12">Username</p>
+                                            <input type="text" class="form-control input-default" id="username" placeholder="">
+                                        </div>
+                                        <div class="form-group col-lg-12">
+                                            <p class="text-muted m-b-15 f-s-12">Password</p>
+                                            <input type="password" class="form-control input-default " id="pPrice" placeholder="">
+                                        </div>
+                                        
+                                        <div class="form-group col-lg-5">
+                                            <p class="text-muted m-b-15 f-s-12 ">Role</p>
+                                            <select class="form-control" id="exampleFormControlSelect1">
+                                                    <option>Shop Manager</option>
+                                                    <option>Employee</option>
+                                                  
+                                            </select>
+                                            
+                                        </div>
+                                        <div class="form-group col-lg-5">
+                                                <p class="text-muted m-b-15 f-s-12 ">Shop No.</p>
+                                                <input type="text" class="form-control input-default" id="username" placeholder="">
+                                            </div>
+                                        <br>
+                                        <button class="btn btn-success" type="button" onclick="import_product()">Import</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

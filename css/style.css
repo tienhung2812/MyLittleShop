@@ -1,17 +1,18 @@
 @import url(../icons/font-awesome/css/font-awesome.min.css);
 
 body {
-    background: #fff;
+    background: #f8f9fa;
     font-family: 'Open Sans', sans-serif;
     margin: 0;
     overflow-x: hidden;
     color: #67757c;
+    height: 100%;
 }
 
 html {
     position: relative;
     min-height: 100%;
-    background: #ffffff;
+    background: #f8f9fa;
 }
 
 .header{
@@ -207,6 +208,7 @@ html {
     margin-left: 240px;
     background: #aaaaaa;
     padding-bottom: 60px;
+    height: 100%;
   }
 
 .container-fluid {
@@ -219,10 +221,35 @@ html {
     box-shadow: 1px 0 7px rgba(0, 0, 0, 0.1);
     min-height: 100px;
     margin-top: 20px;
+    
+}
+.card .shop-record{
+  padding: 30px;
+}
+
+.card-body{
+  padding: 0;
+}
+
+.card .basic-form{
+  padding: 20px;
+  padding-bottom: 30px;
+}
+
+.card .shop-record .card-title{
+  padding-top: 5px;
+  padding-left: 10px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 22px;
 }
 
 .card .media{
-    padding: 15px 15px 15px 15px;
+    padding: 15px;
+}
+
+.card .media-body{
+  padding: 0;
 }
 
 .card .media-left{
@@ -234,12 +261,13 @@ html {
 }
 
 .card .form-title{
-    padding: 20px 15px 0 20px;
+    padding: 40px 15px 0 30px;
     color: #303030;
 }
 
 .card form button{
     margin-top: 10px;
+    margin-left: 20px;
 }
 
 .card .preview-container{
@@ -249,6 +277,34 @@ html {
     margin-right: auto;
 }
 
+.card .card-table{
+  padding: 30px;
+}
+
+.card .form-group{
+  display: inline-block;
+}
+
+.login-content{
+  background-color: rgb(250, 249, 249);
+  padding: 90px 30px 60px 30px;
+}
+
+.login-content h2{
+  text-align: center;
+  color: #333333;
+}
+
+.login-content h6{
+  text-align: center;
+  color: #b4b4b4;
+}
+
+.login-content button{
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
 @media (min-width: 768px) {
     .navbar-header {
         width: 240px;
@@ -294,6 +350,11 @@ html {
         padding-top: 65px;
         padding-left: 0;   
         margin-left:0; 
+        height: 100%;
+    }
+
+    .card .shop-record{
+      padding: 20px;
     }
 
 
