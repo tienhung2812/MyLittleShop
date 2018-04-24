@@ -225,11 +225,30 @@ html {
 }
 .card .shop-record{
   padding: 30px;
+  
 }
 
 .card-body{
   padding: 0;
+  display: flex;
 }
+
+.card-body-section{
+  margin: 0;
+  
+  display: inline;
+}
+
+.card-body-section .card-table{
+  padding: 0 30px 0 30px !important;
+  
+}
+
+.card-body-section .card-table .card-body{
+  height: 230px;
+  overflow:auto;
+}
+
 
 .card .basic-form{
   padding: 20px;
@@ -246,6 +265,7 @@ html {
 
 .card .media{
     padding: 15px;
+ 
 }
 
 .card .media-body{
