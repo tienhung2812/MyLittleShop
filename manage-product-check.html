@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/icon16x16.png">
+    <title>My Little Shop</title>
+    <link href="css/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+     var config = {
+         apiKey: "AIzaSyAn1hP3ISXUv7A5as9gBu55PtZfx7mU5g0",
+         authDomain: "my-little-shop-41012.firebaseapp.com",
+         databaseURL: "https://my-little-shop-41012.firebaseio.com",
+         projectId: "my-little-shop-41012",
+         storageBucket: "my-little-shop-41012.appspot.com",
+         messagingSenderId: "439274339673",
+       };
+       firebase.initializeApp(config);
+    </script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.3.3/adapter.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="header">
+            <nav class="navbar top-navbar navbar-expand-md navbar-light">
+                <!-- Logo -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="index.html">
+                        <!-- Logo icon -->
+                        <b><img src="img/logo.png" alt="homepage" class="dark-logo" /></b>
+                        <!-- Logo text -->
+                        <span><img src="images/logo-text.png" alt="My Little Shop" class="dark-logo" /></span>
+                    </a>
+                </div>
+       
+               
+            </nav>
+        </div>
+        <div class="left-sidebar">
+                <nav class="sidebar-nav">
+                       <ul id="sidebarnav">
+                           <li class="nav-devider"></li>
+                           <li class="nav-label">Home</li>
+                           <li> <a class="has-no-arrow" href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a>
+                              
+                           </li>
+                           <li class="nav-label">User</li>
+                           <li> <a class="has-no-arrow  " href="manage-user.html" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">User</span></a>
+                              
+                           </li>
+                           <li class="nav-label">Product</li>
+                           <li> <a class="has-no-arrow  " href="manage-product.html" aria-expanded="false"><i class="fa fa-plus"></i><span class="hide-menu">Add Product</span></a>
+                               <li> <a class="has-no-arrow active" href="manage-product-check.html" aria-expanded="false"><i class="fa fa-qrcode"></i><span class="hide-menu">Check Product</span></a>  
+                       </ul>
+                   </nav>
+           </div>
+        <div class="page-wrapper bg-light">
+            <div class="container-fluid ">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">                          
+                            <div class="preview-container">
+                                <video id="preview"></video>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                            <div class="card p-30">
+                                <div class="media">
+                                    <div class="media-left media media-middle">
+                                        <span><i class="fa fa-qrcode f-s-40 text-info"></i></span>
+                                    </div>
+                                    <div class="media-body media-text-right">
+                                        <h3>Result</h3>
+                                        <p class="m-b-0 result" id="result"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+$('.result').bind("DOMSubtreeModified",function(){
+  alert('changed');
+});
+function import_product(){
+    var databaseRef = firebase.database().ref('productto/');
+   databaseRef.once('value', function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+   var childKey = childSnapshot.key;
+   var childData = childSnapshot.val();
+    
+    })});
+
+}
+</script>
+<script type="text/javascript" src="js/barcode/app.js"></script>
+</html>
