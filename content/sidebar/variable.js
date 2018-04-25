@@ -1,0 +1,7 @@
+var dashboard = '<li><a class="has-no-arrow" href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a></li>';
+var dashboardManager = '<li><a class="has-no-arrow " href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard Manager</span></a></li>';
+var addUser = '<li><a class="has-no-arrow  " href="user-add.html" aria-expanded="false"><i class="fa fa-user-plus"></i><span class="hide-menu">Add User</span></a></li>';
+var modifyUser = '<li><a class="has-no-arrow  " href="user-manage.html" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Modify User</span></a></li>' ;
+var addProduct = '<li><a class="has-no-arrow  " href="manage-product-add.html" aria-expanded="false"><i class="fa fa-plus"></i><span class="hide-menu">Add Product</span></a></li>';
+var modifyProduct = '<li><a class="has-no-arrow  " href="manage-product.html" aria-expanded="false"><i class="fa fa-houzz"></i><span class="hide-menu">Modify Product</span></a></li>';
+var checkOut = '<li><a class="has-no-arrow  " href="manage-product-check.html" aria-expanded="false"><i class="fa fa-qrcode"></i><span class="hide-menu">Check Out</span></a></li>';
