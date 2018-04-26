@@ -1,4 +1,4 @@
-function leftSidebar(role){
+function leftSidebar(role,currentPage){
     //Add left-sidebar category
     $.get('content/sidebar/left-sidebar.html', function(data) {
         $(".left-sidebar").append(data);
@@ -32,6 +32,8 @@ function leftSidebar(role){
             $("#sidebar-home").remove();
             $("#sidebar-user").remove();
         }
+
+        $('a[href="'+currentPage+'.html"]').addClass("active");
     });
 }
 

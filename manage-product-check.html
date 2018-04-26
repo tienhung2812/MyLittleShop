@@ -13,6 +13,7 @@
 
     <!-- script -->
     <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/function.js"></script> 
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
     <script>
       // Initialize Firebase
@@ -41,7 +42,7 @@
                         <!-- Logo icon -->
                         <b><img src="img/logo.png" alt="homepage" class="dark-logo" /></b>
                         <!-- Logo text -->
-                        <span><img src="images/logo-text.png" alt="My Little Shop" class="dark-logo" /></span>
+                        <span>My Little Shop"</span>
                     </a>
                 </div>
        
@@ -54,7 +55,7 @@
         <div class="page-wrapper bg-light">
             <div class="container-fluid ">
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-8">
                         <div class="card">                          
                             <div class="preview-container">
                                 <video id="preview"></video>
@@ -62,7 +63,7 @@
                             
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                             <div class="card p-30">
                                 <div class="media">
                                     <div class="media-left media media-middle">
@@ -82,9 +83,11 @@
 </body>
 <script src="js/app.js"></script>
 <script>
-$('.result').bind("DOMSubtreeModified",function(){
-  alert('changed');
-});
+// $('.result').bind("DOMSubtreeModified",function(){
+//   if($("#result").text()=="http://en.m.wikipedia.org"){
+//       alert($("#result").text());
+//   }
+// });
 function import_product(){
     var databaseRef = firebase.database().ref('productto/');
    databaseRef.once('value', function(snapshot) {

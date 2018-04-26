@@ -57,7 +57,7 @@ html {
     top: 0;
     z-index: 20;
     padding-top: 60px;
-    background-color: #ecf0f1;
+    background-color: #797c7c;
     -webkit-box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
     box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
   }
@@ -325,6 +325,11 @@ html {
   margin-left: auto;
   margin-right: auto;
 }
+
+#result {
+  height: 393px;
+}
+
 @media (min-width: 768px) {
     .navbar-header {
         width: 240px;
