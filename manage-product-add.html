@@ -80,13 +80,15 @@
           exist = true;
         }
       });
-    if(exist){
-      alert('Product code exist!');
-    }else{
-      updates['/product/' + code] = data;
-      firebase.database().ref().update(updates);
-      alert('The user is created successfully!');
-    }      
+
+      if(exist){
+        alert('Product code exist!');
+      }else{
+        updates['/product/' + code] = data;
+        firebase.database().ref().update(updates);
+        alert('The user is created successfully!');
+        reload_page();
+      }      
     });
 
 

@@ -112,6 +112,30 @@ function pageWrapper(role,page){
     else if(page == "manage-product"){
         $.getScript('content/page-wrapper/manage-product.js',function(){
             $("#content").append(content);
+            var tblProducts = document.getElementById('tbl_products_list');
+            var databaseRef = firebase.database().ref('product/');
+            var rowIndex = 1;
+
+            databaseRef.once('value', function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+          
+                var row = tblProducts.insertRow(rowIndex);
+                var cellSpace = row.insertCell(0);
+                var cellId = row.insertCell(1);
+                var cellCode = row.insertCell(2);
+                var cellPrice = row.insertCell(3);
+                var cellStock = row.insertCell(4);
+
+                cellId.appendChild(document.createTextNode(rowIndex));
+                cellCode.appendChild(document.createTextNode(childKey));
+                cellPrice.appendChild(document.createTextNode(childData.product_price));
+                cellStock.appendChild(document.createTextNode(childData.stock));
+                rowIndex = rowIndex + 1;
+            });
+           });
         })
     }
 };

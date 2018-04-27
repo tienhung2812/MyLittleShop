@@ -51,7 +51,7 @@
   var tblUsers = document.getElementById('tbl_users_list');
   var databaseRef = firebase.database().ref('employee/');
   var rowIndex = 1;
-  
+  alert(databaseRef);
   databaseRef.once('value', function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
    var childKey = childSnapshot.key;
