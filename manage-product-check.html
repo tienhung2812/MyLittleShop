@@ -15,18 +15,7 @@
     <script src="js/jquery/jquery.min.js"></script>
     <script src="js/function.js"></script> 
     <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
-    <script>
-      // Initialize Firebase
-     var config = {
-         apiKey: "AIzaSyAn1hP3ISXUv7A5as9gBu55PtZfx7mU5g0",
-         authDomain: "my-little-shop-41012.firebaseapp.com",
-         databaseURL: "https://my-little-shop-41012.firebaseio.com",
-         projectId: "my-little-shop-41012",
-         storageBucket: "my-little-shop-41012.appspot.com",
-         messagingSenderId: "439274339673",
-       };
-       firebase.initializeApp(config);
-    </script>
+    <script src="js/init.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.3.3/adapter.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
     <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
@@ -72,6 +61,8 @@
                                     <div class="media-body media-text-right">
                                         <h3>Result</h3>
                                         <p class="m-b-0 result" id="result"></p>
+                                        <p class="m-b-0 result" id="result_price"></p>
+                                        <p class="m-b-0 result" id="result_stock"></p>
                                     </div>
                                 </div>
                             </div>

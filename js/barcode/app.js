@@ -1,3 +1,4 @@
+
 var app = new Vue({
   el: '#app',
   data: {
@@ -12,7 +13,11 @@ var app = new Vue({
     self.scanner.addListener('scan', function (content, image) {
       self.scans.unshift({ date: +(Date.now()), content: content });
       document.getElementById("result").innerHTML = content;
-  
+      var databaseRef = firebase.database().ref('product/'+content);
+      databaseRef.once('value').then(function(snapshot){
+          document.getElementById("result_price").innerHTML = snapshot.val().product_price;
+          document.getElementById("result_stock").innerHTML = snapshot.val().stock;
+      });
     });
     Instascan.Camera.getCameras().then(function (cameras) {
       self.cameras = cameras;
