@@ -98,9 +98,7 @@ var sale = "sale";
 var stock = "stock";
 var record = "record";
 
-//Role: 0-Manager, 1-Shop Manager, 2-Employee
-var role = 1;
-var currentPage = location.pathname.split('/').slice(-1)[0].split('.').slice(0)[0];
+
 
 function highlightSidebar(currentPage) {
     $('a[href="'+currentPage+'.html"]').addClass("active");
@@ -153,8 +151,13 @@ function insertRecordShopData(id,code,date,price,shop){
 //Example for User
 //Employee Record
 function insertUserRecordData(type,id,name,shop){
-    var result = '<tr><td><input type="checkbox" id="manager-1"></td><th scope="row">' 
-                + id + '</th><td>' + name + '</td><td>'+shop+'</td></tr>';
+    var role;
+    if(type=="shopmanager")
+        role = 1;
+    else 
+        role = 2;
+    var result = '<tr onclick="userModifyModal('+id+','+role+')"><th scope="row">' 
+                + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
 
     if(type == "shopmanager"){
         $("#shopManagertbody").append(result);
@@ -175,8 +178,8 @@ function insertUserRecordData(type,id,name,shop){
 //Product record 
 function insertProductRecordData(id,code,price,stock){
 
-    var result = '<tr><td><input type="checkbox" id="manager-1"></td><th scope="row">' 
-                + id + '</th><td>' + code + '</td><td>'+price+'</td><td>'+stock+'</td></tr>';
+    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+                + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-price">'+price+'</td><td id="product-'+id+'-stock">'+stock+'</td></tr>';
 
 
     $("#producttbody").append(result);
@@ -184,5 +187,55 @@ function insertProductRecordData(id,code,price,stock){
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
 
+//Import UserModal
+function userModifyModal(id,role){
+    var name = $('#user-'+id+'-'+role+'-name').text();
+    var shop = $('#user-'+id+'-'+role+'-shop').text();
+    var html = '<div class="basic-form">'+
+    '                          <form>'+
+    '                            <div class="form-group col-lg-12">'+
+    '                              <p class="text-muted m-b-15 f-s-12">Name</p>'+
+    '                              <input type="text" class="form-control input-default" id="username" value="'+name+'">'+
+    '                              </div>'+
+    '                              <div class="form-group col-lg-12">'+
+    '                                <p class="text-muted m-b-15 f-s-12">Shop</p>'+
+    '                                <input type="text" class="form-control input-default " id="shop" value="'+shop+'">'+
+    '                                </div>'+                                                             
+    '                                </form>'+
+    '                              </div>'+
+    '                            </div>'+
+    '                          </div>';
+        
+    $(".modal-body").html(html);
+    $("#userModifyModal").modal();
+}
 
+//Import Product Modal
+function productModifyModal(id){
 
+    var code = $("#product-"+id+"-code").text();
+    var price = $("#product-"+id+"-price").text();
+    var stock = $("#product-"+id+"-stock").text();
+    var html = '<div class="basic-form">'+
+    '                          <form>'+
+    '                            <div class="form-group col-lg-12">'+
+    '                              <p class="text-muted m-b-15 f-s-12">Product Code</p>'+
+    '                              <input type="text" class="form-control input-default" id="pCode" value="'+code+'">'+
+    '                              </div>'+
+    '                              <div class="form-group col-lg-12">'+
+    '                                <p class="text-muted m-b-15 f-s-12">Price</p>'+
+    '                                <input type="text" class="form-control input-default " id="pPrice" value="'+price+'">'+
+    '                                </div>'+
+    '                                <div class="form-group col-lg-12">'+
+    '                                  <p class="text-muted m-b-15 f-s-12">Stock</p>'+
+    '                                  <input type="text" class="form-control input-default " id="pStock" value="'+stock+'">'+
+    '                                  </div>'+                                
+    '                                </form>'+
+    '                              </div>'+
+    '                            </div>'+
+    '                          </div>';
+        
+    $(".modal-body").html(html);
+    $("#productModifyModal").modal();
+    
+}

@@ -21,18 +21,22 @@ function checkPageNeedLoadData(){
     return false;
 }
 //Example For Shop Manager Dashboard
+// updateDashboardData(type,value)
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);
 // updateDashboardData(stock,33);
+// insertRecordData("record",id,code,date,price);
 // insertRecordData("record",2,64645,"Jan 11",51);
 
 //Manager
 // addShop(1);
-// updateDashboardData(total,3240,1);
-// insertRecordData(1,323,2323,123123,1)
+// updateDashboardShopData(type,value,shop);
+// insertRecordShopData(id,code,date,price,shop)
 
 //Example for insert User record Data
+// insertUserRecordData(type,id,name,shop)
 // insertUserRecordData("employee",1,"aa",2);
+// insertUserRecordData("shopmanager",1,"aa",2);
 
 //Product record 
 //Example for product record
@@ -73,6 +77,8 @@ $(document).ready ( function(){
     if(checkPageNeedLoadData){
         LoadData();
     }
+
+    // insertUserRecordData("employee",1,"aa",2);
 });
 
 //Database 
