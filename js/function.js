@@ -1,3 +1,98 @@
+function leftSidebar(role,currentPage){
+    //Add left-sidebar category
+    $(".left-sidebar").load('content/sidebar/left-sidebar.html',function(){
+        //Add content by role
+        //Manager
+        if(role ==0 ){
+            //Dashboard
+            $(dashboardManager).insertAfter("#sidebar-home");
+            //User
+            $(modifyUser).insertAfter("#sidebar-user");
+            $(addUser).insertAfter("#sidebar-user");
+            //Product
+            $(checkOut).insertAfter("#sidebar-product");
+            $(modifyProduct).insertAfter("#sidebar-product");
+            $(addProduct).insertAfter("#sidebar-product");
+        } else if (role==1){
+            //Dashboard
+            $(dashboard).insertAfter("#sidebar-home");
+            //User
+            $(modifyUser).insertAfter("#sidebar-user");
+            $(addUser).insertAfter("#sidebar-user");
+            //Product
+            $(checkOut).insertAfter("#sidebar-product");
+            $(modifyProduct).insertAfter("#sidebar-product");
+            $(addProduct).insertAfter("#sidebar-product");
+        } else if(role==2){
+            $(checkOut).insertAfter("#sidebar-product");
+            $("#sidebar-home").remove();
+            $("#sidebar-user").remove();
+        }
+
+        $('a[href="'+currentPage+'.html"]').addClass("active");
+    });
+
+    
+    
+}
+function pageWrapper(role,page){
+
+    //Dashboard
+    if(page == "index"){
+    //Add content by role
+    console.log("Loading "+page);
+    //Manager
+    if (role==0){
+    }
+
+    //Shop manager
+    else if(role==1){
+        
+        $("#content").append(shopTotal);
+        $("#content").append(shopSale);
+        $("#content").append(shopStock);
+        $("#content").append(shopRecord);
+       
+    }
+}
+    //User Add
+    else if(page == "user-add"){
+        console.log("Loading "+page);
+            
+        //Manager
+        if(role==0){
+            $("#roleSelect").append('<option>Shop Manager</option><option>Employee</option>');
+        }
+        // Shop Manager
+        else if(role == 1){
+            $("#roleSelect").append('<option>Employee</option>');
+            
+        }
+        
+     
+        
+    }
+
+    //User modify
+    else if(page =="user-manage"){
+        console.log("Loading "+page);
+        if(role == 0){
+            $("#content").html('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
+            $("#shopManagerDiv").html(shopManager);
+            $("#employeeDiv").html(employee);
+        } else if (role==1){
+            $("#content").html('<div class="col-lg-12" id="employeeDiv"></div>');
+            $("#employeeDiv").html(employee);
+        }
+    }
+
+    //Add product
+
+
+    //Modify product
+
+};
+
 var total = "total";
 var sale = "sale";
 var stock = "stock";
@@ -33,9 +128,8 @@ function insertRecordData(type,id,code,date,price){
 //Manager
 //Add shop
 function addShop(id) {
-    $.getScript('content/page-wrapper/dashboard-manager-card.js',function(){
-        $("#content").append(composeShop(id));
-    })
+    $("#content").append(composeShop(id));
+
 }
 
 //Modify card Data

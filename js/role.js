@@ -1,8 +1,6 @@
 function leftSidebar(role,currentPage){
     //Add left-sidebar category
-    $.get('content/sidebar/left-sidebar.html', function(data) {
-        $(".left-sidebar").append(data);
-    }, 'text');
+    $(".left-sidebar").load('content/sidebar/left-sidebar.html');
 
     //Add content by role
     $.getScript('content/sidebar/variable.js',function(){
@@ -36,43 +34,33 @@ function leftSidebar(role,currentPage){
         $('a[href="'+currentPage+'.html"]').addClass("active");
     });
 }
-
 function pageWrapper(role,page){
-    $.get('content/page-wrapper/index.html', function(data) {
-        $(".page-wrapper").append(data);
-    }, 'text');
 
     //Dashboard
     if(page == "index"){
-        //Add content by role
-        console.log("Loading "+page);
-        //Manager
-        if (role==0){
-        }
-
-        //Shop manager
-        else if(role==1){
-            $.getScript('content/page-wrapper/dashboard-card.js',function(){
-                $("#content").append(shopTotal);
-                $("#content").append(shopSale);
-                $("#content").append(shopStock);
-                $("#content").append(shopRecord);
-            })
-        }
+    //Add content by role
+    console.log("Loading "+page);
+    //Manager
+    if (role==0){
     }
+
+    //Shop manager
+    else if(role==1){
+        $.getScript('content/page-wrapper/dashboard-card.js',function(){
+            $("#content").append(shopTotal);
+            $("#content").append(shopSale);
+            $("#content").append(shopStock);
+            $("#content").append(shopRecord);
+        })
+    }
+}
     //User Add
     else if(page == "user-add"){
         console.log("Loading "+page);
+        $("#content").load('content/page-wrapper/user-add.html',function(){
+            alert("loaded");
+        });
         $.getScript('content/page-wrapper/user-add.js',function(){
-            $("#content").append(userAdd);
-            function presleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
-            async function sleep(ms) {
-                await presleep(ms);
-            }
-            sleep(10);
-
             //Manager
             if(role==0){
                 $("#roleSelect").append('<option>Shop Manager</option><option>Employee</option>');
@@ -90,12 +78,12 @@ function pageWrapper(role,page){
         console.log("Loading "+page);
             $.getScript('content/page-wrapper/user-manage.js',function(){
                 if(role == 0){
-                    $("#content").append('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
-                    $("#shopManagerDiv").append(shopManager);
-                    $("#employeeDiv").append(employee);
+                    $("#content").html('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
+                    $("#shopManagerDiv").html(shopManager);
+                    $("#employeeDiv").html(employee);
                 } else if (role==1){
-                    $("#content").append('<div class="col-lg-12" id="employeeDiv"></div>');
-                    $("#employeeDiv").append(employee);
+                    $("#content").html('<div class="col-lg-12" id="employeeDiv"></div>');
+                    $("#employeeDiv").html(employee);
                 }
             });
         
@@ -121,7 +109,7 @@ function pageWrapper(role,page){
 
                 var childKey = childSnapshot.key;
                 var childData = childSnapshot.val();
-          
+        
                 var row = tblProducts.insertRow(rowIndex);
                 var cellSpace = row.insertCell(0);
                 var cellId = row.insertCell(1);
@@ -135,7 +123,7 @@ function pageWrapper(role,page){
                 cellStock.appendChild(document.createTextNode(childData.stock));
                 rowIndex = rowIndex + 1;
             });
-           });
+        });
         })
     }
 };

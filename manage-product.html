@@ -13,6 +13,7 @@
 
     <!-- script -->
     <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/variable.js"></script>
     <script src="js/function.js"></script> 
     <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
     <script src="js/init.js"></script>
@@ -38,7 +39,36 @@
              
         </div>
         <div class="page-wrapper">
-            
+            <div class="container-fluid ">
+                <div class="row" id="content">
+                    <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-table">
+                                    <div class="card-title">
+                                        <h4>Product</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="tbl_products_list" class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>#</th>
+                                                        <th>Code</th>
+                                                        <th>Price</th>
+                                                        <th>Stock</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="producttbody"></tbody>
+                                            </table>
+                                            <button class="btn btn-danger" type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
