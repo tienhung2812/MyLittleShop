@@ -12,11 +12,18 @@ var app = new Vue({
     self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5 });
     self.scanner.addListener('scan', function (content, image) {
       self.scans.unshift({ date: +(Date.now()), content: content });
-      document.getElementById("result").innerHTML = content;
-      var databaseRef = firebase.database().ref('product/'+content);
+      var databaseRef = firebase.database().ref('product/'+ content);
+
       databaseRef.once('value').then(function(snapshot){
-          document.getElementById("result_price").innerHTML = snapshot.val().product_price;
-          document.getElementById("result_stock").innerHTML = snapshot.val().stock;
+          if(snapshot.exists()){
+            document.getElementById("result").innerHTML = content;
+            document.getElementById("result_price").innerHTML = snapshot.val().product_price;
+            document.getElementById("result_stock").innerHTML = snapshot.val().stock;
+          }else{
+            document.getElementById("result").innerHTML = "Product Not Found!";
+            document.getElementById("result_price").innerHTML = "";
+            document.getElementById("result_stock").innerHTML = "";
+          }
       });
     });
     Instascan.Camera.getCameras().then(function (cameras) {

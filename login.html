@@ -14,18 +14,7 @@
     <!-- script -->
     <script src="js/jquery/jquery.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
-    <script>
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyAn1hP3ISXUv7A5as9gBu55PtZfx7mU5g0",
-        authDomain: "my-little-shop-41012.firebaseapp.com",
-        databaseURL: "https://my-little-shop-41012.firebaseio.com",
-        projectId: "my-little-shop-41012",
-        storageBucket: "my-little-shop-41012.appspot.com",
-        messagingSenderId: "439274339673"
-    };
-    firebase.initializeApp(config);
-    </script>
+    <script src="js/init.js"></script>
 </head>
 <body>
     <div class="main-wrapper">
@@ -64,30 +53,48 @@
     function login(){  
         var usr = document.forms["loginForm"]["username"].value;
         var password = document.forms["loginForm"]["psw"].value;
-        window.location.href = "index.html";
-        var type;
-        var status = false;
-        if((usr=="manager")&&(password=="")){
-            // document.cookie = "role=manager;";
-            type=0;
-            status = true;
-        }
+        //window.location.href = "index.html";
+        var type = 0;
+        //var status = false;
 
-        if((usr=="employee")&&(password=="")){
-            // document.cookie = "role=employee;";
-            type=2;
-            status = true;
-        }
+        var databaseRef = firebase.database().ref('employee/'+ usr);
+  
+        databaseRef.once('value').then(function(snapshot){
+          if(snapshot.exists()){
+            if(password == snapshot.val().password){
+                type = snapshot.val().role;
+                localStorage.setItem("role",type);
+                localStorage.setItem("shop_id",snapshot.val().shop_id);
+                window.location.href = "index.html";
+            }else{
+                alert("Wrong password!");
+            }
+          }else{
+            alert("Username not exists!");
+          }
+        });
 
-        if((usr=="shopmanager")&&(password=="")){
-            // document.cookie = "role=shopmanager;";
-            type=1;
-            status = true;
-        }
+        // if((usr=="manager")&&(password=="")){
+        //     // document.cookie = "role=manager;";
+        //     type=0;
+        //     status = true;
+        // }
 
-        if(status){
-            window.location.replace("index.html?type="+type);
-        }
+        // if((usr=="employee")&&(password=="")){
+        //     // document.cookie = "role=employee;";
+        //     type=2;
+        //     status = true;
+        // }
+
+        // if((usr=="shopmanager")&&(password=="")){
+        //     // document.cookie = "role=shopmanager;";
+        //     type=1;
+        //     status = true;
+        // }
+
+        // if(status){
+        //     window.location.replace("index.html?type="+type);
+        // }
         return false;
     }
 </script>

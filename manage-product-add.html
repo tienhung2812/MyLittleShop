@@ -105,7 +105,7 @@
       }else{
         updates['/product/' + code] = data;
         firebase.database().ref().update(updates);
-        alert('The user is created successfully!');
+        alert('The product is created successfully!');
         reload_page();
       }      
     });
