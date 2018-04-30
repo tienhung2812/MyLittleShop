@@ -82,7 +82,7 @@ function checkPageNeedLoadData(){
 // insertUserRecordData("employee",1,"aa",2);
 function loadEmployee(){
     if(currentPage=="user-manage"){
-        var Table = document.getElementById("tbl_managers_list");
+        var Table = document.getElementById("tbl_employees_list");
         alert(Table);
 
         var databaseRef = firebase.database().ref('employee/');
@@ -121,6 +121,8 @@ function loadEmployee(){
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
 function LoadData(){
+    var Table = document.getElementById("tbl_products_list");
+    alert(Table);
     if(currentPage=="manage-product"){
         var databaseRef = firebase.database().ref('product/');
     
