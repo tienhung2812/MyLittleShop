@@ -75,48 +75,4 @@
     </div>
 </body>
 <script src="js/app.js"></script>
-<script>
-
-  function import_product(){
-    var code= document.getElementById('pCode').value;
-    var price= document.getElementById('pPrice').value;
-    var stock= document.getElementById('pStock').value;
-    var shop = 1;  
-    var i = 0;
-    var data = {
-      product_price: price,
-      stock: stock,
-      store_id: shop
-    }
-     
-    var updates = {};
-    var databaseRef = firebase.database().ref('product/');
-    var exist = false;
-
-    databaseRef.once('value', function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
-        var childKey = childSnapshot.key;
-        if(code == childKey){
-          exist = true;
-        }
-      });
-
-      if(exist){
-        alert('Product code exist!');
-      }else{
-        updates['/product/' + code] = data;
-        firebase.database().ref().update(updates);
-        alert('The product is created successfully!');
-        reload_page();
-      }      
-    });
-
-
-  }
-
-  function reload_page(){
-     window.location.reload();
-  }
-</script>
-
 </html>

@@ -234,7 +234,6 @@ function productModifyModal(id){
     '                              </div>'+
     '                            </div>'+
     '                          </div>';
-        
     $(".modal-body").html(html);
     $("#productModifyModal").modal();
     

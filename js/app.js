@@ -23,6 +23,50 @@ function checkPageNeedLoadData(){
     return false;
 }
 
+// Add employee
+
+  function import_user(){
+    var username= document.getElementById('username').value;
+    var password= document.getElementById('password').value;
+    var role = 1;
+    if(document.getElementById('roleSelect').value == "Employee"){
+        role = 2;
+    }
+
+    var shop_id = document.getElementById('shopNo').value;  
+    var i = 0;
+
+    var data = {
+      password: password,
+      role: role,
+      shop_id: shop_id
+    }
+     
+    var updates = {};
+    var databaseRef = firebase.database().ref('employee/');
+    var exist = false;
+
+    databaseRef.once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var childKey = childSnapshot.key;
+        if(username == childKey){
+          exist = true;
+        }
+      });
+
+      if(exist){
+        alert('Username exist!');
+      }else{
+        updates['/employee/' + username] = data;
+        firebase.database().ref().update(updates);
+        alert('The user is created successfully!');
+        reload_page();
+      }      
+    });
+  }
+
+  //Modify Employee
+
 //Example For Shop Manager Dashboard
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);
@@ -38,13 +82,15 @@ function checkPageNeedLoadData(){
 // insertUserRecordData("employee",1,"aa",2);
 function loadEmployee(){
     if(currentPage=="user-manage"){
-        var tblEmployees = document.getElementById('tbl_employees_list');
-        var tblManagers = document.getElementById('tbl_managers_list');
+        var Table = document.getElementById("tbl_managers_list");
+        alert(Table);
+
         var databaseRef = firebase.database().ref('employee/');
-        var rowIndex = 1;
-        var rowManager = 1;
-        var rowEmployee = 1;
-        databaseRef.once('value', function(snapshot) {
+        databaseRef.on('value', function(snapshot) {
+            $("#tbl_employees_list tbody tr").remove();
+            
+            var rowManager = 1;
+            var rowEmployee = 1;
             snapshot.forEach(function(childSnapshot) {
         
                 var childKey = childSnapshot.key;
@@ -64,18 +110,6 @@ function loadEmployee(){
                         rowEmployee++;
                     }
                 }
-                // var row = tblProducts.insertRow(rowIndex);
-                // var cellSpace = row.insertCell(0);
-                // var cellId = row.insertCell(1);
-                // var cellCode = row.insertCell(2);
-                // var cellPrice = row.insertCell(3);
-                // var cellStock = row.insertCell(4);
-            
-                // cellId.appendChild(document.createTextNode(rowIndex));
-                // cellCode.appendChild(document.createTextNode(childKey));
-                // cellPrice.appendChild(document.createTextNode(childData.product_price));
-                // cellStock.appendChild(document.createTextNode(childData.stock));
-                rowIndex = rowIndex + 1;
             })
         });
     }
@@ -88,29 +122,23 @@ function loadEmployee(){
 // insertProductRecordData(2,342,141,342); 
 function LoadData(){
     if(currentPage=="manage-product"){
-        var tblProducts = document.getElementById('tbl_products_list');
         var databaseRef = firebase.database().ref('product/');
-        var rowIndex = 1;
-        
-        databaseRef.once('value', function(snapshot) {
+    
+        databaseRef.on('value', function(snapshot) {
+            $("#tbl_products_list tbody tr").remove();
+            var rowIndex = 1;
             snapshot.forEach(function(childSnapshot) {
-        
                 var childKey = childSnapshot.key;
                 var childData = childSnapshot.val();
-                
-                insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
-                // var row = tblProducts.insertRow(rowIndex);
-                // var cellSpace = row.insertCell(0);
-                // var cellId = row.insertCell(1);
-                // var cellCode = row.insertCell(2);
-                // var cellPrice = row.insertCell(3);
-                // var cellStock = row.insertCell(4);
-            
-                // cellId.appendChild(document.createTextNode(rowIndex));
-                // cellCode.appendChild(document.createTextNode(childKey));
-                // cellPrice.appendChild(document.createTextNode(childData.product_price));
-                // cellStock.appendChild(document.createTextNode(childData.stock));
-                rowIndex = rowIndex + 1;
+                if(role == 0){
+                    insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
+                    rowIndex = rowIndex + 1;
+                } else {
+                    if(childData.store_id == shop_id){
+                        insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
+                        rowIndex = rowIndex + 1;
+                    }
+                }
             })
         });
     }
@@ -126,5 +154,79 @@ $(document).ready ( function(){
         loadEmployee();
     }
 });
+
+
+// Add Product
+function import_product(){
+    var code= document.getElementById('pCode').value;
+    var price= document.getElementById('pPrice').value;
+    var stock= document.getElementById('pStock').value;
+
+    if(role == 0){
+        shop_id = 1;
+    }
+
+    var data = {
+      product_price: price,
+      stock: stock,
+      store_id: shop_id
+    }
+     
+    var updates = {};
+    var databaseRef = firebase.database().ref('product/');
+    var exist = false;
+
+    databaseRef.once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var childKey = childSnapshot.key;
+        if(code == childKey){
+          exist = true;
+        }
+      });
+
+      if(exist){
+        alert('Product code exist!');
+      }else{
+        updates['/product/' + code] = data;
+        firebase.database().ref().update(updates);
+        alert('The product is created successfully!');
+        reload_page();
+      }      
+    });
+
+
+  }
+
+
+  //Modify Product
+function update_product(){
+   var product_code = document.getElementById('pCode').value;
+   var product_price = document.getElementById('pPrice').value;
+   var stock = document.getElementById('pStock').value;
+
+   var data = {
+        product_price: product_price,
+        stock: stock,
+        store_id: shop_id
+    }
+
+   
+    var updates = {};
+    updates['/product/' + product_code] = data;
+    firebase.database().ref().update(updates);
+   
+    alert('The product is updated successfully!');
+}
+  
+function delete_product(){
+      var product_code = document.getElementById('pCode').value;
+  
+   firebase.database().ref().child('/product/' + product_code).remove();
+   alert('The product is deleted successfully!');
+}
+
+function reload_page(){
+    window.location.reload();
+}
 
 //Database 
