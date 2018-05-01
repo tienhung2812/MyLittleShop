@@ -7,6 +7,7 @@ function leftSidebar(role,currentPage){
             //Dashboard
             $(dashboardManager).insertAfter("#sidebar-home");
             //User
+            $(changeUserPassword).insertAfter("#sidebar-user");
             $(modifyUser).insertAfter("#sidebar-user");
             $(addUser).insertAfter("#sidebar-user");
             //Product
@@ -17,16 +18,19 @@ function leftSidebar(role,currentPage){
             //Dashboard
             $(dashboard).insertAfter("#sidebar-home");
             //User
+            $(changeUserPassword).insertAfter("#sidebar-user");
             $(modifyUser).insertAfter("#sidebar-user");
             $(addUser).insertAfter("#sidebar-user");
+            
             //Product
             $(checkOut).insertAfter("#sidebar-product");
             $(modifyProduct).insertAfter("#sidebar-product");
             $(addProduct).insertAfter("#sidebar-product");
         } else if(role==2){
+            $(changeUserPassword).insertAfter("#sidebar-user");
             $(checkOut).insertAfter("#sidebar-product");
             $("#sidebar-home").remove();
-            $("#sidebar-user").remove();
+            
         }
 
         $('a[href="'+currentPage+'.html"]').addClass("active");
@@ -237,4 +241,25 @@ function productModifyModal(id){
     $(".modal-body").html(html);
     $("#productModifyModal").modal();
     
+}
+
+//Sidebar function
+function Sidebar(){
+    if($(".left-sidebar").hasClass("close")){
+        $(".left-sidebar").removeClass("close");
+        if(screen.width>480){
+            $(".page-wrapper").css("margin-left","240px");
+        }
+    }else{
+        $(".left-sidebar").addClass("close");
+        if(screen.width>480){
+            $(".page-wrapper").css("margin-left","0");
+        }
+    }
+}
+
+//Signout 
+function signOut(){
+    localStorage.removeItem("role");
+    window.location.href = "login.html";
 }

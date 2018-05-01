@@ -1,7 +1,22 @@
 var total="total",sale="sale",stock="stock",record="record";
-var role=localStorage.getItem("role");
-var shop_id = localStorage.getItem("shop_id");
 var currentPage=location.pathname.split("/").slice(-1)[0].split(".").slice(0)[0];
+var role=localStorage.getItem("role");
+
+
+if (role==null&&currentPage!="login"){
+    window.location.href = "login.html";
+}
+
+if(role==2){
+    $(".navbar-brand").attr("href","manage-product-check.html");
+}
+
+var shop_id = localStorage.getItem("shop_id");
+
+if(screen.width<767){
+        Sidebar();
+}; 
+
 
 function installContent(callback){
 
@@ -25,45 +40,45 @@ function checkPageNeedLoadData(){
 
 // Add employee
 
-  function import_user(){
-    var username= document.getElementById('username').value;
-    var password= document.getElementById('password').value;
-    var role = 1;
-    if(document.getElementById('roleSelect').value == "Employee"){
-        role = 2;
+function import_user(){
+var username= document.getElementById('username').value;
+var password= document.getElementById('password').value;
+var role = 1;
+if(document.getElementById('roleSelect').value == "Employee"){
+    role = 2;
+}
+
+var shop_id = document.getElementById('shopNo').value;  
+var i = 0;
+
+var data = {
+    password: password,
+    role: role,
+    shop_id: shop_id
+}
+    
+var updates = {};
+var databaseRef = firebase.database().ref('employee/');
+var exist = false;
+
+databaseRef.once('value', function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+    var childKey = childSnapshot.key;
+    if(username == childKey){
+        exist = true;
     }
-
-    var shop_id = document.getElementById('shopNo').value;  
-    var i = 0;
-
-    var data = {
-      password: password,
-      role: role,
-      shop_id: shop_id
-    }
-     
-    var updates = {};
-    var databaseRef = firebase.database().ref('employee/');
-    var exist = false;
-
-    databaseRef.once('value', function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
-        var childKey = childSnapshot.key;
-        if(username == childKey){
-          exist = true;
-        }
-      });
-
-      if(exist){
-        alert('Username exist!');
-      }else{
-        updates['/employee/' + username] = data;
-        firebase.database().ref().update(updates);
-        alert('The user is created successfully!');
-        reload_page();
-      }      
     });
-  }
+
+    if(exist){
+    alert('Username exist!');
+    }else{
+    updates['/employee/' + username] = data;
+    firebase.database().ref().update(updates);
+    alert('The user is created successfully!');
+    reload_page();
+    }      
+});
+}
 
   //Modify Employee
 
@@ -152,8 +167,13 @@ $(document).ready ( function(){
         console.log("Page loaded");
     });
     if(checkPageNeedLoadData){
-        LoadData();
-        loadEmployee();
+        if(currentPage=="manage-product"){
+            LoadData();
+        }
+        else if (currentPage=="user-manage"){
+            loadEmployee();
+        }
+        
     }
 });
 
@@ -231,4 +251,11 @@ function reload_page(){
     window.location.reload();
 }
 
-//Database 
+
+$(".menu-icon").bind("click", function(){
+    Sidebar();
+}); 
+
+$(".logout-icon").bind("click", function(){
+    signOut();
+}); 

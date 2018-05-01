@@ -25,13 +25,13 @@ html {
 .header .top-navbar {
     min-height: 50px;
     padding: 0 15px 5px 0;
+
 }
 
 .header .top-navbar .navbar-header {
     line-height: 45px;
     text-align: center;
     
-    padding-left: 30px;
 }
 
 .header .top-navbar .navbar-header .navbar-brand {
@@ -51,6 +51,19 @@ html {
   display: inline-block;
 }
 
+.menu-icon{
+  width: 20px;
+  text-align: center;
+  margin-left: 15px;
+  
+}
+
+.logout-icon{
+  margin-left: auto;
+  height: 100%;
+}
+
+
 .left-sidebar {
     position: absolute;
     width: 240px;
@@ -61,7 +74,18 @@ html {
     background-color: #2d353c;
     -webkit-box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
     box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
-  }
+    transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+}
+
+.close{
+  margin-left: -240px;
+  opacity: 50;
+  transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+}
 
 .sidebar-nav {
   padding: 0;
@@ -216,6 +240,9 @@ html {
     background: #f5f5f5;
     padding-bottom: 60px;
     height: 100%;
+    transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
   }
 
 .container-fluid {
@@ -312,6 +339,10 @@ html {
   display: inline-block;
 }
 
+.card .login-form{
+  display: block;
+}
+
 .login-content{
   background-color: rgb(250, 249, 249);
   padding: 90px 30px 60px 30px;
@@ -331,6 +362,14 @@ html {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+}
+
+.login-form .loginContent{
+  padding: 0 20px;
+}
+
+.login-form .btn{
+  margin: auto;
 }
 
 #result {
@@ -372,11 +411,9 @@ html {
     }
     .header .top-navbar .navbar-header{
         padding-left: 15px;
+        margin-right: auto;
     }
     
-    .left-sidebar{
-        margin-left:-240px;
-    }
 
     .page-wrapper{
         padding-top: 65px;
@@ -389,5 +426,7 @@ html {
       padding: 20px;
     }
 
-
+    .login-form .loginContent{
+      padding: 0 0;
+    }
 }
