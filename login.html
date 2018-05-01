@@ -65,6 +65,8 @@
                 type = snapshot.val().role;
                 localStorage.setItem("role",type);
                 localStorage.setItem("shop_id",snapshot.val().shop_id);
+                localStorage.setItem("username",usr);
+                localStorage.setItem("password",password);
                 if(type==2){
                     window.location.href = "manage-product-check.html";
                 }
