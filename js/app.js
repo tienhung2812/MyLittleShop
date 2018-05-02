@@ -135,16 +135,31 @@ function loadEmployee(){
 function update_user(){
     var username = document.getElementById('username').value;
     var shop_id = document.getElementById('shop').value;
- 
-    var data = {
-        store_id: shop_id
-    }
 
    
     var updates = {};
     updates['/employee/' + username] = data;
     firebase.database().ref().update(updates);
     notify("success",'The user is <strong>updated</strong> successfully!');
+    var databaseRef = firebase.database().ref('employee/'+ oldCode);
+
+    databaseRef.once('value').then(function(snapshot){
+        var data = {
+            password : snapshot.val().password,
+            role: snapshot.val().role,
+            shop_id : shop_id,
+        }
+
+        if(username != oldCode) {
+            firebase.database().ref().child('/employee/' + oldCode).remove();
+        }
+
+        var updates = {};
+        updates['/employee/' + username] = data;
+        firebase.database().ref().update(updates);
+       
+        alert('The user is updated successfully!');
+    });
 }
   
 function delete_user(){
@@ -164,7 +179,7 @@ function password_update(){
             var data = {
                 password : newPass,
                 role : role,
-                store_id : shop_id
+                shop_id : shop_id
             }
 
             var updates = {};
@@ -179,7 +194,7 @@ function password_update(){
     }
 }
 
-//-------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
 //Product record 
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
@@ -283,6 +298,24 @@ function update_product(){
     updates['/product/' + product_code] = data;
     firebase.database().ref().update(updates);
     notify('success','The product is <strong>updated</strong> successfully!');
+    var databaseRef = firebase.database().ref('product/'+ oldCode);
+
+    databaseRef.once('value').then(function(snapshot){
+        var data = {
+            product_price: product_price,
+            stock: stock,
+            store_id: shop_id
+        }
+        if(product_code != oldCode) {
+            firebase.database().ref().child('/product/' + oldCode).remove();
+        }
+
+        var updates = {};
+        updates['/product/' + product_code] = data;
+        firebase.database().ref().update(updates);
+           
+        alert('The product is updated successfully!');
+    });   
 }
   
 function delete_product(){

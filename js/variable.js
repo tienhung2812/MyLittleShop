@@ -30,3 +30,5 @@ var employee = '<div class="card"><div class="card-table"><div class="card-title
 
 //Product Check
 var product=[];
+// user modify function
+var oldCode;
