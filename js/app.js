@@ -71,11 +71,12 @@ function checkPageNeedLoadData(){
       });
 
       if(exist){
-        alert('Username exist!');
+        notify("danger",'Username exist!');
+        
       }else{
         updates['/employee/' + username] = data;
         firebase.database().ref().update(updates);
-        alert('The user is created successfully!');
+        notify("success",'The user is created successfully!');
         reload_page();
       }      
     });
@@ -143,15 +144,14 @@ function update_user(){
     var updates = {};
     updates['/employee/' + username] = data;
     firebase.database().ref().update(updates);
-   
-    alert('The user is updated successfully!');
+    notify("success",'The user is <strong>updated</strong> successfully!');
 }
   
 function delete_user(){
     var username = document.getElementById('username').value;
   
    firebase.database().ref().child('/employee/' + username).remove();
-   alert('The user is deleted successfully!');
+   notify("success",'The user is <strong>deleted</strong> successfully!');
 }
 
 function password_update(){
@@ -170,13 +170,12 @@ function password_update(){
             var updates = {};
             updates['/employee/' + usr] = data;
             firebase.database().ref().update(updates);
-   
-            alert('The user password is updated successfully!');
+            notify("success",'The user <strong>password is updated</strong> successfully!');
         }else{
-            alert("Re-enter password not match!");
+            notify("danger","Re-enter password not match!");
         }
     }else{
-        alert("Old Password not correct!");
+        notify("danger","Old Password not correct!");
     }
 }
 
@@ -254,11 +253,11 @@ function import_product(){
       });
 
       if(exist){
-        alert('Product code exist!');
+        notify("danger",'Product code exist!');
       }else{
         updates['/product/' + code] = data;
         firebase.database().ref().update(updates);
-        alert('The product is created successfully!');
+        notify('success','The product is created successfully!');
         reload_page();
       }      
     });
@@ -283,15 +282,14 @@ function update_product(){
     var updates = {};
     updates['/product/' + product_code] = data;
     firebase.database().ref().update(updates);
-   
-    alert('The product is updated successfully!');
+    notify('success','The product is <strong>updated</strong> successfully!');
 }
   
 function delete_product(){
       var product_code = document.getElementById('pCode').value;
   
    firebase.database().ref().child('/product/' + product_code).remove();
-   alert('The product is deleted successfully!');
+   notify('success','The product is <strong>deleted</strong> successfully!')
 }
 
 function reload_page(){

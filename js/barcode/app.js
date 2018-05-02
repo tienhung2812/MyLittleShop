@@ -12,17 +12,24 @@ var app = new Vue({
     self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5 });
     self.scanner.addListener('scan', function (content, image) {
       self.scans.unshift({ date: +(Date.now()), content: content });
+      notify("info","Scanning product");
       var databaseRef = firebase.database().ref('product/'+ content);
 
       databaseRef.once('value').then(function(snapshot){
           if(snapshot.exists()){
-            document.getElementById("result").innerHTML = content;
-            document.getElementById("result_price").innerHTML = snapshot.val().product_price;
-            document.getElementById("result_stock").innerHTML = snapshot.val().stock;
+            
+            insertResultData(content,snapshot.val().product_price);
+            notify("success","Product found");
+            console.log("Product found");
+            // document.getElementById("result").innerHTML = content;
+            // document.getElementById("result_price").innerHTML = snapshot.val().product_price;
+            // document.getElementById("result_stock").innerHTML = snapshot.val().stock;
           }else{
-            document.getElementById("result").innerHTML = "Product Not Found!";
-            document.getElementById("result_price").innerHTML = "";
-            document.getElementById("result_stock").innerHTML = "";
+            console.log("Product not found");
+            notify("danger","Product not found");
+            // document.getElementById("result").innerHTML = "Product Not Found!";
+            // document.getElementById("result_price").innerHTML = "";
+            // document.getElementById("result_stock").innerHTML = "";
           }
       });
     });

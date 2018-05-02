@@ -47,6 +47,9 @@ function pageWrapper(role,page){
     console.log("Loading "+page);
     //Manager
     if (role==0){
+        addShop(1);
+        updateDashboardData(total,3240,1);
+        insertRecordData(1,323,2323,123123,1);
     }
 
     //Shop manager
@@ -54,7 +57,7 @@ function pageWrapper(role,page){
         
         $("#content").append(shopTotal);
         $("#content").append(shopSale);
-        $("#content").append(shopStock);
+        // $("#content").append(shopStock);
         $("#content").append(shopRecord);
        
     }
@@ -150,6 +153,56 @@ function insertRecordShopData(id,code,date,price,shop){
 // addShop(1);
 // updateDashboardData(total,3240,1);
 // insertRecordData(1,323,2323,123123,1)
+
+//Insert result record data
+function insertResultData(code,price){
+    var haveProduct = false;
+    var quantity;
+    if (product.length>0){
+        console.log("Find have product");
+        //Find have product or not
+        var i;
+        for(i =0;i<product.length;i++){
+            if(product[i][0]==code){
+                console.log("Found same product");                
+                quantity = product[i][1] + 1;
+                product[i][1]=quantity;
+                var id = i+1;
+                console.log(quantity +" - "+id);
+                $("#"+id+"-quantity").text(quantity);
+                haveProduct=true;
+                break;
+            }
+        }
+        // If not
+        if(!haveProduct){
+            var id = product.length+1;
+            quantity=1;
+            product[0] = [code,quantity,price];
+            var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity>'+quantity+'</td><td>$'+price+'</td></tr>';
+            $("#producttbody").append(insert);
+        }
+        
+    }
+    else{
+        //First quantity
+        var id = product.length+1;
+        console.log("First product");
+        quantity=1;
+        product[0] = [code,quantity,price];
+        var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity">'+quantity+'</td><td>$'+price+'</td></tr>';
+        $("#producttbody").append(insert);
+
+    }
+    var i;
+    var total=0;
+    for(i=0;i<product.length;i++){
+        total += product[i][2]*product[i][1];
+    }
+    console.log(total);
+    $(".result-total h4").html(total);
+    
+}
 
 
 //Example for User
@@ -258,6 +311,23 @@ function Sidebar(){
         }
     }
 }
+
+//Notification
+function notify(type,content){
+    var alertHTML = '<div class="alert alert-'+type+'" id="alert" role="alert">'
+                    +'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+                    + '<div id="alert-content">'
+                    +content
+                    +'</div>';           
+    $("#alert-div").html(alertHTML);
+    //Fade up after 3sec
+    $("#alert").fadeTo(3000, 500).fadeOut(500, function(){
+        $("#alert").fadeOut(500);
+    });
+    
+}
+
+
 
 //Signout 
 function signOut(){
