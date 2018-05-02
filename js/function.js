@@ -212,6 +212,7 @@ function userModifyModal(id,role){
         
     $(".modal-body").html(html);
     $("#userModifyModal").modal();
+    oldCode=name;
 }
 
 //Import Product Modal
@@ -240,7 +241,7 @@ function productModifyModal(id){
     '                          </div>';
     $(".modal-body").html(html);
     $("#productModifyModal").modal();
-    
+    oldCode=code;
 }
 
 //Sidebar function
