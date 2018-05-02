@@ -28,3 +28,5 @@ function composeShop(id){
 //User Manage
 var shopManager = '<div class="card"><div class="card-table"><div class="card-title"><h4>Shop Manager </h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="shopManagertbody"></tbody></table></div></div></div></div>';
 var employee = '<div class="card"><div class="card-table"><div class="card-title"><h4>Employee </h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="employeetbody"></tbody></table></div></div></div></div>';
+// user modify function
+var oldCode;
