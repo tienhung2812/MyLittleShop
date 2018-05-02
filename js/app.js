@@ -1,7 +1,10 @@
 var total="total",sale="sale",stock="stock",record="record";
-var currentPage=location.pathname.split("/").slice(-1)[0].split(".").slice(0)[0];
 var role=localStorage.getItem("role");
+var shop_id = localStorage.getItem("shop_id");
+var usr = localStorage.getItem("username");
+var pass = localStorage.getItem("password");
 
+var currentPage=location.pathname.split("/").slice(-1)[0].split(".").slice(0)[0];
 
 if (role==null&&currentPage!="login"){
     window.location.href = "login.html";
@@ -16,8 +19,6 @@ var shop_id = localStorage.getItem("shop_id");
 if(screen.width<767){
         Sidebar();
 }; 
-
-
 function installContent(callback){
 
         //Add Left sidebar
@@ -40,45 +41,45 @@ function checkPageNeedLoadData(){
 
 // Add employee
 
-function import_user(){
-var username= document.getElementById('username').value;
-var password= document.getElementById('password').value;
-var role = 1;
-if(document.getElementById('roleSelect').value == "Employee"){
-    role = 2;
-}
-
-var shop_id = document.getElementById('shopNo').value;  
-var i = 0;
-
-var data = {
-    password: password,
-    role: role,
-    shop_id: shop_id
-}
-    
-var updates = {};
-var databaseRef = firebase.database().ref('employee/');
-var exist = false;
-
-databaseRef.once('value', function(snapshot) {
-    snapshot.forEach(function(childSnapshot) {
-    var childKey = childSnapshot.key;
-    if(username == childKey){
-        exist = true;
+  function import_user(){
+    var username= document.getElementById('username').value;
+    var password= document.getElementById('password').value;
+    var role = 1;
+    if(document.getElementById('roleSelect').value == "Employee"){
+        role = 2;
     }
-    });
 
-    if(exist){
-    alert('Username exist!');
-    }else{
-    updates['/employee/' + username] = data;
-    firebase.database().ref().update(updates);
-    alert('The user is created successfully!');
-    reload_page();
-    }      
-});
-}
+    var shop_id = document.getElementById('shopNo').value;  
+    var i = 0;
+
+    var data = {
+      password: password,
+      role: role,
+      shop_id: shop_id
+    }
+     
+    var updates = {};
+    var databaseRef = firebase.database().ref('employee/');
+    var exist = false;
+
+    databaseRef.once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var childKey = childSnapshot.key;
+        if(username == childKey){
+          exist = true;
+        }
+      });
+
+      if(exist){
+        alert('Username exist!');
+      }else{
+        updates['/employee/' + username] = data;
+        firebase.database().ref().update(updates);
+        alert('The user is created successfully!');
+        reload_page();
+      }      
+    });
+  }
 
   //Modify Employee
 
@@ -97,13 +98,11 @@ databaseRef.once('value', function(snapshot) {
 // insertUserRecordData("employee",1,"aa",2);
 function loadEmployee(){
     if(currentPage=="user-manage"){
-        var Table = document.getElementById("tbl_employees_list");
-        alert(Table);
-
+        
         var databaseRef = firebase.database().ref('employee/');
         databaseRef.on('value', function(snapshot) {
-            $("#tbl_employees_list tbody tr").remove();
-            
+            $("#shopManagertbody tr").remove();
+            $("#employeetbody tr").remove();
             var rowManager = 1;
             var rowEmployee = 1;
             snapshot.forEach(function(childSnapshot) {
@@ -131,13 +130,61 @@ function loadEmployee(){
 }
 
 
+//Modify user
+function update_user(){
+    var username = document.getElementById('username').value;
+    var shop_id = document.getElementById('shop').value;
+ 
+    var data = {
+        store_id: shop_id
+    }
 
+   
+    var updates = {};
+    updates['/employee/' + username] = data;
+    firebase.database().ref().update(updates);
+   
+    alert('The user is updated successfully!');
+}
+  
+function delete_user(){
+    var username = document.getElementById('username').value;
+  
+   firebase.database().ref().child('/employee/' + username).remove();
+   alert('The user is deleted successfully!');
+}
+
+function password_update(){
+    var oldPass = document.getElementById("old_pass").value;
+    var newPass = document.getElementById("new_pass").value;
+    var rePass = document.getElementById("re_pass").value;
+
+    if(oldPass == pass){
+        if(newPass == rePass){
+            var data = {
+                password : newPass,
+                role : role,
+                store_id : shop_id
+            }
+
+            var updates = {};
+            updates['/employee/' + usr] = data;
+            firebase.database().ref().update(updates);
+   
+            alert('The user password is updated successfully!');
+        }else{
+            alert("Re-enter password not match!");
+        }
+    }else{
+        alert("Old Password not correct!");
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
 //Product record 
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
 function LoadData(){
-    var Table = document.getElementById("tbl_products_list");
-    alert(Table);
     if(currentPage=="manage-product"){
         var databaseRef = firebase.database().ref('product/');
     
