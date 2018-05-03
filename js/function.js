@@ -159,11 +159,11 @@ function insertResultData(code,price){
     var haveProduct = false;
     var quantity;
     if (product.length>0){
-        console.log("Find have product");
+        console.log("Product already ?");
         //Find have product or not
         var i;
         for(i =0;i<product.length;i++){
-            if(product[i][0]==code){
+            if(product[i][0].toString()==code.toString()){
                 console.log("Found same product");                
                 quantity = product[i][1] + 1;
                 product[i][1]=quantity;
@@ -178,8 +178,8 @@ function insertResultData(code,price){
         if(!haveProduct){
             var id = product.length+1;
             quantity=1;
-            product[0] = [code,quantity,price];
-            var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity>'+quantity+'</td><td>$'+price+'</td></tr>';
+            product[product.length] = [code,quantity,price];
+            var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity">'+quantity+'</td><td>$'+price+'</td></tr>';
             $("#producttbody").append(insert);
         }
         
