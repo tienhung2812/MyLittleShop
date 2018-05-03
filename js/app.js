@@ -48,14 +48,19 @@ function checkPageNeedLoadData(){
     if(document.getElementById('roleSelect').value == "Employee"){
         role = 2;
     }
+    var shopId;
+    if(role == 1){
+        shopId = document.getElementById('shopNo').value;  
+    } else {
+        shopId = shop_id;
+    }
 
-    var shop_id = document.getElementById('shopNo').value;  
     var i = 0;
 
     var data = {
       password: password,
       role: role,
-      shop_id: shop_id
+      shop_id: shopId
     }
      
     var updates = {};
@@ -92,7 +97,29 @@ function checkPageNeedLoadData(){
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);
 // updateDashboardData(stock,33);
-// insertRecordData("record",2,64645,"Jan 11",51);
+// insertRecordData(2,64645,"Jan 11",51);
+function loadRecord(){
+    if(role == 1){
+        var databaseRef = firebase.database().ref('shop/'+shop_id);
+
+        databaseRef.on('value',function(snapshot){
+            $('#record-val tr').remove();
+            var rowIndex = 1;
+            snapshot.forEach(function(dateSnapshot){
+                var date = dateSnapshot.key;
+
+                dateSnapshot.forEach(function(productSnapshot){
+                    var code = productSnapshot.key;
+                    var price = productSnapshot.val().price;
+                    var qty = productSnapshot.val().qty;
+                    insertRecordData(rowIndex,code,date,qty,price);
+                    rowIndex++;
+                });
+            });
+        });
+    }
+    
+}
 
 //Manager
 // addShop(1);
@@ -227,21 +254,6 @@ function LoadData(){
 }
 
 
-$(document).ready ( function(){
-    installContent(function(){
-        console.log("Page loaded");
-    });
-    if(checkPageNeedLoadData){
-        if(currentPage=="manage-product"){
-            LoadData();
-        }
-        else if (currentPage=="user-manage"){
-            loadEmployee();
-        }
-        
-    }
-});
-
 
 // Add Product
 function import_product(){
@@ -305,6 +317,7 @@ function update_product(){
             stock: stock,
             store_id: shop_id
         }
+
         if(product_code != oldCode) {
             firebase.database().ref().child('/product/' + oldCode).remove();
         }
@@ -356,35 +369,30 @@ function addShop(){
 //---------------------------------------------------------------------
 function saveRecord(){
     var updates = {};
-    var databaseRef = firebase.database().ref('shop/'+ shop_id+'/'+ getDate());
-    var count = 1;
-
-    databaseRef.once('value', function(snapshot) { 
-        if(snapshot.exists()){
-            count = snapshot.numChildren();        
-        }
-    });
-
-    var record=[];
 
     for(var i = 0; i < product.length;i++){
-        record[i] = 4;
-       //  data["record"].push(2);
-       //      // product[i][0]:{
-       //      // qty: product[i][1],
-       //      // price: product[i][2] * product[i][1]
-       // // });
-    }
-    var data = {
-        time: getTime(),
-        total: total,
-        record : record
-    }
+        var code = product[i][0];
+        var databaseRef = firebase.database().ref('shop/'+ shop_id+'/'+ getDate()+'/'+code);
+        var qty = product[i][1];
+        var price = product[i][2] * product[i][1];
 
-    
-
-    updates['/shop/'+shop_id+'/'+getDate()+'/'+count] = data;
-    firebase.database().ref().update(updates);
+        databaseRef.once('value',function(snapshot){
+            var data;
+            if(snapshot.exists()){
+                data = {
+                    qty: snapshot.val().qty + qty,
+                    price: snapshot.val().price + price
+                }              
+            }else {
+                data = {
+                    qty: qty,
+                    price: price
+                }
+            }
+            updates['/shop/'+shop_id+'/'+getDate()+'/'+code] = data;
+            firebase.database().ref().update(updates);
+        });
+    }
     notify('success','The record is saved successfully!');
 }
 
@@ -421,3 +429,20 @@ $(".logout-icon").bind("click", function(){
     signOut();
 }); 
 
+$(document).ready ( function(){
+    installContent(function(){
+        console.log("Page loaded");
+    });
+    if(checkPageNeedLoadData){
+        if(currentPage=="manage-product"){
+            LoadData();
+        }
+        else if (currentPage=="user-manage"){
+            loadEmployee();
+        }
+    }
+
+    if(currentPage == "index"){
+        loadRecord();
+    }
+});
