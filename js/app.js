@@ -48,14 +48,19 @@ function checkPageNeedLoadData(){
     if(document.getElementById('roleSelect').value == "Employee"){
         role = 2;
     }
+    var shopId;
+    if(role == 1){
+        shopId = document.getElementById('shopNo').value;  
+    } else {
+        shopId = shop_id;
+    }
 
-    var shop_id = document.getElementById('shopNo').value;  
     var i = 0;
 
     var data = {
       password: password,
       role: role,
-      shop_id: shop_id
+      shop_id: shopId
     }
      
     var updates = {};
@@ -92,7 +97,29 @@ function checkPageNeedLoadData(){
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);
 // updateDashboardData(stock,33);
-// insertRecordData("record",2,64645,"Jan 11",51);
+// insertRecordData(2,64645,"Jan 11",51);
+function loadRecord(){
+    if(role == 1){
+        var databaseRef = firebase.database().ref('shop/'+shop_id);
+
+        databaseRef.on('value',function(snapshot){
+            $('#record-val tr').remove();
+            var rowIndex = 1;
+            snapshot.forEach(function(dateSnapshot){
+                var date = dateSnapshot.key;
+
+                dateSnapshot.forEach(function(productSnapshot){
+                    var code = productSnapshot.key;
+                    var price = productSnapshot.val().price;
+                    var qty = productSnapshot.val().qty;
+                    insertRecordData(rowIndex,code,date,qty,price);
+                    rowIndex++;
+                });
+            });
+        });
+    }
+    
+}
 
 //Manager
 // addShop(1);
@@ -225,6 +252,7 @@ function LoadData(){
         });
     }
 }
+
 
 
 // Add Product
@@ -401,8 +429,6 @@ $(".logout-icon").bind("click", function(){
     signOut();
 }); 
 
-//When all page is loaded
-
 $(document).ready ( function(){
     installContent(function(){
         console.log("Page loaded");
@@ -414,8 +440,9 @@ $(document).ready ( function(){
         else if (currentPage=="user-manage"){
             loadEmployee();
         }
-        
     }
 
-    // insertRecordData(1,2,3,4,5);
+    if(currentPage == "index"){
+        loadRecord();
+    }
 });
