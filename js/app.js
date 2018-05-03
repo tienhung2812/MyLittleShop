@@ -38,7 +38,7 @@ function checkPageNeedLoadData(){
     }
     return false;
 }
-
+//------------------------------------------------------------------------------------------------------------------
 // Add employee
 
   function import_user(){
@@ -60,20 +60,29 @@ function checkPageNeedLoadData(){
      
     var updates = {};
     var databaseRef = firebase.database().ref('employee/');
-    var exist = false;
-
+    var userExist = false;
+    var shopExist = true;
     databaseRef.once('value', function(snapshot) {
       snapshot.forEach(function(childSnapshot) {
         var childKey = childSnapshot.key;
         if(username == childKey){
-          exist = true;
+          userExist = true;
         }
       });
 
-      if(exist){
+    var databaseRef1 = firebase.database().ref('shop/'+ shop_id);
+    alert('dm');
+    databaseRef.once('value').then(function(snapshot){
+        if(snapshot.exists()){
+            shopExist = false;
+        }
+    });
+
+    if(userExist){
         notify("danger",'Username exist!');
-        
-      }else{
+    }else if (shopExist == false){
+        notify("danger","ShopId not exist!");
+    }else{
         updates['/employee/' + username] = data;
         firebase.database().ref().update(updates);
         notify("success",'The user is created successfully!');
@@ -82,7 +91,6 @@ function checkPageNeedLoadData(){
     });
   }
 
-  //Modify Employee
 
 //Example For Shop Manager Dashboard
 // updateDashboardData(total,3);
@@ -323,6 +331,42 @@ function delete_product(){
   
    firebase.database().ref().child('/product/' + product_code).remove();
    notify('success','The product is <strong>deleted</strong> successfully!')
+}
+//--------------------------------------------------------------------
+function addShop(){
+    var shopId = document.getElementById("shopId");
+    var shopName = document.getElementById("shopName");
+
+    var data = {
+        name: shopName
+    }
+     
+    var updates = {};
+    var databaseRef = firebase.database().ref('shop/');
+    var exist = false;
+
+    databaseRef.once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var childKey = childSnapshot.key;
+        if(shopId == childKey){
+          exist = true;
+        }
+      });
+
+      if(exist){
+        notify("danger",'Shop Id exist!');
+        
+      }else{
+        updates['/shop/' + shopId] = data;
+        firebase.database().ref().update(updates);
+        notify("success",'The shop is created successfully!');
+        reload_page();
+      }      
+    });
+}
+//---------------------------------------------------------------------
+function saveRecord(){
+
 }
 
 function reload_page(){

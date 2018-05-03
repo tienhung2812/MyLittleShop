@@ -200,8 +200,7 @@ function insertResultData(code,price){
         total += product[i][2]*product[i][1];
     }
     console.log(total);
-    $(".result-total h4").html(total);
-    
+    $(".result-total h4").html(total); 
 }
 
 

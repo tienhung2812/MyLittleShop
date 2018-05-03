@@ -16,7 +16,7 @@ var app = new Vue({
       var databaseRef = firebase.database().ref('product/'+ content);
 
       databaseRef.once('value').then(function(snapshot){
-          if(snapshot.exists()){
+          if(snapshot.exists() && (snapshot.val().snapshot_id == shop_id)){
             
             insertResultData(content,snapshot.val().product_price);
             notify("success","Product found");
