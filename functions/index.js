@@ -71,3 +71,45 @@ exports.countDeleteRoleUser = functions.database.ref('/employee/{userid}').onDel
         }
         
     });
+
+exports.shopTotalRevenue = functions.database.ref('/shop/{shopid}/record/{date}/{recordid}').onWrite(
+    (change) => {
+        console.log('Count shop total revenue');
+        const collectionRef = change.after.ref.parent;
+        const recordRef = collectionRef.parent;
+        const countRef = collectionRef.parent.parent.child('revenue');
+        var total=0;
+        return recordRef.on('value',function(date){
+            date.forEach(function(dateRecord){
+                dateRecord.ref.on('value',function(record){
+                    record.forEach(function(snapshot){
+                        total += snapshot.val().price;
+                    })
+                })
+            })
+            console.log("Total: "+ total);
+                countRef.set(total);
+        })
+        
+    });
+
+exports.shopTotalSale = functions.database.ref('/shop/{shopid}/record/{date}/{recordid}').onWrite(
+    (change) => {
+        console.log('Count shop total Sale');
+        const collectionRef = change.after.ref.parent;
+        const recordRef = collectionRef.parent;
+        const countRef = collectionRef.parent.parent.child('sale');
+        var total=0;
+        return recordRef.on('value',function(date){
+            date.forEach(function(dateRecord){
+                dateRecord.ref.on('value',function(record){
+                    record.forEach(function(snapshot){
+                        total += snapshot.val().qty;
+                    })
+                })
+            })
+            console.log("Total: "+ total);
+                countRef.set(total);
+        })
+        
+    });

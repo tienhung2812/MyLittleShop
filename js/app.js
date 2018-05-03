@@ -100,7 +100,7 @@ function checkPageNeedLoadData(){
 // insertRecordData(2,64645,"Jan 11",51);
 function loadRecord(){
     if(role == 1){
-        var databaseRef = firebase.database().ref('shop/'+shop_id);
+        var databaseRef = firebase.database().ref('shop/'+shop_id+'/record');
 
         databaseRef.on('value',function(snapshot){
             $('#record-val tr').remove();
@@ -372,7 +372,7 @@ function saveRecord(){
 
     for(var i = 0; i < product.length;i++){
         var code = product[i][0];
-        var databaseRef = firebase.database().ref('shop/'+ shop_id+'/'+ getDate()+'/'+code);
+        var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
         var qty = product[i][1];
         var price = product[i][2] * product[i][1];
 
@@ -389,11 +389,15 @@ function saveRecord(){
                     price: price
                 }
             }
-            updates['/shop/'+shop_id+'/'+getDate()+'/'+code] = data;
+            updates['/shop/'+shop_id+'/record/'+getDate()+'/'+code] = data;
             firebase.database().ref().update(updates);
         });
     }
     notify('success','The record is saved successfully!');
+
+    product = [];
+    $("#producttbody").html("");
+    $("#total").html("");
 }
 
 function getDate(){
