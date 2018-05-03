@@ -78,6 +78,7 @@ function pageWrapper(role,page){
         // Shop Manager
         else if(role == 1){
             $("#roleSelect").append('<option>Employee</option>');
+            $("#shop-no").remove();
             
         }
         
@@ -95,6 +96,7 @@ function pageWrapper(role,page){
         } else if (role==1){
             $("#content").html('<div class="col-lg-12" id="employeeDiv"></div>');
             $("#employeeDiv").html(employee);
+            
         }
     }
 
