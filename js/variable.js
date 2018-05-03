@@ -1,6 +1,7 @@
 //Sidebar
 var dashboard = '<li><a class="has-no-arrow" href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a></li>';
 var dashboardManager = '<li><a class="has-no-arrow " href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard Manager</span></a></li>';
+var addShopSidebar = '<li><a class="has-no-arrow  " href="shop-add.html" aria-expanded="false"><i class="fa fa-plus-circle"></i><span class="hide-menu">Add shop</span></a></li>';
 var addUser = '<li><a class="has-no-arrow  " href="user-add.html" aria-expanded="false"><i class="fa fa-user-plus"></i><span class="hide-menu">Add User</span></a></li>';
 var modifyUser = '<li><a class="has-no-arrow  " href="user-manage.html" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Modify User</span></a></li>' ;
 var changeUserPassword = '<li><a class="has-no-arrow  " href="user-password.html" aria-expanded="false"><i class="fa fa-key"></i><span class="hide-menu">Change Password</span></a></li>' ;

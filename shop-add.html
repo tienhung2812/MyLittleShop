@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/icon16x16.png">
+    <title>My Little Shop</title>
+    <link href="css/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- script -->
+    <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/bootstrap/bootstrap.js"></script>
+    <script src="js/variable.js"></script>
+    <script src="js/function.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+    <script src="js/init.js"></script>
+
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="header">
+            <nav class="navbar top-navbar navbar-expand-md navbar-light">
+                    <div class="menu-icon">
+                            <i class="fa fa-bars text-white"></i>
+                        </div>
+                        <!-- Logo -->
+                        <div class="navbar-header">
+                            <a class="navbar-brand " href="index.html">
+                                <!-- Logo icon -->
+                                <b><img src="img/logo.png" alt="homepage" class="dark-logo" /></b>
+                                <!-- Logo text -->
+                                <span>My Little Shop</span>
+                            </a>
+        
+                        </div>
+                        <div class="logout-icon" data-toggle="tooltip" title="Sign Out">
+                                <i class="fa fa-sign-out text-white"></i>
+                        </div>
+            </nav>
+        </div>
+         <div class="left-sidebar">
+             
+        </div>
+        <div class="page-wrapper">
+          <div class="container-fluid ">
+            <div class="row" id="content">
+                <div class="col-lg-12">
+                    <div class="card">
+                      <div class="card-title form-title">
+                        <h4>Add Shop</h4>
+                      </div>
+                      <div class="card-body">
+                        <div class="basic-form">
+                          <form>
+                            <div class="form-group col-lg-12">
+                              <p class="text-muted m-b-15 f-s-12">Shop ID</p>
+                              <input type="text" class="form-control input-default" id="shopId" placeholder="">
+                              </div>
+                              <div class="form-group col-lg-12">
+                                <p class="text-muted m-b-15 f-s-12">Shop Name</p>
+                                <input type="text" class="form-control input-default " id="shopName" placeholder="">
+                                </div>
+                                
+                                <button class="btn btn-success" type="button" onclick="import_product()">Add</button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+            </div>
+        </div>
+        <div id="alert-div">
+
+        </div>
+        </div>
+    </div>
+</body>
+<script src="js/app.js"></script>
+</html>

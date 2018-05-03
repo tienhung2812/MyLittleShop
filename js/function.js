@@ -5,7 +5,7 @@ function leftSidebar(role,currentPage){
         //Manager
         if(role ==0 ){
             //Dashboard
-            $(dashboardManager).insertAfter("#sidebar-home");
+            $(dashboardManager).insertAfter("#sidebar-home");         
             //User
             $(changeUserPassword).insertAfter("#sidebar-user");
             $(modifyUser).insertAfter("#sidebar-user");
@@ -14,6 +14,8 @@ function leftSidebar(role,currentPage){
             $(checkOut).insertAfter("#sidebar-product");
             $(modifyProduct).insertAfter("#sidebar-product");
             $(addProduct).insertAfter("#sidebar-product");
+            //Shop
+            $(addShopSidebar).insertAfter("#sidebar-shop");
         } else if (role==1){
             //Dashboard
             $(dashboard).insertAfter("#sidebar-home");
@@ -26,10 +28,13 @@ function leftSidebar(role,currentPage){
             $(checkOut).insertAfter("#sidebar-product");
             $(modifyProduct).insertAfter("#sidebar-product");
             $(addProduct).insertAfter("#sidebar-product");
+
+            $("#sidebar-shop").remove();
         } else if(role==2){
             $(changeUserPassword).insertAfter("#sidebar-user");
             $(checkOut).insertAfter("#sidebar-product");
             $("#sidebar-home").remove();
+            $("#sidebar-shop").remove();
             
         }
 
@@ -73,6 +78,7 @@ function pageWrapper(role,page){
         // Shop Manager
         else if(role == 1){
             $("#roleSelect").append('<option>Employee</option>');
+            $("#shop-no").remove();
             
         }
         
@@ -90,13 +96,14 @@ function pageWrapper(role,page){
         } else if (role==1){
             $("#content").html('<div class="col-lg-12" id="employeeDiv"></div>');
             $("#employeeDiv").html(employee);
+            
         }
     }
 
     //Add product
 
-
     //Modify product
+    
 
 };
 
