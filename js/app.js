@@ -305,6 +305,7 @@ function update_product(){
             stock: stock,
             store_id: shop_id
         }
+
         if(product_code != oldCode) {
             firebase.database().ref().child('/product/' + oldCode).remove();
         }
@@ -356,35 +357,30 @@ function addShop(){
 //---------------------------------------------------------------------
 function saveRecord(){
     var updates = {};
-    var databaseRef = firebase.database().ref('shop/'+ shop_id+'/'+ getDate());
-    var count = 1;
-
-    databaseRef.once('value', function(snapshot) { 
-        if(snapshot.exists()){
-            count = snapshot.numChildren();        
-        }
-    });
-
-    var record=[];
 
     for(var i = 0; i < product.length;i++){
-        record[i] = 4;
-       //  data["record"].push(2);
-       //      // product[i][0]:{
-       //      // qty: product[i][1],
-       //      // price: product[i][2] * product[i][1]
-       // // });
-    }
-    var data = {
-        time: getTime(),
-        total: total,
-        record : record;
-    }
+        var code = product[i][0];
+        var databaseRef = firebase.database().ref('shop/'+ shop_id+'/'+ getDate()+'/'+code);
+        var qty = product[i][1];
+        var price = product[i][2] * product[i][1];
 
-    
-
-    updates['/shop/'+shop_id+'/'+getDate()+'/'+count] = data;
-    firebase.database().ref().update(updates);
+        databaseRef.once('value',function(snapshot){
+            var data;
+            if(snapshot.exists()){
+                data = {
+                    qty: snapshot.val().qty + qty,
+                    price: snapshot.val().price + price
+                }              
+            }else {
+                data = {
+                    qty: qty,
+                    price: price
+                }
+            }
+            updates['/shop/'+shop_id+'/'+getDate()+'/'+code] = data;
+            firebase.database().ref().update(updates);
+        });
+    }
     notify('success','The record is saved successfully!');
 }
 
