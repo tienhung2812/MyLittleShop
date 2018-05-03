@@ -378,7 +378,7 @@ function saveRecord(){
     var data = {
         time: getTime(),
         total: total,
-        record : record;
+        record : record
     }
 
     
@@ -420,3 +420,4 @@ $(".menu-icon").bind("click", function(){
 $(".logout-icon").bind("click", function(){
     signOut();
 }); 
+
