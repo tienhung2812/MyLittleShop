@@ -202,7 +202,7 @@ function insertResultData(code,price){
 
     }
     var i;
-    var total=0;
+    total = 0;
     for(i=0;i<product.length;i++){
         total += product[i][2]*product[i][1];
     }
