@@ -59,35 +59,31 @@ function checkPageNeedLoadData(){
     }
      
     var updates = {};
-    var databaseRef = firebase.database().ref('employee/');
     var userExist = false;
     var shopExist = true;
-    databaseRef.once('value', function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
-        var childKey = childSnapshot.key;
-        if(username == childKey){
-          userExist = true;
-        }
-      });
 
     var databaseRef1 = firebase.database().ref('shop/'+ shop_id);
-    alert('dm');
-    databaseRef.once('value').then(function(snapshot){
-        if(snapshot.exists()){
+    var databaseRef = firebase.database().ref('employee/'+username);
+    databaseRef1.once('value').then(function(snapshot){
+        if(!snapshot.exists()){
             shopExist = false;
         }
     });
+    databaseRef.once('value', function(snapshot) {
+        if(snapshot.exists()){
+            userExist = true;
+        }
 
-    if(userExist){
-        notify("danger",'Username exist!');
-    }else if (shopExist == false){
-        notify("danger","ShopId not exist!");
-    }else{
-        updates['/employee/' + username] = data;
-        firebase.database().ref().update(updates);
-        notify("success",'The user is created successfully!');
-        reload_page();
-      }      
+        if(userExist){
+            notify("danger",'Username exist!');
+        }else if(!shopExist){
+            notify("danger",'ShopId not exist!');
+        }else{
+            updates['/employee/' + username] = data;
+            firebase.database().ref().update(updates);
+            notify("success",'The user is created successfully!');
+            reload_page();
+        }      
     });
   }
 
@@ -264,29 +260,24 @@ function import_product(){
     }
      
     var updates = {};
-    var databaseRef = firebase.database().ref('product/');
+    var databaseRef = firebase.database().ref('product/' + code);
     var exist = false;
 
     databaseRef.once('value', function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
-        var childKey = childSnapshot.key;
-        if(code == childKey){
-          exist = true;
+        if(snapshot.exists()){
+            exist = true;
         }
-      });
 
-      if(exist){
-        notify("danger",'Product code exist!');
-      }else{
-        updates['/product/' + code] = data;
-        firebase.database().ref().update(updates);
-        notify('success','The product is created successfully!');
-        reload_page();
-      }      
+        if(exist){
+            notify("danger",'Product code exist!');
+        }else{
+            updates['/product/' + code] = data;
+            firebase.database().ref().update(updates);
+            notify('success','The product is created successfully!');
+            reload_page();
+        }      
     });
-
-
-  }
+}
 
 
   //Modify Product
@@ -327,46 +318,94 @@ function update_product(){
 }
   
 function delete_product(){
-      var product_code = document.getElementById('pCode').value;
+    var product_code = document.getElementById('pCode').value;
   
-   firebase.database().ref().child('/product/' + product_code).remove();
-   notify('success','The product is <strong>deleted</strong> successfully!')
+    firebase.database().ref().child('/product/' + product_code).remove();
+    notify('success','The product is <strong>deleted</strong> successfully!')
 }
 //--------------------------------------------------------------------
+
 function addShop(){
-    var shopId = document.getElementById("shopId");
-    var shopName = document.getElementById("shopName");
+    var shopId = document.getElementById("shopId").value;
+    var shopName = document.getElementById("shopName").value;
 
     var data = {
         name: shopName
     }
      
     var updates = {};
-    var databaseRef = firebase.database().ref('shop/');
+    var databaseRef = firebase.database().ref('shop/'+ shopId);
     var exist = false;
 
     databaseRef.once('value', function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
-        var childKey = childSnapshot.key;
-        if(shopId == childKey){
-          exist = true;
-        }
-      });
+        if(snapshot.exists()){
+            exist = true;
+        } 
 
-      if(exist){
-        notify("danger",'Shop Id exist!');
-        
-      }else{
-        updates['/shop/' + shopId] = data;
-        firebase.database().ref().update(updates);
-        notify("success",'The shop is created successfully!');
-        reload_page();
-      }      
+        if(exist){
+            notify("danger",'Shop Id exist!');
+        }else{
+            updates['/shop/' + shopId] = data;
+            firebase.database().ref().update(updates);
+            notify("success",'The shop is created successfully!');
+            reload_page();
+        }      
     });
 }
+
 //---------------------------------------------------------------------
 function saveRecord(){
+    var updates = {};
+    var databaseRef = firebase.database().ref('shop/'+ shop_id+'/'+ getDate());
+    var count = 1;
 
+    databaseRef.once('value', function(snapshot) { 
+        if(snapshot.exists()){
+            count = snapshot.numChildren();        
+        }
+    });
+
+    var record=[];
+
+    for(var i = 0; i < product.length;i++){
+        record[i] = 4;
+       //  data["record"].push(2);
+       //      // product[i][0]:{
+       //      // qty: product[i][1],
+       //      // price: product[i][2] * product[i][1]
+       // // });
+    }
+    var data = {
+        time: getTime(),
+        total: total,
+        record : record;
+    }
+
+    
+
+    updates['/shop/'+shop_id+'/'+getDate()+'/'+count] = data;
+    firebase.database().ref().update(updates);
+    notify('success','The record is saved successfully!');
+}
+
+function getDate(){
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if(dd<10){
+        dd='0'+dd;
+    } 
+    if(mm<10){
+        mm='0'+mm;
+    } 
+    return dd+'-'+mm+'-'+yyyy;
+}
+
+function getTime(){
+    var d = new Date(); 
+    return d.getHours()+'-'+d.getMinutes();+'-'+d.getSeconds();
 }
 
 function reload_page(){
