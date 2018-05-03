@@ -231,22 +231,6 @@ function LoadData(){
 }
 
 
-$(document).ready ( function(){
-    installContent(function(){
-        console.log("Page loaded");
-    });
-    if(checkPageNeedLoadData){
-        if(currentPage=="manage-product"){
-            LoadData();
-        }
-        else if (currentPage=="user-manage"){
-            loadEmployee();
-        }
-        
-    }
-});
-
-
 // Add Product
 function import_product(){
     var code= document.getElementById('pCode').value;
@@ -381,3 +365,22 @@ $(".menu-icon").bind("click", function(){
 $(".logout-icon").bind("click", function(){
     signOut();
 }); 
+
+//When all page is loaded
+
+$(document).ready ( function(){
+    installContent(function(){
+        console.log("Page loaded");
+    });
+    if(checkPageNeedLoadData){
+        if(currentPage=="manage-product"){
+            LoadData();
+        }
+        else if (currentPage=="user-manage"){
+            loadEmployee();
+        }
+        
+    }
+
+    // insertRecordData(1,2,3,4,5);
+});

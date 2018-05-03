@@ -126,9 +126,9 @@ function updateDashboardData(type,value) {
     console.log("Updated "+type+" value");
 }
 //Record Data
-function insertRecordData(type,id,code,date,price){
-    var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>$'+price+'</td></tr>';
-    setTimeout($("#"+type+"-val").append(insert),40)   
+function insertRecordData(id,code,date,quantity,price){
+    var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>'+quantity+'</td><td>$'+price+'</td></tr>';
+    $("#record-val").append(insert);   
     console.log("Updated record value");
 };
 //Example For Shop Manager Dashboard
