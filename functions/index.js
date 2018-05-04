@@ -3,7 +3,10 @@ const functions = require('firebase-functions');
 
 // The Firebase Admin SDK to access the Firebase Realtime Database.
 const admin = require('firebase-admin');
-admin.initializeApp();
+const cors = require('cors')({origin: true});
+
+admin.initializeApp(functions.config().firebase);
+
 
 // Track on totalUser
 exports.countTotalUser = functions.database.ref('/employee/{userid}').onWrite(
@@ -163,3 +166,37 @@ exports.TotalSale = functions.database.ref('/shop/{shopid}/record/{date}/{record
         })     
         
     });
+
+
+exports.checkLogin = functions.https.onRequest((req,res)=>{
+    cors(req, res, () => {
+        const params = req.url.split("/");
+        const usrId = params[1];
+        const password = params[2];
+        return admin.database().ref('employee/'+usrId).once('value',(userSnapshot)=>{
+
+            var usr = userSnapshot.val();
+            var pass = usr.password;
+            var role = -1; // default
+            var shop_id = -1; // default
+            var isMatched = false;
+
+            if(password == pass){
+                isMatched = true;
+                role = usr.role;
+                shop_id = usr.shop_id;
+            }
+
+            var data = {
+                usr: usrId,
+                pass: password,
+                role : role,
+                shop_id : shop_id,
+                result: isMatched
+            }
+            
+            res.send(data);
+        });
+    });
+});
+
