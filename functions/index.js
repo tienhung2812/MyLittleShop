@@ -108,8 +108,58 @@ exports.shopTotalSale = functions.database.ref('/shop/{shopid}/record/{date}/{re
                     })
                 })
             })
-            console.log("Total: "+ total);
+            console.log("Sale: "+ total);
                 countRef.set(total);
         })
+        
+    });
+
+exports.TotalRevenue = functions.database.ref('/shop/{shopid}/record/{date}/{recordid}').onWrite(
+    (change) => {
+        console.log('Count total revenue');
+        const collectionRef = change.after.ref.parent;
+        const shopRef = collectionRef.parent.parent.parent;
+        const countRef = collectionRef.parent.parent.parent.child('revenue');
+        var total=0;
+        return shopRef.on('value',function(shopID){
+            shopID.forEach(function(record){
+                record.ref.child('record').on('value',function(date){
+                    date.forEach(function(dateRecord){
+                        dateRecord.ref.on('value',function(record){
+                            record.forEach(function(snapshot){
+                                total += snapshot.val().price;
+                            })
+                        })
+                    })
+                })
+            })
+            console.log("Total: "+ total);
+                    countRef.set(total);
+        })     
+        
+    });
+
+exports.TotalSale = functions.database.ref('/shop/{shopid}/record/{date}/{recordid}').onWrite(
+    (change) => {
+        console.log('Count total revenue');
+        const collectionRef = change.after.ref.parent;
+        const shopRef = collectionRef.parent.parent.parent;
+        const countRef = collectionRef.parent.parent.parent.child('sale');
+        var total=0;
+        return shopRef.on('value',function(shopID){
+            shopID.forEach(function(record){
+                record.ref.child('record').on('value',function(date){
+                    date.forEach(function(dateRecord){
+                        dateRecord.ref.on('value',function(record){
+                            record.forEach(function(snapshot){
+                                total += snapshot.val().qty;
+                            })
+                        })
+                    })
+                })
+            })
+            console.log("Sale: "+ total);
+                    countRef.set(total);
+        })     
         
     });
