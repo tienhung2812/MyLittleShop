@@ -45,24 +45,26 @@ function checkPageNeedLoadData(){
   function import_user(){
     var username= document.getElementById('username').value;
     var password= document.getElementById('password').value;
-    var role = 1;
+    var input_role = -1;
+
     if(document.getElementById('roleSelect').value == "Employee"){
-        role = 2;
+        input_role = 2;
     }
     var shopId;
-    if(role == 1){
+
+    if(role == 0){
         shopId = document.getElementById('shopNo').value;  
     } else {
         shopId = shop_id;
     }
 
+
     var hash= CryptoJS.SHA3(password);
-	  
-    var i = 0;
+	alert(hash);
 
     var data = {
       password: hash,
-      role: role,
+      role: input_role,
       shop_id: shopId
     }
      
@@ -72,6 +74,7 @@ function checkPageNeedLoadData(){
 
     var databaseRef1 = firebase.database().ref('shop/'+ shop_id);
     var databaseRef = firebase.database().ref('employee/'+username);
+
     databaseRef1.once('value').then(function(snapshot){
         if(!snapshot.exists()){
             shopExist = false;
