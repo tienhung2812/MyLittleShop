@@ -551,10 +551,11 @@ function reload_page(){
 
 function LoadData(){
     if(currentPage=="manage-product"){
-    	alert('dm');
+
         $("#tbl_products_list tbody tr").remove();
         var rowIndex = 1;
-		var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/loadProduct/'+shop_id;
+		
+		alert(url);
         var xhr = createCORSRequest('GET', url);
 
       	if (!xhr) {
