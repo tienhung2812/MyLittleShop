@@ -172,7 +172,6 @@ function loadRecord(){
             updateDashboardData("sale",snapshot.val());
         })
     }
-    
 }
 
 //Manager
@@ -284,112 +283,146 @@ function password_update(){
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
 function LoadData(){
-    if(currentPage=="manage-product"){
-        var databaseRef = firebase.database().ref('product/');
-    
-        databaseRef.on('value', function(snapshot) {
-            $("#tbl_products_list tbody tr").remove();
-            var rowIndex = 1;
-            snapshot.forEach(function(childSnapshot) {
-                var childKey = childSnapshot.key;
-                var childData = childSnapshot.val();
-                if(role == 0){
-                    insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
-                    rowIndex = rowIndex + 1;
-                } else {
-                    if(childData.store_id == shop_id){
-                        insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
-                        rowIndex = rowIndex + 1;
-                    }
-                }
-            })
-        });
-    }
+        $("#tbl_products_list tbody tr").remove();
+        var rowIndex = 1;
+		var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/loadProduct/'+shop_id;
+	
+        var xhr = createCORSRequest('GET', url);
+
+      	if (!xhr) {
+        	alert('CORS not supported');
+        	return;
+      	}
+
+      	// Response handlers.
+      	xhr.onload = function() {
+        	var data = JSON.parse(xhr.responseText);
+        	for(var i = 0; i < data.length; i++){
+        		var price = data[i].price;
+        		var stock = data[i].stock;
+        		var product_code = data[i].product_code;
+        		insertProductRecordData(rowIndex,product_code,price,stock);
+        		rowIndex +=1;
+        	}
+     	};
+
+      	xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+        	alert('Something went wrong!');
+      	};
+
+      	xhr.send();
+      	return false;
 }
 
 
+	// Add Product
+	function import_product(){
+	    var code= document.getElementById('pCode').value;
+	    var price= document.getElementById('pPrice').value;
+	    var stock= document.getElementById('pStock').value;
 
-// Add Product
-function import_product(){
-    var code= document.getElementById('pCode').value;
-    var price= document.getElementById('pPrice').value;
-    var stock= document.getElementById('pStock').value;
-
-    if(role == 0){
-        shop_id = 1;
-    }
-
-    var data = {
-      product_price: price,
-      stock: stock,
-      store_id: shop_id
-    }
      
-    var updates = {};
-    var databaseRef = firebase.database().ref('product/' + code);
-    var exist = false;
+		var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shop_id;
+	
+        var xhr = createCORSRequest('GET', url);
 
-    databaseRef.once('value', function(snapshot) {
-        if(snapshot.exists()){
-            exist = true;
-        }
+      	if (!xhr) {
+        	alert('CORS not supported');
+        	return;
+      	}
 
-        if(exist){
-            notify("danger",'Product code exist!');
-        }else{
-            updates['/product/' + code] = data;
-            firebase.database().ref().update(updates);
-            notify('success','The product is created successfully!');
-            reload_page();
-        }      
-    });
-}
+      	// Response handlers.
+      	xhr.onload = function() {
+        	var result = (xhr.responseText === "true");
+    
+        	if(result){
+        		alert('Product is add successfully!');
+        	}else{
+        		alert('Product is already exist!');
+        	}
+        	
+     	};
+
+      	xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+        	alert('Something went wrong!');
+      	};
+
+      	xhr.send();
+      	return false;
+	}
 
 
-  //Modify Product
-function update_product(){
-   var product_code = document.getElementById('pCode').value;
-   var product_price = document.getElementById('pPrice').value;
-   var stock = document.getElementById('pStock').value;
+	  //Modify Product
+	function update_product(){
+	   	var code = document.getElementById('pCode').value;
+	   	var price = document.getElementById('pPrice').value;
+	   	var stock = document.getElementById('pStock').value;
+	   	var type = 0;
+	   	if(code == oldCode){
+	   		type = 1;
+	   	} else {
+	   		type = 2;
+	   	}
 
-   var data = {
-        product_price: product_price,
-        stock: stock,
-        store_id: shop_id
-    }
+	   	var url =  'https://us-central1-my-little-shop-41012.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
+        var xhr = createCORSRequest('GET', url);
 
-   
-    var updates = {};
-    updates['/product/' + product_code] = data;
-    firebase.database().ref().update(updates);
-    notify('success','The product is <strong>updated</strong> successfully!');
-    var databaseRef = firebase.database().ref('product/'+ oldCode);
+		if (!xhr) {
+	       	alert('CORS not supported');
+	       	return;
+    	}
+	      	// Response handlers.
+	    xhr.onload = function() {
+	       	var result = (xhr.responseText === "true");
+	    
+	        if(result){
+	        	alert('Product is modified successfully!');
+	        	reload_page();
+	        }else{
+	        	alert('Modified product code is exist!');
+	        }
+	    };
 
-    databaseRef.once('value').then(function(snapshot){
-        var data = {
-            product_price: product_price,
-            stock: stock,
-            store_id: shop_id
-        }
+	    xhr.onerror = function() {
+	        //notify('danger', 'Username not exist!');
+	        alert('Something went wrong!');
+	    };
 
-        if(product_code != oldCode) {
-            firebase.database().ref().child('/product/' + oldCode).remove();
-        }
-
-        var updates = {};
-        updates['/product/' + product_code] = data;
-        firebase.database().ref().update(updates);
-           
-        alert('The product is updated successfully!');
-    });   
-}
+	    xhr.send();
+      	return false;   
+	}
   
-function delete_product(){
-    var product_code = document.getElementById('pCode').value;
-  
-    firebase.database().ref().child('/product/' + product_code).remove();
-    notify('success','The product is <strong>deleted</strong> successfully!')
-}
+	function delete_product(){
+	    var product_code = document.getElementById('pCode').value;
+	  
+	    var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/removeProduct/'+product_code;
+		
+	    var xhr = createCORSRequest('GET', url);
+
+      	if (!xhr) {
+        	alert('CORS not supported');
+        	return;
+      	}
+
+      	// Response handlers.
+      	xhr.onload = function() {
+        	var result = (xhr.responseText === "true");
+        	if(result){
+        		alert("Delete success!");
+        		reload_page();
+        	}
+     	};
+
+      	xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+        	alert('Something went wrong!');
+      	};
+
+      	xhr.send();
+      	return false;
+	}
 //--------------------------------------------------------------------
 
 function addShop(){
@@ -549,41 +582,6 @@ function reload_page(){
       	return false;
     }  
 
-function LoadData(){
-    if(currentPage=="manage-product"){
-
-        $("#tbl_products_list tbody tr").remove();
-        var rowIndex = 1;
-		
-		alert(url);
-        var xhr = createCORSRequest('GET', url);
-
-      	if (!xhr) {
-        	alert('CORS not supported');
-        	return;
-      	}
-
-      	// Response handlers.
-      	xhr.onload = function() {
-        	var data = JSON.parse(xhr.responseText);
-        	for(var i = 0; i < data.length; i++){
-        		var price = data[i].price;
-        		var stock = data[i].stock;
-        		var product_code = data[i].product_code;
-        		insertProductRecordData(rowIndex,product_code,price,stock);
-        		rowIndex +=1;
-        	}
-     	};
-
-      	xhr.onerror = function() {
-        	//notify('danger', 'Username not exist!');
-        	alert('Something went wrong!');
-      	};
-
-      	xhr.send();
-      	return false;
-    }
-}
 //-------------------------------------------------------------------------------------------------
 $(".menu-icon").bind("click", function(){
     Sidebar();

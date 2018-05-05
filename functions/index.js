@@ -366,7 +366,7 @@ exports.countShopNumber = functions.database.ref('/shop/{userid}').onWrite(
         return console.log('Counter updated.');
         });
     });
-    
+    //--------------------------------------------------------------------------------------------
 exports.checkLogin = functions.https.onRequest((req,res)=>{
     cors(req, res, () => {
         const params = req.url.split("/");
@@ -421,3 +421,104 @@ exports.loadProduct = functions.https.onRequest((req,res)=>{
         });
     });
 });
+
+exports.addProduct = functions.https.onRequest((req,res)=>{
+    cors(req,res,() =>{
+        const params = req.url.split("/");
+        const product_code = params[1];
+
+        var updates = {};
+        var result = true;
+
+        var data = {
+          product_price : params[2],
+          stock: params[3],
+          store_id: params[4]
+        }
+
+        return admin.database().ref('product/'+product_code).once('value',(snapshot)=>{
+            if(snapshot.exists()){
+                result = false;
+            } else {
+                updates['/product/' + product_code] = data;
+                admin.database().ref().update(updates);
+            }
+            res.send(result);
+        });
+    });
+});
+
+exports.modifyProduct = functions.https.onRequest((req,res)=>{
+    cors(req,res,() =>{
+        const params = req.url.split("/");
+        const product_code = params[1];
+        const product_oldcode = params[5];
+        const type = params[6];
+
+        var updates = {};
+        var result = true;
+
+        var data = {
+          product_price : params[2],
+          stock: params[3],
+          store_id: params[4]
+        }
+
+        if(type == 1){  // update current product
+            admin.database().ref('product/'+product_code).once('value',(snapshot)=>{
+                if(snapshot.exists()){
+                    updates['/product/' + product_code] = data;
+                    admin.database().ref().update(updates);
+                }
+                res.send(result);
+            });
+        } else {
+            admin.database().ref('product/'+product_code).once('value',(snapshot)=>{
+                if(snapshot.exists()){
+                    result = false;
+                } else {
+                    updates['/product/' + product_code] = data;
+                    admin.database().ref().update(updates);
+                }
+                res.send(result);
+            });
+            admin.database().ref().child('/product/'+product_oldcode).remove();
+        }
+    });
+});
+
+
+exports.removeProduct = functions.https.onRequest((req,res)=>{
+    cors(req,res,() =>{
+        const params = req.url.split("/");
+        const product_code = params[1];
+
+        admin.database().ref().child('/product/'+product_code).remove();
+        return res.send(true);
+    });
+});
+
+//------------------------------------------------------------------------------------------
+
+
+// exports.loadProduct = functions.https.onRequest((req,res)=>{
+//     cors(req,res,() =>{
+//         const params = req.url.split("/");
+//         const shop_id = params[1];
+//         return admin.database().ref('product/').once('value',(snapshot)=>{
+//             var products = [];
+//             snapshot.forEach(function(productSnapshot) {
+//                 var product = productSnapshot.val();
+//                 if(shop_id == product.store_id || shop_id == 0){
+//                     var data = {
+//                         product_code : productSnapshot.key,
+//                         price : product.product_price,
+//                         stock : product.stock
+//                     }
+//                     products.push(data);
+//                 }
+//             });
+//             res.send(products);
+//         });
+//     });
+// });
