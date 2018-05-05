@@ -122,7 +122,7 @@ exports.TotalRevenue = functions.database.ref('/shop/{shopid}/record/{date}/{rec
         console.log('Count total revenue');
         const collectionRef = change.after.ref.parent;
         const shopRef = collectionRef.parent.parent.parent;
-        const countRef = collectionRef.parent.parent.parent.child('revenue');
+        const countRef = collectionRef.parent.parent.parent.parent.child('stat/shop/revenue');
         var total=0;
         return shopRef.on('value',function(shopID){
             shopID.forEach(function(record){
@@ -144,10 +144,10 @@ exports.TotalRevenue = functions.database.ref('/shop/{shopid}/record/{date}/{rec
 
 exports.TotalSale = functions.database.ref('/shop/{shopid}/record/{date}/{recordid}').onWrite(
     (change) => {
-        console.log('Count total revenue');
+        console.log('Count total sale');
         const collectionRef = change.after.ref.parent;
         const shopRef = collectionRef.parent.parent.parent;
-        const countRef = collectionRef.parent.parent.parent.child('sale');
+        const countRef = collectionRef.parent.parent.parent.parent.child('stat/shop/sale');
         var total=0;
         return shopRef.on('value',function(shopID){
             shopID.forEach(function(record){
@@ -167,6 +167,27 @@ exports.TotalSale = functions.database.ref('/shop/{shopid}/record/{date}/{record
         
     });
 
+exports.countShopNumber = functions.database.ref('/shop/{userid}').onWrite(
+    (change) => {
+        console.log('Count shop number function');
+        const collectionRef = change.after.ref.parent;
+        const countRef = collectionRef.parent.child('stat/shop/num');
+
+        let increment;
+        if (change.after.exists() && !change.before.exists()) {
+        increment = 1;
+        } else if (!change.after.exists() && change.before.exists()) {
+        increment = -1;
+        } else {
+        return null;
+        }
+        return countRef.transaction((current) => {
+        return (current || 0) + increment;
+        }).then(() => {
+        return console.log('Counter updated.');
+        });
+    });
+    
 
 exports.checkLogin = functions.https.onRequest((req,res)=>{
     cors(req, res, () => {
