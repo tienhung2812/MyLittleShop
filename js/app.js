@@ -4,6 +4,7 @@ var shop_id = localStorage.getItem("shop_id");
 var usr = localStorage.getItem("username");
 var pass = localStorage.getItem("password");
 
+
 var currentPage=location.pathname.split("/").slice(-1)[0].split(".").slice(0)[0];
 
 if (role==null&&currentPage!="login"){
@@ -480,8 +481,75 @@ function getTime(){
 function reload_page(){
     window.location.reload();
 }
+//------------------------------------------------------------
+// About HTTP request
 
+   // Create the XHR object.
+    function createCORSRequest(method, url) {
+      	var xhr = new XMLHttpRequest();
+      	if ("withCredentials" in xhr) {
+        // XHR for Chrome/Firefox/Opera/Safari.
+        	xhr.open(method, url, true);
+      	} else if (typeof XDomainRequest != "undefined") {
+        	// XDomainRequest for IE.
+        	xhr = new XDomainRequest();
+        	xhr.open(method, url);
+      	} else {
+        	// CORS not supported.
+        	xhr = null;
+      	}
+      	return xhr;
+    }
 
+    // Helper method to parse the title tag from the response.
+    function getTitle(text) {
+    	return text.match('<title>(.*)?</title>')[1];
+    }
+
+    // Make the actual CORS request.
+    function login() {
+     	// This is a sample server that supports CORS.
+     	var usr = document.forms["loginForm"]["username"].value;
+     	var password = document.forms["loginForm"]["psw"].value;
+
+     	var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/checkLogin/'+usr+'/'+password ;
+    	
+      	var xhr = createCORSRequest('GET', url);
+      	if (!xhr) {
+        	alert('CORS not supported');
+        	return;
+      	}
+
+      	// Response handlers.
+      	xhr.onload = function() {
+        	var data = JSON.parse(xhr.responseText);
+        	if(data.result){
+        		localStorage.setItem("role",data.role);
+                localStorage.setItem("shop_id",data.shop_id);
+                localStorage.setItem("username",data.usr);
+                localStorage.setItem("password",data.pass);
+                if(data.role==2){
+                    window.location.href = "manage-product-check.html";
+                }
+                else {
+                    window.location.href = "index.html";
+                }
+        	} else {
+        		//notify('danger','Wrong password!');
+        		alert('Wrong password!');
+        	}
+     	};
+
+      	xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+        	alert('Username not exist!');
+      	};
+
+      	xhr.send();
+      	return false;
+    }        
+
+//-------------------------------------------------------------------------------------------------
 $(".menu-icon").bind("click", function(){
     Sidebar();
 }); 
