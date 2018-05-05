@@ -490,8 +490,42 @@ function reload_page(){
 
       	xhr.send();
       	return false;
-    }        
+    }  
 
+function LoadData(){
+    if(currentPage=="manage-product"){
+    	alert('dm');
+        $("#tbl_products_list tbody tr").remove();
+        var rowIndex = 1;
+		var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/loadProduct/'+shop_id;
+        var xhr = createCORSRequest('GET', url);
+
+      	if (!xhr) {
+        	alert('CORS not supported');
+        	return;
+      	}
+
+      	// Response handlers.
+      	xhr.onload = function() {
+        	var data = JSON.parse(xhr.responseText);
+        	for(var i = 0; i < data.length; i++){
+        		var price = data[i].price;
+        		var stock = data[i].stock;
+        		var product_code = data[i].product_code;
+        		insertProductRecordData(rowIndex,product_code,price,stock);
+        		rowIndex +=1;
+        	}
+     	};
+
+      	xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+        	alert('Something went wrong!');
+      	};
+
+      	xhr.send();
+      	return false;
+    }
+}
 //-------------------------------------------------------------------------------------------------
 $(".menu-icon").bind("click", function(){
     Sidebar();

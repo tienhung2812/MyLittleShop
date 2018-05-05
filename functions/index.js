@@ -200,3 +200,25 @@ exports.checkLogin = functions.https.onRequest((req,res)=>{
     });
 });
 
+
+exports.loadProduct = functions.https.onRequest((req,res)=>{
+    cors(req,res,() =>{
+        const params = req.url.split("/");
+        const shop_id = params[1];
+        return admin.database().ref('product/').once('value',(snapshot)=>{
+            var products = [];
+            snapshot.forEach(function(productSnapshot) {
+                var product = productSnapshot.val();
+                if(shop_id == product.store_id || shop_id == 0){
+                    var data = {
+                        product_code : productSnapshot.key,
+                        price : product.product_price,
+                        stock : product.stock
+                    }
+                    products.push(data);
+                }
+            });
+            res.send(products);
+        });
+    });
+});
