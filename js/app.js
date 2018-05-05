@@ -56,10 +56,12 @@ function checkPageNeedLoadData(){
         shopId = shop_id;
     }
 
+    var hash= CryptoJS.SHA3(password);
+	  
     var i = 0;
 
     var data = {
-      password: password,
+      password: hash,
       role: role,
       shop_id: shopId
     }
