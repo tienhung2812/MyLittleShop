@@ -52,9 +52,6 @@ function pageWrapper(role,page){
     console.log("Loading "+page);
     //Manager
     if (role==0){
-        addShop(1);
-        updateDashboardData(total,3240,1);
-        insertRecordData(1,323,2323,123123,1);
     }
 
     //Shop manager
@@ -123,7 +120,7 @@ function highlightSidebar(currentPage) {
 //Card Data
 function updateDashboardData(type,value) {
     $("#"+type+"-var").text(value);
-    console.log("Updated "+type+" value");
+    console.log("Updated "+type+" value: "+ value);
 }
 //Record Data
 function insertRecordData(id,code,date,quantity,price){
@@ -139,7 +136,7 @@ function insertRecordData(id,code,date,quantity,price){
 
 //Manager
 //Add shop
-function addShop(id) {
+function addShopDashboard(id) {
     $("#content").append(composeShop(id));
 
 }
@@ -151,8 +148,8 @@ function updateDashboardShopData(type,value,shop) {
 }
 
 //insert Record Data
-function insertRecordShopData(id,code,date,price,shop){
-    var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>$'+price+'</td></tr>';
+function insertRecordShopData(id,code,date,quantity,price,shop){
+    var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>'+quantity+'</td><td>$'+price+'</td></tr>';
     $("#record-val-"+shop).append(insert);
     console.log("Updated record value at shop"+shop);
 };

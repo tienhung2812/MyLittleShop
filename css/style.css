@@ -402,11 +402,15 @@ html {
   margin-right: 40px;
 }
 
-.result-complete-button{
+.result-button{
   margin-top: 15px;
   margin-left: -30px;
-  width: 100%;
+  width: 50%;
 
+}
+
+.new-button{
+  margin-left: auto;
 }
 
 @media (min-width: 768px) {

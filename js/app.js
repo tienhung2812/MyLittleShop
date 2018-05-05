@@ -99,10 +99,53 @@ function checkPageNeedLoadData(){
 // updateDashboardData(stock,33);
 // insertRecordData(2,64645,"Jan 11",51);
 function loadRecord(){
-    if(role == 1){
-        var databaseRef = firebase.database().ref('shop/'+shop_id+'/record');
+    if(role==0){
+        var databaseRef = firebase.database().ref('stat');
+        shopNumRef = databaseRef.child('/shop/num');
+        // shopRef = databaseRef.parent.child('shop');
+        shopRef = databaseRef.parent.child("shop");
+        shopNumRef.on('value',function(shopNum){
+            var i=1;
+            for(i;i<=shopNum.val();i++){
+                addShopDashboard(i);
+                console.log("Add shop "+i);
+            }
+        })
 
-        databaseRef.on('value',function(snapshot){
+        
+        shopRef.on('value',function(shopID){
+            shopID.forEach(function(shopSnap){
+                shopSnap.ref.child('record').on('value',function(snapshot){
+                    console.log("Update shop "+shopSnap.key);
+                    $('#record-val tr').remove();
+                    var rowIndex = 1;
+                    snapshot.forEach(function(dateSnapshot){
+                        var date = dateSnapshot.key;
+        
+                        dateSnapshot.forEach(function(productSnapshot){
+                            var code = productSnapshot.key;
+                            var price = productSnapshot.val().price;
+                            var qty = productSnapshot.val().qty;
+                            insertRecordShopData(rowIndex,code,date,qty,price,shopSnap.key);
+                            rowIndex++;
+                        });
+                    });
+                });
+
+                shopSnap.ref.child('revenue').on('value',function(snapshot){
+                    updateDashboardShopData("total",snapshot.val(),shopSnap.key);
+                })
+
+                shopSnap.ref.child('sale').on('value',function(snapshot){
+                    updateDashboardShopData("sale",snapshot.val(),shopSnap.key);
+                })
+            })
+        })
+    }else
+    if(role == 1){
+        var databaseRef = firebase.database().ref('shop/'+shop_id);
+        recordRef = databaseRef.child('record');
+        recordRef.on('value',function(snapshot){
             $('#record-val tr').remove();
             var rowIndex = 1;
             snapshot.forEach(function(dateSnapshot){
@@ -117,12 +160,22 @@ function loadRecord(){
                 });
             });
         });
+
+        totalRef = databaseRef.child('revenue');
+        totalRef.on('value',function(snapshot){
+            updateDashboardData("total",snapshot.val());
+        })
+
+        saleRef = databaseRef.child('sale');
+        saleRef.on('value',function(snapshot){
+            updateDashboardData("sale",snapshot.val());
+        })
     }
     
 }
 
 //Manager
-// addShop(1);
+// addShopDashboard(1);
 // updateDashboardData(total,3240,1);
 // insertRecordData(1,323,2323,123123,1)
 
@@ -395,6 +448,10 @@ function saveRecord(){
     }
     notify('success','The record is saved successfully!');
 
+    
+}
+
+function newRecord(){
     product = [];
     $("#producttbody").html("");
     $("#total").html("");
@@ -448,5 +505,7 @@ $(document).ready ( function(){
 
     if(currentPage == "index"){
         loadRecord();
+    }else if(currentPage == "manager-product-check"){
+        $(".new-button").addClass("disable");
     }
 });
