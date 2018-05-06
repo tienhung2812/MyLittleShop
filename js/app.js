@@ -352,7 +352,7 @@ function LoadData(){
       	};
 
       	xhr.send();
-      	return false;
+          return false;
 	}
 
 
@@ -482,6 +482,8 @@ function saveRecord(){
             firebase.database().ref().update(updates);
         });
     }
+    $('.new-button').removeClass('disabled');
+    $('.complete-button').addClass('disabled');
     notify('success','The record is saved successfully!');
 
     
@@ -491,6 +493,8 @@ function newRecord(){
     product = [];
     $("#producttbody").html("");
     $("#total").html("");
+    $('.new-button').addClass('disabled');
+    $('.complete-button').removeClass('disabled');
 }
 
 function getDate(){
@@ -608,7 +612,8 @@ $(document).ready ( function(){
 
     if(currentPage == "index"){
         loadRecord();
-    }else if(currentPage == "manager-product-check"){
-        $(".new-button").addClass("disable");
+    }else if(currentPage == "manage-product-check"){
+        $(".new-button").addClass("disabled");
+        $(".complete-button").addClass("disabled");
     }
 });

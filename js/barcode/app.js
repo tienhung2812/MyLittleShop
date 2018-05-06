@@ -20,6 +20,7 @@ var app = new Vue({
           if(snapshot.exists() && (snapshot.val().store_id == shop_id)){
             
             insertResultData(content,snapshot.val().product_price);
+            $('.complete-button').removeClass('disabled');
             notify("success","Product found");
             console.log("Product found");
             // document.getElementById("result").innerHTML = content;
