@@ -107,7 +107,12 @@ function pageWrapper(role,page){
     }
 
     //Modify product
-    
+    else if(page=="manage-product"){
+        console.log("Loading "+page);
+        if(role==0){
+            $('#tbl_products_list thead tr').append ('<th>Shop</th>')
+        }
+    }
 
 };
 
@@ -264,6 +269,15 @@ function insertProductRecordData(id,code,price,stock){
 
     $("#producttbody").append(result);
 };
+function insertProductRecordDataManager(id,code,price,stock,shop){
+
+    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+                + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-price">'+price+'</td><td id="product-'+id+'-stock">'+stock+'</td><td id="product-'+id+'-shop">'+shop+'</td></tr>';
+
+
+    $("#producttbody").append(result);
+};
+
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
 
@@ -297,6 +311,11 @@ function productModifyModal(id){
     var code = $("#product-"+id+"-code").text();
     var price = $("#product-"+id+"-price").text();
     var stock = $("#product-"+id+"-stock").text();
+    if (role==0){
+        var shop = $("#product-"+id+"-shop").text();
+    } else {
+        var shop = 0;
+    }
     var html = '<div class="basic-form">'+
     '                          <form>'+
     '                            <div class="form-group col-lg-12">'+
@@ -310,7 +329,11 @@ function productModifyModal(id){
     '                                <div class="form-group col-lg-12" id="modal-stock">'+
     '                                  <p class="text-muted m-b-15 f-s-12">Stock</p>'+
     '                                  <input type="text" class="form-control input-default " id="pStock" value="'+stock+'">'+
-    '                                  </div>'+                                
+    '                                  </div>'+  
+    '                                <div class="form-group col-lg-12" id="modal-shop">'+
+    '                                  <p class="text-muted m-b-15 f-s-12">Shop</p>'+
+    '                                  <input type="text" class="form-control input-default " id="pShop" value="'+shop+'">'+
+    '                                  </div>'+  
     '                                </form>'+
     '                              </div>'+
     '                            </div>'+
@@ -319,6 +342,9 @@ function productModifyModal(id){
     $("#productModifyModal").modal();
     if(role==0){
         $("#modal-stock").remove();
+    }
+    else {
+        $("#modal-shop").remove();
     }
     oldCode=code;
 }
