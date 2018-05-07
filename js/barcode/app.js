@@ -18,6 +18,7 @@ var app = new Vue({
       
       var xhr = createCORSRequest('GET', url);
 
+<<<<<<< HEAD
       if (!xhr) {
         alert('CORS not supported');
           return;
@@ -43,6 +44,26 @@ var app = new Vue({
 
       xhr.send();
      });
+=======
+          if(snapshot.exists() && (snapshot.val().store_id == shop_id)){
+            
+            insertResultData(content,snapshot.val().product_price);
+            $('.complete-button').removeClass('disabled');
+            notify("success","Product found");
+            console.log("Product found");
+            // document.getElementById("result").innerHTML = content;
+            // document.getElementById("result_price").innerHTML = snapshot.val().product_price;
+            // document.getElementById("result_stock").innerHTML = snapshot.val().stock;
+          }else{
+            console.log("Product not found");
+            notify("danger","Product not found");
+            // document.getElementById("result").innerHTML = "Product Not Found!";
+            // document.getElementById("result_price").innerHTML = "";
+            // document.getElementById("result_stock").innerHTML = "";
+          }
+      });
+    });
+>>>>>>> 0f7af4afe081d17e925cbd7f144a7ae375e8a7b2
     Instascan.Camera.getCameras().then(function (cameras) {
       self.cameras = cameras;
       if (cameras.length > 0) {

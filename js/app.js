@@ -486,7 +486,7 @@ function LoadData(){
       	};
 
       	xhr.send();
-      	return false;
+          return false;
 	}
 
 
@@ -611,11 +611,34 @@ function saveRecord(){
         var qty = product[i][1];
         var price = product[i][2] * product[i][1];
 
+<<<<<<< HEAD
         var data = {
         	product_code:code,
         	qty: qty,
         	price: price
         }
+=======
+        databaseRef.once('value',function(snapshot){
+            var data;
+            if(snapshot.exists()){
+                data = {
+                    qty: snapshot.val().qty + qty,
+                    price: snapshot.val().price + price
+                }              
+            }else {
+                data = {
+                    qty: qty,
+                    price: price
+                }
+            }
+            updates['/shop/'+shop_id+'/record/'+getDate()+'/'+code] = data;
+            firebase.database().ref().update(updates);
+        });
+    }
+    $('.new-button').removeClass('disabled');
+    $('.complete-button').addClass('disabled');
+    notify('success','The record is saved successfully!');
+>>>>>>> 0f7af4afe081d17e925cbd7f144a7ae375e8a7b2
 
         var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
         let request = new XMLHttpRequest();
@@ -636,6 +659,8 @@ function newRecord(){
     product = [];
     $("#producttbody").html("");
     $("#total").html("");
+    $('.new-button').addClass('disabled');
+    $('.complete-button').removeClass('disabled');
 }
 
 function getDate(){
@@ -777,8 +802,9 @@ $(document).ready ( function(){
 
     if(currentPage == "index"){
         loadRecord();
-    }else if(currentPage == "manager-product-check"){
-        $(".new-button").addClass("disable");
+    }else if(currentPage == "manage-product-check"){
+        $(".new-button").addClass("disabled");
+        $(".complete-button").addClass("disabled");
     }
 });
 
