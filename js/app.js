@@ -559,43 +559,83 @@ function password_update(){
 //       	xhr.send();
 //       	return false;
 // }
-
+function LoadData(){
+    if(currentPage=="manage-product"){
+      if(role == 0){
+        var rowIndex = 1;
+        var databaseRef = firebase.database().ref('shop/');
+        databaseRef.on('value', function(snapshot) {
+          $("#tbl_products_list tbody tr").remove();
+          snapshot.forEach(function(shopSnapshot){
+            var shopId = shopSnapshot.key;
+            databaseRef.child(shopId+'/products').on('value',function(productSnapshot){
+              productSnapshot.forEach(function(childSnapshot) {
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+                insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
+                rowIndex ++;
+            });
+            });
+          });
+        });
+      }else{
+        var databaseRef = firebase.database().ref('shop/'+shop_id+'/products');
+    
+        databaseRef.on('value', function(snapshot) {
+            $("#tbl_products_list tbody tr").remove();
+            var rowIndex = 1;
+            snapshot.forEach(function(childSnapshot) {
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+                insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
+                rowIndex ++;
+            });
+        });
+      }
+    }
+}
 
 	// Add Product
 	function import_product(){
-	    var code= document.getElementById('pCode').value;
+	    var code= document.getElementById('result').innerHTML;
 	    var price= document.getElementById('pPrice').value;
 	    var stock= document.getElementById('pStock').value;
+      var shopID;
+      
+      if(role == 0){
+        shopID = document.getElementById('pID').value;
+      } else {
+        shopID = shop_id;
+      }
+		  var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shopID;
+	     alert(url);
+      var xhr = createCORSRequest('GET', url);
 
-     
-		  var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shop_id;
-	
-        var xhr = createCORSRequest('GET', url);
+      if (!xhr) {
+        alert('CORS not supported');
+        return;
+      }
 
-      	if (!xhr) {
-        	alert('CORS not supported');
-        	return;
-      	}
-
-      	// Response handlers.
-      	xhr.onload = function() {
-        	var result = (xhr.responseText === "true");
+      // Response handlers.
+      xhr.onload = function() {
+        var result = (xhr.responseText === "true");
     
-        	if(result){
-        		alert('Product is add successfully!');
-        	}else{
-        		alert('Product is already exist!');
-        	}
+        if(result){
+        	notify('success','Product is add successfully!');
+          reload_page();
+        }else{
+        	notify('danger','Product is already exist!');
+        }
         	
-     	};
+     };
 
-      	xhr.onerror = function() {
-        	//notify('danger', 'Username not exist!');
-        	alert('Something went wrong!');
-      	};
+      xhr.onerror = function() {
+        //notify('danger', 'Username not exist!');
+        alert('Something went wrong!');
+      };
 
-      	xhr.send();
-        return false;
+      xhr.send();
+      return false;
 	}
 
 
@@ -810,42 +850,42 @@ function reload_page(){
      	var password = document.forms["loginForm"]["psw"].value;
      
      	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/checkLogin/'+usr+'/'+password ;
-    	
-      	var xhr = createCORSRequest('GET', url);
-      	if (!xhr) {
-        	alert('CORS not supported');
-        	return;
-      	}
+
+      var xhr = createCORSRequest('GET', url);
+      if (!xhr) {
+        alert('CORS not supported');
+        return;
+      }
 
       	// Response handlers.
-      	xhr.onload = function() {
-        	var data = JSON.parse(xhr.responseText);
-        	if(data.result){
-        		localStorage.setItem("role",data.role);
+      xhr.onload = function() {
+        var data = JSON.parse(xhr.responseText);
+        if(data.result){
+        	localStorage.setItem("role",data.role);
 
-                localStorage.setItem("shop_id",data.shop_id);
-                localStorage.setItem("username",data.usr);
-                localStorage.setItem("password",data.pass);
-                if(data.role==2){
-                    window.location.href = "manage-product-check.html";
-                }
-                else {
-                    window.location.href = "index.html";
-                }
-        	} else {
+          localStorage.setItem("shop_id",data.shop_id);
+          localStorage.setItem("username",data.usr);
+          localStorage.setItem("password",data.pass);
+          if(data.role==2){
+            window.location.href = "manage-product-check.html";
+          }
+          else {
+            window.location.href = "index.html";
+          }
+        } else {
         		//notify('danger','Wrong password!');
-        		alert('Wrong password!');
-        	}
+        	notify('danger','Wrong password!');
+        }
      	};
 
-      	xhr.onerror = function() {
-        	//notify('danger', 'Username not exist!');
-        	alert('Username not exist!');
-      	};
+      xhr.onerror = function() {
+        //notify('danger', 'Username not exist!');
+        notify('danger','Username not exist!');
+      };
 
-      	xhr.send();
-      	return false;
-    }  
+      xhr.send();
+      return false;
+  }  
 
     function loadShopId(){
     	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadShopId';

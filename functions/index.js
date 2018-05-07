@@ -440,7 +440,7 @@ exports.addProduct = functions.https.onRequest((req,res)=>{
             if(snapshot.exists()){
                 result = false;
             } else {
-                updates['shop/'+shop_id+'/products/'] = data;
+                updates['/shop/'+shop_id+'/products/'+product_code] = data;
                 admin.database().ref().update(updates);
             }
             res.send(result);
