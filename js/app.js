@@ -60,10 +60,6 @@ function checkPageNeedLoadData(){
         shopId = shop_id;
     }
 
-
- 	// var hash= CryptoJS.SHA3(password);
-	// alert(hash);
-
     var data = {
       username: username,
       password: password,
