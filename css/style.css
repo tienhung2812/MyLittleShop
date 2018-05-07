@@ -374,7 +374,7 @@ html {
 }
 
 #result {
-  font-weight: bold;
+  height: 393px;
 }
 
 .result-table{
@@ -411,14 +411,6 @@ html {
 
 .new-button{
   margin-left: auto;
-}
-
-#add-product-result-qrcode-field{
-  width: 150px;
-}
-
-.product-code-qr-field{
-  display: flex;
 }
 
 @media (min-width: 768px) {

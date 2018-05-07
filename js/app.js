@@ -3,7 +3,8 @@ var role=localStorage.getItem("role");
 var shop_id = localStorage.getItem("shop_id");
 var usr = localStorage.getItem("username");
 var pass = localStorage.getItem("password");
-
+var project_code = "mylittleshop-9d826";
+var shopNum = localStorage.getItem("shopNum");
 
 var currentPage=location.pathname.split("/").slice(-1)[0].split(".").slice(0)[0];
 
@@ -45,62 +46,67 @@ function checkPageNeedLoadData(){
   function import_user(){
     var username= document.getElementById('username').value;
     var password= document.getElementById('password').value;
-    var role = 1;
+    var input_role = -1;
+
     if(document.getElementById('roleSelect').value == "Employee"){
-        role = 2;
+        input_role = 2;
+    } else if(document.getElementById('roleSelect').value == "Shop Manager"){
+        input_role = 1;
     }
     var shopId;
-    if(role == 1){
+
+    if(role == 0){
         shopId = document.getElementById('shopNo').value;  
     } else {
         shopId = shop_id;
     }
 
-    var hash= CryptoJS.SHA3(password);
-	  
-    var i = 0;
+
+ 	// var hash= CryptoJS.SHA3(password);
+	// alert(hash);
 
     var data = {
-      password: hash,
-      role: role,
+      username: username,
+      password: password,
+      role: input_role,
       shop_id: shopId
     }
-     
-    var updates = {};
-    var userExist = false;
-    var shopExist = true;
 
-    var databaseRef1 = firebase.database().ref('shop/'+ shop_id);
-    var databaseRef = firebase.database().ref('employee/'+username);
-    databaseRef1.once('value').then(function(snapshot){
-        if(!snapshot.exists()){
-            shopExist = false;
-        }
-    });
-    databaseRef.once('value', function(snapshot) {
-        if(snapshot.exists()){
-            userExist = true;
-        }
+    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addEmployee/'+JSON.stringify(data);
+    var xhr = createCORSRequest('GET', url);
 
-        if(userExist){
-            notify("danger",'Username exist!');
-        }else if(!shopExist){
-            notify("danger",'ShopId not exist!');
-        }else{
-            updates['/employee/' + username] = data;
-            firebase.database().ref().update(updates);
-            notify("success",'The user is created successfully!');
-            reload_page();
-        }      
-    });
+    if (!xhr) {
+        alert('CORS not supported');
+        return;
+    }
+
+    // Response handlers.
+    xhr.onload = function() {
+       var result = JSON.parse(xhr.responseText);
+       var userExist = result.userExist;
+       
+       if(userExist){
+       	notify('danger','Username exist!');
+       } else {
+       	var shopExist = result.shopExist;
+
+       	if(!shopExist){
+       		notify('danger','Shop is not exist!');
+       	}else{
+       		notify('success','User added successfully!');
+       	}
+       }
+    };
+
+    xhr.onerror = function() {
+       //notify('danger', 'Username not exist!');
+        notify('danger','Something went wrong!');
+    };
+
+    xhr.send(); 
+
   }
 
-
-//Example For Shop Manager Dashboard
-// updateDashboardData(total,3);
-// updateDashboardData(sale,13);
-// updateDashboardData(stock,33);
-// insertRecordData(2,64645,"Jan 11",51);
 function loadRecord(){
     if(role==0){
         var databaseRef = firebase.database().ref('stat');
@@ -120,7 +126,7 @@ function loadRecord(){
             shopID.forEach(function(shopSnap){
                 shopSnap.ref.child('record').on('value',function(snapshot){
                     console.log("Update shop "+shopSnap.key);
-                    $('#record-val tr').remove();
+                    $('#record-val-'+shopSnap.key+' tr').remove();
                     var rowIndex = 1;
                     snapshot.forEach(function(dateSnapshot){
                         var date = dateSnapshot.key;
@@ -174,15 +180,108 @@ function loadRecord(){
             updateDashboardData("sale",snapshot.val());
         })
     }
+    
 }
 
-//Manager
-// addShopDashboard(1);
-// updateDashboardData(total,3240,1);
-// insertRecordData(1,323,2323,123123,1)
 
-//Example for insert User record Data
-// insertUserRecordData("employee",1,"aa",2);
+//Example For Shop Manager Dashboard
+// updateDashboardData(total,3);
+// updateDashboardData(sale,13);
+// updateDashboardData(stock,33);
+// insertRecordData(2,64645,"Jan 11",51);
+// function loadRecord(){
+// 	var shopRecords = [];
+//     if(role==0){
+        
+//         for(var i = 0; i < shopNum; i++){
+        
+//         	addShopDashboard(i+1);
+//         	console.log("Add shop " + (i+1));
+        	
+//         	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+(i+1);
+
+//         	let request = new XMLHttpRequest();
+//         	request.open("GET",url,false);
+//        		request.onreadystatechange = function() {
+//         		if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+//         			var shopId = 1;
+//             		var data = JSON.parse(request.responseText);
+//             		shopRecords.push(data);  	
+//         		}
+//    			}
+//    			request.send();
+//         }
+
+//        	for(var i = 0; i < shopRecords.length;i++){
+//       		var rowIndex = 1;
+//        		var records = shopRecords[i].records;
+//        		var revenue = shopRecords[i].revenue;
+//             var sale = shopRecords[i].sale;
+
+//             updateDashboardShopData("total",revenue,(i+1));
+//             updateDashboardShopData("sale",sale,(i+1));
+
+//             for(var j = 0; j < records.length ; j++){
+//             	var date = records[j].date;
+//             	var products = records[j].products;
+            	
+//             	for (var k = 0; k < products.length; k++){
+            		
+//             		var product_code = products[k].product_code;
+//             		var price = products[k].price;
+//             		var qty = products[k].qty;
+//             		insertRecordShopData(rowIndex,product_code,date,qty,price,(i+1));
+//             		rowIndex++;
+//             	}
+//             }   		
+//        	}    
+//     } else {
+//     	var rowIndex = 1;
+//     	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+shop_id;
+//     	var xhr = createCORSRequest('GET', url);
+
+//       	if (!xhr) {
+//         	alert('CORS not supported');
+//         	return;
+//       	}
+
+//       	// Response handlers.
+//       	xhr.onload = function() {
+//         	var data = JSON.parse(xhr.responseText);
+
+//         	var records = data.records;
+//        		var revenue = data.revenue;
+//             var sale = data.sale;
+
+//             updateDashboardData("total",revenue);
+//             updateDashboardData("sale",sale);
+
+//             for(var j = 0; j < records.length ; j++){
+//             	var date = records[j].date;
+//             	var products = records[j].products;
+            	
+//             	for (var k = 0; k < products.length; k++){
+            		
+//             		var product_code = products[k].product_code;
+//             		var price = products[k].price;
+//             		var qty = products[k].qty;
+//             		insertRecordData(rowIndex,product_code,date,qty,price);
+//             		rowIndex++;
+//             	}
+//             }
+//      	};
+
+//       	xhr.onerror = function() {
+//         	//notify('danger', 'Username not exist!');
+//         	alert('Something went wrong!');
+//       	};
+
+//       	xhr.send();
+//     }
+//     return false;
+ 
+// }
+  
 function loadEmployee(){
     if(currentPage=="user-manage"){
         
@@ -216,43 +315,162 @@ function loadEmployee(){
     }
 }
 
+// function loadEmployee(){
+//         $("#shopManagertbody tr").remove();
+//         $("#employeetbody tr").remove();
+
+//         var rowEmployee = 1;
+//         var rowManager = 1;
+
+// 		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadEmployee/'+role+'/'+shop_id;
+		
+//         var xhr = createCORSRequest('GET', url);
+
+//       	if (!xhr) {
+//         	alert('CORS not supported');
+//         	return;
+//       	}
+
+//       	// Response handlers.
+//       	xhr.onload = function() {
+//         	var data = JSON.parse(xhr.responseText);
+
+//         	var managers = data.managers;
+//         	var employees = data.employees;
+//         	for (var i = 0; i < employees.length; i++){
+//         		insertUserRecordData("employee",rowEmployee,employees[i].username,employees[i].shop_id);
+//         		rowEmployee++;
+//         	}
+//         	for (var i = 0; i < managers.length;i++){
+//         		insertUserRecordData("shopmanager",rowManager,managers[i].username,managers[i].shop_id);
+//         		rowManager++;
+//         	}
+//      	};
+
+//       	xhr.onerror = function() {
+//         	//notify('danger', 'Username not exist!');
+//         	alert('Something went wrong!');
+//       	};
+
+//       	xhr.send();
+//       	return false;
+// }
+
 
 //Modify user
 function update_user(){
-    var username = document.getElementById('username').value;
-    var shop_id = document.getElementById('shop').value;
-
+ //    var username = document.getElementById('username').value;
+ //    var shop_id = document.getElementById('shop').value;
+ //    var type = 0;
    
-    var updates = {};
-    updates['/employee/' + username] = data;
-    firebase.database().ref().update(updates);
-    notify("success",'The user is <strong>updated</strong> successfully!');
-    var databaseRef = firebase.database().ref('employee/'+ oldCode);
+ //   	if(username == oldCode){
+	//    	type = 1;
+	// } else {
+	//    	type = 2;
+	// }
 
-    databaseRef.once('value').then(function(snapshot){
-        var data = {
-            password : snapshot.val().password,
-            role: snapshot.val().role,
-            shop_id : shop_id,
-        }
+	// var data = {
+	// 	username: username,
+	// 	shop_id: shop_id,
+	// 	type: type,
+	// 	oldUsername: oldCode
+	// }
 
-        if(username != oldCode) {
-            firebase.database().ref().child('/employee/' + oldCode).remove();
-        }
+	// var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyUser/'+JSON.stringify(data);
+ //    var xhr = createCORSRequest('GET', url);
+	
+	// if (!xhr) {
+	//     alert('CORS not supported');
+	//     return;
+ //    }
+	//       	// Response handlers.
+	// xhr.onload = function() {
+	//     var result = (xhr.responseText === "true");
+	    
+	//     if(result){
+	//         notify('success','User modified successfully!');
+	//         reload_page();
+	//     }else{
+	//         notify('danger','Shop not exist!');
+	//     }
+	// };
 
-        var updates = {};
-        updates['/employee/' + username] = data;
-        firebase.database().ref().update(updates);
-       
-        alert('The user is updated successfully!');
-    });
+	// xhr.onerror = function() {
+	//         //notify('danger', 'Username not exist!');
+	//     notify('danger','Something went wrong!');
+	// };
+
+	// xhr.send();
+ //    return false;   
+
 }
+  
+  function update_product(){
+	   	var code = document.getElementById('pCode').value;
+	   	var price = document.getElementById('pPrice').value;
+	   	var stock = document.getElementById('pStock').value;
+	   	var type = 0;
+	   	if(code == oldCode){
+	   		type = 1;
+	   	} else {
+	   		type = 2;
+	   	}
+
+	   	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
+        var xhr = createCORSRequest('GET', url);
+
+		if (!xhr) {
+	       	alert('CORS not supported');
+	       	return;
+    	}
+	      	// Response handlers.
+	    xhr.onload = function() {
+	       	var result = (xhr.responseText === "true");
+	    
+	        if(result){
+	        	alert('Product is modified successfully!');
+	        	reload_page();
+	        }else{
+	        	alert('Modified product code is exist!');
+	        }
+	    };
+
+	    xhr.onerror = function() {
+	        //notify('danger', 'Username not exist!');
+	        alert('Something went wrong!');
+	    };
+
+	    xhr.send();
+      	return false;   
+	}
   
 function delete_user(){
     var username = document.getElementById('username').value;
   
-   firebase.database().ref().child('/employee/' + username).remove();
-   notify("success",'The user is <strong>deleted</strong> successfully!');
+	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/removeUser/'+username;
+		
+    var xhr = createCORSRequest('GET', url);
+
+    if (!xhr) {
+        alert('CORS not supported');
+        return;
+    }
+
+      	// Response handlers.
+    xhr.onload = function() {
+    	var result = (xhr.responseText === true);
+    	if(result){
+    		notify('success','User delete successfully!');
+    	}
+    };
+
+    xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+       notify('danger','Something went wrong!');
+    };
+
+    xhr.send();
+    return false;
 }
 
 function password_update(){
@@ -263,69 +481,94 @@ function password_update(){
     if(oldPass == pass){
         if(newPass == rePass){
             var data = {
+            	username: usr,
                 password : newPass,
                 role : role,
                 shop_id : shop_id
             }
 
-            var updates = {};
-            updates['/employee/' + usr] = data;
-            firebase.database().ref().update(updates);
-            notify("success",'The user <strong>password is updated</strong> successfully!');
+            var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/updatePass/'+JSON.stringify(data);
+          
+		
+		    var xhr = createCORSRequest('GET', url);
+
+		    if (!xhr) {	
+		        alert('CORS not supported');
+		        return;
+		    }
+
+		      	// Response handlers.
+		    xhr.onload = function() {
+		    	var result = (xhr.responseText === "true");
+		    	if(result){
+		    		notify('success','Password update successfully!');
+		    		localStorage.setItem('password',newPass);
+		    		reload_page();
+		    	}
+		    };
+
+		    xhr.onerror = function() {
+		        	//notify('danger', 'Username not exist!');
+		       notify('danger','Something went wrong!');
+		    };
+
+    		xhr.send();
         }else{
             notify("danger","Re-enter password not match!");
         }
     }else{
         notify("danger","Old Password not correct!");
     }
+ 
+    return false;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
 //Product record 
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
-function LoadData(){
-        $("#tbl_products_list tbody tr").remove();
-        var rowIndex = 1;
-		var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/loadProduct/'+shop_id;
+// function LoadData(){
+//         $("#tbl_products_list tbody tr").remove();
+//         var rowIndex = 1;
+// 		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadProduct/'+shop_id;
 	
-        var xhr = createCORSRequest('GET', url);
+//         var xhr = createCORSRequest('GET', url);
 
-      	if (!xhr) {
-        	alert('CORS not supported');
-        	return;
-      	}
+//       	if (!xhr) {
+//         	alert('CORS not supported');
+//         	return;
+//       	}
 
-      	// Response handlers.
-      	xhr.onload = function() {
-        	var data = JSON.parse(xhr.responseText);
-        	for(var i = 0; i < data.length; i++){
-        		var price = data[i].price;
-        		var stock = data[i].stock;
-        		var product_code = data[i].product_code;
-        		insertProductRecordData(rowIndex,product_code,price,stock);
-        		rowIndex +=1;
-        	}
-     	};
+//       	// Response handlers.
+//       	xhr.onload = function() {
+//         	var data = JSON.parse(xhr.responseText);
+//         	for(var i = 0; i < data.length; i++){
+//         		var price = data[i].price;
+//         		var stock = data[i].stock;
+//         		var product_code = data[i].product_code;
+//         		insertProductRecordData(rowIndex,product_code,price,stock);
+//         		rowIndex +=1;
+//         	}
+//      	};
 
-      	xhr.onerror = function() {
-        	//notify('danger', 'Username not exist!');
-        	alert('Something went wrong!');
-      	};
+//       	xhr.onerror = function() {
+//         	//notify('danger', 'Username not exist!');
+//         	alert('Something went wrong!');
+//       	};
 
-      	xhr.send();
-      	return false;
-}
+//       	xhr.send();
+//       	return false;
+// }
 
 
-// Add Product
-function import_product(){
-	    var code= document.getElementById('result').innerHTML;
+	// Add Product
+	function import_product(){
+	    var code= document.getElementById('pCode').value;
 	    var price= document.getElementById('pPrice').value;
 	    var stock= document.getElementById('pStock').value;
-        alert("Import: "+code + " "+ price + " " + stock);
-        
-		var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shop_id;
+
+     
+		  var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shop_id;
 	
         var xhr = createCORSRequest('GET', url);
 
@@ -339,10 +582,7 @@ function import_product(){
         	var result = (xhr.responseText === "true");
     
         	if(result){
-                alert('Product is add successfully!');
-                var code= document.getElementById('result').innerHTML = "";
-                var price= document.getElementById('pPrice').value = "";
-                var stock= document.getElementById('pStock').value = "";
+        		alert('Product is add successfully!');
         	}else{
         		alert('Product is already exist!');
         	}
@@ -355,8 +595,8 @@ function import_product(){
       	};
 
       	xhr.send();
-          return false;
-}
+        return false;
+	}
 
 
 	  //Modify Product
@@ -371,7 +611,7 @@ function import_product(){
 	   		type = 2;
 	   	}
 
-	   	var url =  'https://us-central1-my-little-shop-41012.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
+	   	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
         var xhr = createCORSRequest('GET', url);
 
 		if (!xhr) {
@@ -402,7 +642,7 @@ function import_product(){
 	function delete_product(){
 	    var product_code = document.getElementById('pCode').value;
 	  
-	    var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/removeProduct/'+product_code;
+	    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/removeProduct/'+product_code;
 		
 	    var xhr = createCORSRequest('GET', url);
 
@@ -430,67 +670,82 @@ function import_product(){
 	}
 //--------------------------------------------------------------------
 
-function addShop(){
-    var shopId = document.getElementById("shopId").value;
-    var shopName = document.getElementById("shopName").value;
+	function addShop(){
+    	var shopId = document.getElementById("shopId").value;
+    	var shopName = document.getElementById("shopName").value;
 
-    var data = {
-        name: shopName
-    }
-     
-    var updates = {};
-    var databaseRef = firebase.database().ref('shop/'+ shopId);
-    var exist = false;
+    	var shop = {
+    		shop_id: shopId,
+    		shop_name: shopName
+    	}
 
-    databaseRef.once('value', function(snapshot) {
-        if(snapshot.exists()){
-            exist = true;
-        } 
+		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addShop/'+JSON.stringify(shop);
 
-        if(exist){
-            notify("danger",'Shop Id exist!');
-        }else{
-            updates['/shop/' + shopId] = data;
-            firebase.database().ref().update(updates);
-            notify("success",'The shop is created successfully!');
-            reload_page();
-        }      
-    });
-}
+        var xhr = createCORSRequest('GET', url);
 
-//---------------------------------------------------------------------
-function saveRecord(){
-    var updates = {};
+      	if (!xhr) {
+        	alert('CORS not supported');
+        	return;
+      	}
 
-    for(var i = 0; i < product.length;i++){
-        var code = product[i][0];
-        var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
-        var qty = product[i][1];
-        var price = product[i][2] * product[i][1];
-
-        databaseRef.once('value',function(snapshot){
-            var data;
-            if(snapshot.exists()){
-                data = {
-                    qty: snapshot.val().qty + qty,
-                    price: snapshot.val().price + price
-                }              
-            }else {
-                data = {
-                    qty: qty,
-                    price: price
-                }
-            }
-            updates['/shop/'+shop_id+'/record/'+getDate()+'/'+code] = data;
-            firebase.database().ref().update(updates);
-        });
-    }
-    $('.new-button').removeClass('disabled');
-    $('.complete-button').addClass('disabled');
-    notify('success','The record is saved successfully!');
-
+      	// Response handlers.
+      	xhr.onload = function() {
+        	var result = (xhr.responseText === "true");
     
+        	if(result){
+        		alert('Shop id is exist!');
+        	}else{
+        		alert('Create new shop successfully!');
+        	}
+        	
+     	};
+
+      	xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+        	alert('Something went wrong!');
+      	};
+
+      	xhr.send();
+      	return false;
+	}
+//--------------------------------------------------
+
+function saveRecord(){
+    // var updates = {};
+   
+    // for(var i = 0; i < product.length;i++){
+
+    //     var code = product[i][0];
+    //     //var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
+    //     var qty = product[i][1];
+    //     var price = product[i][2] * product[i][1];
+
+
+    //     var data = {
+    //     	product_code:code,
+    //     	qty: qty,
+    //     	price: price
+    //     }
+    // }
+    // $('.new-button').removeClass('disabled');
+    // $('.complete-button').addClass('disabled');
+    // notify('success','The record is saved successfully!');
+
+
+    //     var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
+    //     let request = new XMLHttpRequest();
+    //     request.open("GET",url);
+    //    	request.onreadystatechange = function() {
+    //     	if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+            	
+    //     	}
+   	// 	}
+    //     request.send();
+    // }
+    // notify('success','Save Record sucess!');
+    // return false;  
 }
+
 
 function newRecord(){
     product = [];
@@ -553,8 +808,8 @@ function reload_page(){
      	// This is a sample server that supports CORS.
      	var usr = document.forms["loginForm"]["username"].value;
      	var password = document.forms["loginForm"]["psw"].value;
-
-     	var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/checkLogin/'+usr+'/'+password ;
+     
+     	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/checkLogin/'+usr+'/'+password ;
     	
       	var xhr = createCORSRequest('GET', url);
       	if (!xhr) {
@@ -567,6 +822,7 @@ function reload_page(){
         	var data = JSON.parse(xhr.responseText);
         	if(data.result){
         		localStorage.setItem("role",data.role);
+
                 localStorage.setItem("shop_id",data.shop_id);
                 localStorage.setItem("username",data.usr);
                 localStorage.setItem("password",data.pass);
@@ -591,6 +847,29 @@ function reload_page(){
       	return false;
     }  
 
+    function loadShopId(){
+    	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadShopId';
+    	var xhr = createCORSRequest('GET', url);
+      	if (!xhr) {
+        	alert('CORS not supported');
+        	return;
+      	}
+
+      	// Response handlers.
+      	xhr.onload = function() {
+        	var data = JSON.parse(xhr.responseText);
+        	localStorage.setItem("shopNum",data.shopNum);
+     	};
+
+      	xhr.onerror = function() {
+        	//notify('danger', 'Username not exist!');
+        	alert('Something went wrong!');
+      	};
+
+      	xhr.send();
+      	return false;
+    }
+
 //-------------------------------------------------------------------------------------------------
 $(".menu-icon").bind("click", function(){
     Sidebar();
@@ -599,11 +878,6 @@ $(".menu-icon").bind("click", function(){
 $(".logout-icon").bind("click", function(){
     signOut();
 }); 
-
-$("#add-product-button").bind("click", function(){
-    import_product();
-}); 
-
 
 $(document).ready ( function(){
     installContent(function(){
@@ -625,3 +899,17 @@ $(document).ready ( function(){
         $(".complete-button").addClass("disabled");
     }
 });
+
+function notify(type,content){
+    var alertHTML = '<div class="alert alert-'+type+'" id="alert" role="alert">'
+                    +'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+                    + '<div id="alert-content">'
+                    +content
+                    +'</div>';           
+    $("#alert-div").html(alertHTML);
+    //Fade up after 3sec
+    $("#alert").fadeTo(3000, 500).fadeOut(500, function(){
+        $("#alert").fadeOut(500);
+    });
+    
+}

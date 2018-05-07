@@ -16,11 +16,8 @@
     <script src="js/bootstrap/bootstrap.js"></script>
     <script src="js/variable.js"></script>
     <script src="js/function.js"></script> 
-    <script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
     <script src="js/init.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/3.3.3/adapter.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
-    <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 
 </head>
 <body>
@@ -45,56 +42,43 @@
                         </div>
             </nav>
         </div>
-        <div class="left-sidebar">
+         <div class="left-sidebar">
              
         </div>
         <div class="page-wrapper">
-            <div class="container-fluid ">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card">                          
-                            <div class="preview-container">
-                                <video id="preview"></video>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="col-lg-12">
-                            <div class="card">
-                              <div class="card-title form-title">
-                                <h4>Input Product Data</h4>
+          <div class="container-fluid ">
+            <div class="row" id="content">
+                <div class="col-lg-12">
+                    <div class="card">
+                      <div class="card-title form-title">
+                        <h4>Input Product Data</h4>
+                      </div>
+                      <div class="card-body">
+                        <div class="basic-form">
+                          <form>
+                            <div class="form-group col-lg-12">
+                              <p class="text-muted m-b-15 f-s-12">Product Code</p>
+                              <input type="text" class="form-control input-default" id="pCode" placeholder="">
                               </div>
-                              <div class="card-body">
-                                <div class="basic-form">
-                                  <form>
-                                    <div class="form-group col-lg-12">
-                                      <p class="text-muted m-b-15 f-s-12">Product Code</p>
-                                      <div class="col-lg-4 product-code-qr-field">
-                                        <p id="result"></p>
-                                      </div>
-                                      </div>
-                                      
-                                      <div class="form-group col-lg-10">
-                                        <p class="text-muted m-b-15 f-s-12">Price</p>
-                                        <input type="text" class="form-control input-default " id="pPrice" placeholder="">
-                                        </div>
-                                        <div class="form-group col-lg-10">
-                                          <p class="text-muted m-b-15 f-s-12">Stock</p>
-                                          <input type="text" class="form-control input-default " id="pStock" placeholder="">
-                                          </div>
-                                          <button  id="add-product-button" class="btn btn-success" type="button" onclick="import_product();">Import</button>
-                                        </form>
-                                      </div>
-                                    </div>
+                              <div class="form-group col-lg-12">
+                                <p class="text-muted m-b-15 f-s-12">Price</p>
+                                <input type="text" class="form-control input-default " id="pPrice" placeholder="">
+                                </div>
+                                <div class="form-group col-lg-12">
+                                  <p class="text-muted m-b-15 f-s-12">Stock</p>
+                                  <input type="text" class="form-control input-default " id="pStock" placeholder="">
                                   </div>
+                                  <button  id="add-product-button" class="btn btn-success" type="button" onclick="import_product();">Import</button>
+                                </form>
                               </div>
-                        </div>
-                </div>
+                            </div>
+                          </div>
+                      </div>
             </div>
-            <div id="alert-div">
+        </div>
+        <div id="alert-div">
 
-            </div>
+        </div>
         </div>
     </div>
 </body>
