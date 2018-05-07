@@ -223,7 +223,7 @@ function insertResultData(code,price){
 //Stock-----------------------------------------------------
 function insertShopStocks(id,code,price,stock,shop){
 
-    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+    var result = '<tr onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
                 + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-qty">'+stock+'</td><td id="product-'+id+'-price">'+price+'</td></tr>';
 
 
@@ -232,7 +232,7 @@ function insertShopStocks(id,code,price,stock,shop){
 
 function insertShopStock(id,code,price,stock){
 
-    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+    var result = '<tr onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
                 + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-qty">'+stock+'</td><td id="product-'+id+'-price">'+price+'</td></tr>';
 
 
@@ -313,7 +313,7 @@ function loadShopEmployee(){
 //Product record 
 function insertProductRecordData(id,code,price,stock){
 
-    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+    var result = '<tr onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
                 + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-price">'+price+'</td><td id="product-'+id+'-stock">'+stock+'</td></tr>';
 
 
@@ -321,7 +321,7 @@ function insertProductRecordData(id,code,price,stock){
 };
 function insertProductRecordDataManager(id,code,price,stock,shop){
 
-    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+    var result = '<tr onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
                 + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-price">'+price+'</td><td id="product-'+id+'-stock">'+stock+'</td><td id="product-'+id+'-shop">'+shop+'</td></tr>';
 
 
