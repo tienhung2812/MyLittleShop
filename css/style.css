@@ -374,7 +374,7 @@ html {
 }
 
 #result {
-  height: 393px;
+  font-weight: bold;
 }
 
 .result-table{

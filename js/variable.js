@@ -29,6 +29,9 @@ function composeShop(id){
 var shopManager = '<div class="card"><div class="card-table"><div class="card-title"><h4>Shop Manager </h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="shopManagertbody"></tbody></table></div></div></div></div>';
 var employee = '<div class="card"><div class="card-table"><div class="card-title"><h4>Employee </h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="employeetbody"></tbody></table></div></div></div></div>';
 
+//Add Product
+var addProductShopID = '<div class="form-group col-lg-10"><p class="text-muted m-b-15 f-s-12">ShopID</p><input type="text" class="form-control input-default " id="pID" placeholder=""></div>'
+
 //Product Check
 var product=[];
 var total;

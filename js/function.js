@@ -98,6 +98,12 @@ function pageWrapper(role,page){
     }
 
     //Add product
+    else if(page=="manage-product-add"){
+        console.log("Loading "+page);
+        if(role==0){
+            $(addProductShopID).insertBefore("#add-product-button");
+        }
+    }
 
     //Modify product
     
