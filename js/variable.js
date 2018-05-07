@@ -1,4 +1,16 @@
 //Sidebar
+var leftSidebarHTML = '<nav class="sidebar-nav">'+
+						'	<ul id="sidebarnav">'+
+						'		<li class="nav-devider"></li>'+
+						'		<li class="nav-label" id="sidebar-home">Home</li>	'+
+						'		<li class="nav-label" id="sidebar-shop">Shop</li>'+
+						'		<li class="nav-label" id="sidebar-user">User</li>	'+
+						'		<li class="nav-label" id="sidebar-product">Product</li>'+
+						'		'+
+						'		'+
+						'		'+
+						'	</ul>'+
+						'</nav>';
 var dashboard = '<li><a class="has-no-arrow" href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a></li>';
 var dashboardManager = '<li><a class="has-no-arrow " href="index.html" aria-expanded="false"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard Manager</span></a></li>';
 var addShopSidebar = '<li><a class="has-no-arrow  " href="shop-add.html" aria-expanded="false"><i class="fa fa-plus-circle"></i><span class="hide-menu">Add shop</span></a></li>';

@@ -922,6 +922,7 @@ function reload_page(){
 
     // Make the actual CORS request.
     function login() {
+		console.log(project_code);
      	// This is a sample server that supports CORS.
      	var usr = document.forms["loginForm"]["username"].value;
      	var password = document.forms["loginForm"]["psw"].value;
