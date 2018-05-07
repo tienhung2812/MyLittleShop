@@ -878,8 +878,9 @@ function reload_page(){
       	// Response handlers.
       xhr.onload = function() {
         var data = JSON.parse(xhr.responseText);
+   
         if(data.result){
-        	localStorage.setItem("role",data.role);
+          localStorage.setItem("role",data.role);
 
           localStorage.setItem("shop_id",data.shop_id);
           localStorage.setItem("username",data.usr);
@@ -892,13 +893,13 @@ function reload_page(){
           }
         } else {
         		//notify('danger','Wrong password!');
-        	notify('danger','Wrong password!');
+            alert('Wrong password');
         }
      	};
 
       xhr.onerror = function() {
         //notify('danger', 'Username not exist!');
-        notify('danger','Username not exist!');
+        alert('User not exist!');
       };
 
       xhr.send();
