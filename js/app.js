@@ -50,6 +50,8 @@ function checkPageNeedLoadData(){
 
     if(document.getElementById('roleSelect').value == "Employee"){
         input_role = 2;
+    } else if(document.getElementById('roleSelect').value == "Shop Manager"){
+        input_role = 1;
     }
     var shopId;
 
@@ -87,13 +89,13 @@ function checkPageNeedLoadData(){
        	notify('danger','Username exist!');
        } else {
        	var shopExist = result.shopExist;
+
        	if(!shopExist){
        		notify('danger','Shop is not exist!');
        	}else{
        		notify('success','User added successfully!');
        	}
        }
-    
     };
 
     xhr.onerror = function() {
@@ -105,147 +107,254 @@ function checkPageNeedLoadData(){
 
   }
 
+function loadRecord(){
+    if(role==0){
+        var databaseRef = firebase.database().ref('stat');
+        shopNumRef = databaseRef.child('/shop/num');
+        // shopRef = databaseRef.parent.child('shop');
+        shopRef = databaseRef.parent.child("shop");
+        shopNumRef.on('value',function(shopNum){
+            var i=1;
+            for(i;i<=shopNum.val();i++){
+                addShopDashboard(i);
+                console.log("Add shop "+i);
+            }
+        })
+
+        
+        shopRef.on('value',function(shopID){
+            shopID.forEach(function(shopSnap){
+                shopSnap.ref.child('record').on('value',function(snapshot){
+                    console.log("Update shop "+shopSnap.key);
+                    $('#record-val-'+shopSnap.key+' tr').remove();
+                    var rowIndex = 1;
+                    snapshot.forEach(function(dateSnapshot){
+                        var date = dateSnapshot.key;
+        
+                        dateSnapshot.forEach(function(productSnapshot){
+                            var code = productSnapshot.key;
+                            var price = productSnapshot.val().price;
+                            var qty = productSnapshot.val().qty;
+                            insertRecordShopData(rowIndex,code,date,qty,price,shopSnap.key);
+                            rowIndex++;
+                        });
+                    });
+                });
+
+                shopSnap.ref.child('revenue').on('value',function(snapshot){
+                    updateDashboardShopData("total",snapshot.val(),shopSnap.key);
+                })
+
+                shopSnap.ref.child('sale').on('value',function(snapshot){
+                    updateDashboardShopData("sale",snapshot.val(),shopSnap.key);
+                })
+            })
+        })
+    }else
+    if(role == 1){
+        var databaseRef = firebase.database().ref('shop/'+shop_id);
+        recordRef = databaseRef.child('record');
+        recordRef.on('value',function(snapshot){
+            $('#record-val tr').remove();
+            var rowIndex = 1;
+            snapshot.forEach(function(dateSnapshot){
+                var date = dateSnapshot.key;
+
+                dateSnapshot.forEach(function(productSnapshot){
+                    var code = productSnapshot.key;
+                    var price = productSnapshot.val().price;
+                    var qty = productSnapshot.val().qty;
+                    insertRecordData(rowIndex,code,date,qty,price);
+                    rowIndex++;
+                });
+            });
+        });
+
+        totalRef = databaseRef.child('revenue');
+        totalRef.on('value',function(snapshot){
+            updateDashboardData("total",snapshot.val());
+        })
+
+        saleRef = databaseRef.child('sale');
+        saleRef.on('value',function(snapshot){
+            updateDashboardData("sale",snapshot.val());
+        })
+    }
+    
+}
+
 
 //Example For Shop Manager Dashboard
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);
 // updateDashboardData(stock,33);
 // insertRecordData(2,64645,"Jan 11",51);
-function loadRecord(){
-	var shopRecords = [];
-    if(role==0){
+// function loadRecord(){
+// 	var shopRecords = [];
+//     if(role==0){
         
-        for(var i = 0; i < shopNum; i++){
+//         for(var i = 0; i < shopNum; i++){
         
-        	addShopDashboard(i+1);
-        	console.log("Add shop " + (i+1));
+//         	addShopDashboard(i+1);
+//         	console.log("Add shop " + (i+1));
         	
-        	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+(i+1);
+//         	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+(i+1);
 
-        	let request = new XMLHttpRequest();
-        	request.open("GET",url,false);
-       		request.onreadystatechange = function() {
-        		if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
-        			var shopId = 1;
-            		var data = JSON.parse(request.responseText);
-            		shopRecords.push(data);  	
-        		}
-   			}
-   			request.send();
-        }
+//         	let request = new XMLHttpRequest();
+//         	request.open("GET",url,false);
+//        		request.onreadystatechange = function() {
+//         		if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+//         			var shopId = 1;
+//             		var data = JSON.parse(request.responseText);
+//             		shopRecords.push(data);  	
+//         		}
+//    			}
+//    			request.send();
+//         }
 
-       	for(var i = 0; i < shopRecords.length;i++){
-      		var rowIndex = 1;
-       		var records = shopRecords[i].records;
-       		var revenue = shopRecords[i].revenue;
-            var sale = shopRecords[i].sale;
+//        	for(var i = 0; i < shopRecords.length;i++){
+//       		var rowIndex = 1;
+//        		var records = shopRecords[i].records;
+//        		var revenue = shopRecords[i].revenue;
+//             var sale = shopRecords[i].sale;
 
-            updateDashboardShopData("total",revenue,(i+1));
-            updateDashboardShopData("sale",sale,(i+1));
+//             updateDashboardShopData("total",revenue,(i+1));
+//             updateDashboardShopData("sale",sale,(i+1));
 
-            for(var j = 0; j < records.length ; j++){
-            	var date = records[j].date;
-            	var products = records[j].products;
+//             for(var j = 0; j < records.length ; j++){
+//             	var date = records[j].date;
+//             	var products = records[j].products;
             	
-            	for (var k = 0; k < products.length; k++){
+//             	for (var k = 0; k < products.length; k++){
             		
-            		var product_code = products[k].product_code;
-            		var price = products[k].price;
-            		var qty = products[k].qty;
-            		insertRecordShopData(rowIndex,product_code,date,qty,price,(i+1));
-            		rowIndex++;
-            	}
-            }   		
-       	}    
-    } else {
-    	var rowIndex = 1;
-    	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+shop_id;
-    	var xhr = createCORSRequest('GET', url);
+//             		var product_code = products[k].product_code;
+//             		var price = products[k].price;
+//             		var qty = products[k].qty;
+//             		insertRecordShopData(rowIndex,product_code,date,qty,price,(i+1));
+//             		rowIndex++;
+//             	}
+//             }   		
+//        	}    
+//     } else {
+//     	var rowIndex = 1;
+//     	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+shop_id;
+//     	var xhr = createCORSRequest('GET', url);
 
-      	if (!xhr) {
-        	alert('CORS not supported');
-        	return;
-      	}
+//       	if (!xhr) {
+//         	alert('CORS not supported');
+//         	return;
+//       	}
 
-      	// Response handlers.
-      	xhr.onload = function() {
-        	var data = JSON.parse(xhr.responseText);
+//       	// Response handlers.
+//       	xhr.onload = function() {
+//         	var data = JSON.parse(xhr.responseText);
 
-        	var records = data.records;
-       		var revenue = data.revenue;
-            var sale = data.sale;
+//         	var records = data.records;
+//        		var revenue = data.revenue;
+//             var sale = data.sale;
 
-            updateDashboardData("total",revenue);
-            updateDashboardData("sale",sale);
+//             updateDashboardData("total",revenue);
+//             updateDashboardData("sale",sale);
 
-            for(var j = 0; j < records.length ; j++){
-            	var date = records[j].date;
-            	var products = records[j].products;
+//             for(var j = 0; j < records.length ; j++){
+//             	var date = records[j].date;
+//             	var products = records[j].products;
             	
-            	for (var k = 0; k < products.length; k++){
+//             	for (var k = 0; k < products.length; k++){
             		
-            		var product_code = products[k].product_code;
-            		var price = products[k].price;
-            		var qty = products[k].qty;
-            		insertRecordData(rowIndex,product_code,date,qty,price);
-            		rowIndex++;
-            	}
-            }
-     	};
+//             		var product_code = products[k].product_code;
+//             		var price = products[k].price;
+//             		var qty = products[k].qty;
+//             		insertRecordData(rowIndex,product_code,date,qty,price);
+//             		rowIndex++;
+//             	}
+//             }
+//      	};
 
-      	xhr.onerror = function() {
-        	//notify('danger', 'Username not exist!');
-        	alert('Something went wrong!');
-      	};
+//       	xhr.onerror = function() {
+//         	//notify('danger', 'Username not exist!');
+//         	alert('Something went wrong!');
+//       	};
 
-      	xhr.send();
-    }
-    return false;
+//       	xhr.send();
+//     }
+//     return false;
  
-}
+// }
   
-
-
 function loadEmployee(){
-        $("#shopManagertbody tr").remove();
-        $("#employeetbody tr").remove();
-
-        var rowEmployee = 1;
-        var rowManager = 1;
-
-		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadEmployee/'+role+'/'+shop_id;
-		
-        var xhr = createCORSRequest('GET', url);
-
-      	if (!xhr) {
-        	alert('CORS not supported');
-        	return;
-      	}
-
-      	// Response handlers.
-      	xhr.onload = function() {
-        	var data = JSON.parse(xhr.responseText);
-
-        	var managers = data.managers;
-        	var employees = data.employees;
-        	for (var i = 0; i < employees.length; i++){
-        		insertUserRecordData("employee",rowEmployee,employees[i].username,employees[i].shop_id);
-        		rowEmployee++;
-        	}
-        	for (var i = 0; i < managers.length;i++){
-        		insertUserRecordData("shopmanager",rowManager,managers[i].username,managers[i].shop_id);
-        		rowManager++;
-        	}
-     	};
-
-      	xhr.onerror = function() {
-        	//notify('danger', 'Username not exist!');
-        	alert('Something went wrong!');
-      	};
-
-      	xhr.send();
-      	return false;
+    if(currentPage=="user-manage"){
+        
+        var databaseRef = firebase.database().ref('employee/');
+        databaseRef.on('value', function(snapshot) {
+            $("#shopManagertbody tr").remove();
+            $("#employeetbody tr").remove();
+            var rowManager = 1;
+            var rowEmployee = 1;
+            snapshot.forEach(function(childSnapshot) {
+        
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+                if(role == 0) {
+                    if(childData.role == 1){
+                        insertUserRecordData("shopmanager",rowManager,childKey,childData.shop_id);
+                        rowManager++;
+                    }
+                    if (childData.role == 2){
+                        insertUserRecordData("employee",rowEmployee,childKey,childData.shop_id);
+                        rowEmployee++;
+                    }
+                }else{
+                    if(childData.role == 2 && childData.shop_id == shop_id){
+                        insertUserRecordData("employee",rowEmployee,childKey,childData.shop_id);
+                        rowEmployee++;
+                    }
+                }
+            })
+        });
+    }
 }
+
+// function loadEmployee(){
+//         $("#shopManagertbody tr").remove();
+//         $("#employeetbody tr").remove();
+
+//         var rowEmployee = 1;
+//         var rowManager = 1;
+
+// 		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadEmployee/'+role+'/'+shop_id;
+		
+//         var xhr = createCORSRequest('GET', url);
+
+//       	if (!xhr) {
+//         	alert('CORS not supported');
+//         	return;
+//       	}
+
+//       	// Response handlers.
+//       	xhr.onload = function() {
+//         	var data = JSON.parse(xhr.responseText);
+
+//         	var managers = data.managers;
+//         	var employees = data.employees;
+//         	for (var i = 0; i < employees.length; i++){
+//         		insertUserRecordData("employee",rowEmployee,employees[i].username,employees[i].shop_id);
+//         		rowEmployee++;
+//         	}
+//         	for (var i = 0; i < managers.length;i++){
+//         		insertUserRecordData("shopmanager",rowManager,managers[i].username,managers[i].shop_id);
+//         		rowManager++;
+//         	}
+//      	};
+
+//       	xhr.onerror = function() {
+//         	//notify('danger', 'Username not exist!');
+//         	alert('Something went wrong!');
+//       	};
+
+//       	xhr.send();
+//       	return false;
+// }
 
 
 //Modify user
@@ -418,38 +527,38 @@ function password_update(){
 //Product record 
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
-function LoadData(){
-        $("#tbl_products_list tbody tr").remove();
-        var rowIndex = 1;
-		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadProduct/'+shop_id;
+// function LoadData(){
+//         $("#tbl_products_list tbody tr").remove();
+//         var rowIndex = 1;
+// 		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadProduct/'+shop_id;
 	
-        var xhr = createCORSRequest('GET', url);
+//         var xhr = createCORSRequest('GET', url);
 
-      	if (!xhr) {
-        	alert('CORS not supported');
-        	return;
-      	}
+//       	if (!xhr) {
+//         	alert('CORS not supported');
+//         	return;
+//       	}
 
-      	// Response handlers.
-      	xhr.onload = function() {
-        	var data = JSON.parse(xhr.responseText);
-        	for(var i = 0; i < data.length; i++){
-        		var price = data[i].price;
-        		var stock = data[i].stock;
-        		var product_code = data[i].product_code;
-        		insertProductRecordData(rowIndex,product_code,price,stock);
-        		rowIndex +=1;
-        	}
-     	};
+//       	// Response handlers.
+//       	xhr.onload = function() {
+//         	var data = JSON.parse(xhr.responseText);
+//         	for(var i = 0; i < data.length; i++){
+//         		var price = data[i].price;
+//         		var stock = data[i].stock;
+//         		var product_code = data[i].product_code;
+//         		insertProductRecordData(rowIndex,product_code,price,stock);
+//         		rowIndex +=1;
+//         	}
+//      	};
 
-      	xhr.onerror = function() {
-        	//notify('danger', 'Username not exist!');
-        	alert('Something went wrong!');
-      	};
+//       	xhr.onerror = function() {
+//         	//notify('danger', 'Username not exist!');
+//         	alert('Something went wrong!');
+//       	};
 
-      	xhr.send();
-      	return false;
-}
+//       	xhr.send();
+//       	return false;
+// }
 
 
 	// Add Product
@@ -459,7 +568,7 @@ function LoadData(){
 	    var stock= document.getElementById('pStock').value;
 
      
-		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shop_id;
+		  var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shop_id;
 	
         var xhr = createCORSRequest('GET', url);
 
@@ -486,7 +595,7 @@ function LoadData(){
       	};
 
       	xhr.send();
-          return false;
+        return false;
 	}
 
 
@@ -571,7 +680,7 @@ function LoadData(){
     	}
 
 		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addShop/'+JSON.stringify(shop);
-		alert(url);
+
         var xhr = createCORSRequest('GET', url);
 
       	if (!xhr) {
@@ -602,56 +711,39 @@ function LoadData(){
 //--------------------------------------------------
 
 function saveRecord(){
-    var updates = {};
+    // var updates = {};
    
-    for(var i = 0; i < product.length;i++){
+    // for(var i = 0; i < product.length;i++){
 
-        var code = product[i][0];
-        //var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
-        var qty = product[i][1];
-        var price = product[i][2] * product[i][1];
+    //     var code = product[i][0];
+    //     //var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
+    //     var qty = product[i][1];
+    //     var price = product[i][2] * product[i][1];
 
-<<<<<<< HEAD
-        var data = {
-        	product_code:code,
-        	qty: qty,
-        	price: price
-        }
-=======
-        databaseRef.once('value',function(snapshot){
-            var data;
-            if(snapshot.exists()){
-                data = {
-                    qty: snapshot.val().qty + qty,
-                    price: snapshot.val().price + price
-                }              
-            }else {
-                data = {
-                    qty: qty,
-                    price: price
-                }
-            }
-            updates['/shop/'+shop_id+'/record/'+getDate()+'/'+code] = data;
-            firebase.database().ref().update(updates);
-        });
-    }
-    $('.new-button').removeClass('disabled');
-    $('.complete-button').addClass('disabled');
-    notify('success','The record is saved successfully!');
->>>>>>> 0f7af4afe081d17e925cbd7f144a7ae375e8a7b2
 
-        var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
-        let request = new XMLHttpRequest();
-        request.open("GET",url);
-       	request.onreadystatechange = function() {
-        	if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+    //     var data = {
+    //     	product_code:code,
+    //     	qty: qty,
+    //     	price: price
+    //     }
+    // }
+    // $('.new-button').removeClass('disabled');
+    // $('.complete-button').addClass('disabled');
+    // notify('success','The record is saved successfully!');
+
+
+    //     var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
+    //     let request = new XMLHttpRequest();
+    //     request.open("GET",url);
+    //    	request.onreadystatechange = function() {
+    //     	if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
             	
-        	}
-   		}
-        request.send();
-    }
-    notify('success','Save Record sucess!');
-    return false;  
+    //     	}
+   	// 	}
+    //     request.send();
+    // }
+    // notify('success','Save Record sucess!');
+    // return false;  
 }
 
 

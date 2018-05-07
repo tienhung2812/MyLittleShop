@@ -429,18 +429,18 @@ exports.addProduct = functions.https.onRequest((req,res)=>{
 
         var updates = {};
         var result = true;
+        var shop_id =  params[4];
 
         var data = {
           product_price : params[2],
-          stock: params[3],
-          store_id: params[4]
+          stock: params[3]
         }
 
-        return admin.database().ref('product/'+product_code).once('value',(snapshot)=>{
+        return admin.database().ref('shop/'+shop_id+'/products/'+product_code).once('value',(snapshot)=>{
             if(snapshot.exists()){
                 result = false;
             } else {
-                updates['/product/' + product_code] = data;
+                updates['shop/'+shop_id+'/products/'] = data;
                 admin.database().ref().update(updates);
             }
             res.send(result);
@@ -720,33 +720,40 @@ exports.addEmployee = functions.https.onRequest((req,res)=>{
         var shop_id = employee.shop_id;
 
         var updates = {};
-        var shopExist = true;
-        var userExist = false;
 
         var data = {
           password : password,
           role: role_id,
           shop_id: shop_id
         }
-
+        var result;
         admin.database().ref('employee/'+username).once('value',(snapshot)=>{
+            var shopExist = true;
+            var userExist = false;
             if(snapshot.exists()){
                 userExist = true;
+                result = {
+                    userExist : userExist
+                }
+                res.send(result);
+            } else {
                 admin.database().ref('shop/'+shop_id).once('value',(shopSnapshot)=>{
-                    if(!shopSnapshot.exists()){
+                    if(shopSnapshot.exists()){
+                        updates['/employee/' + username] = data;
+                        admin.database().ref().update(updates);
+                    } else{
                         shopExist = false;
                     }
+                    result = {
+                        userExist: userExist,
+                        shopExist: shopExist
+                    }
+                    res.send(result);
                 });
-            } else {
-                updates['/employee/' + username] = data;
-                admin.database().ref().update(updates);
             }
-            var result = {
-                userExist: userExist,
-                shopExist: shopExist
-            }
-            res.send(result);
         });
+
+
     });
 });
 
