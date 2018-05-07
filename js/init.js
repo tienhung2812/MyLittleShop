@@ -1,10 +1,11 @@
-    // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyAn1hP3ISXUv7A5as9gBu55PtZfx7mU5g0",
-        authDomain: "my-little-shop-41012.firebaseapp.com",
-        databaseURL: "https://my-little-shop-41012.firebaseio.com",
-        projectId: "my-little-shop-41012",
-        storageBucket: "my-little-shop-41012.appspot.com",
-        messagingSenderId: "439274339673"
-      };
-      firebase.initializeApp(config);
+
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAvvucSh6p2lMwbY3bTt_0tT1VTDeKzw2E",
+    authDomain: "mylittleshop-8086b.firebaseapp.com",
+    databaseURL: "https://mylittleshop-8086b.firebaseio.com",
+    projectId: "mylittleshop-8086b",
+    storageBucket: "mylittleshop-8086b.appspot.com",
+    messagingSenderId: "649871052756"
+  };
+  firebase.initializeApp(config);
