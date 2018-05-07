@@ -219,6 +219,26 @@ function insertResultData(code,price){
     $(".result-total h4").html(total); 
 }
 
+//Stock-----------------------------------------------------
+function insertShopStocks(id,code,price,stock,shop){
+
+    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+                + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-qty">'+stock+'</td><td id="product-'+id+'-price">'+price+'</td></tr>';
+
+
+    $("#stock-val-"+shop).append(result);
+};
+
+function insertShopStock(id,code,price,stock){
+
+    var result = '<tr type="button" onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
+                + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-qty">'+stock+'</td><td id="product-'+id+'-price">'+price+'</td></tr>';
+
+
+    $("#stock-val").append(result);
+};
+
+//-------------------------------------------------
 
 //Example for User
 //Employee Record

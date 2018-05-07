@@ -20,9 +20,9 @@ var shop_id = localStorage.getItem("shop_id");
 
 if(screen.width<767){
         Sidebar();
-}; 
-function installContent(callback){
+};
 
+function installContent(callback){
         //Add Left sidebar
         leftSidebar(role,currentPage);
         //Add content by page
@@ -39,72 +39,8 @@ function checkPageNeedLoadData(){
     }
     return false;
 }
-//------------------------------------------------------------------------------------------------------------------
-// Add employee
 
-  function import_user(){
-    var username= document.getElementById('username').value;
-    var password= document.getElementById('password').value;
-    var input_role = -1;
-
-    if(document.getElementById('roleSelect').value == "Employee"){
-        input_role = 2;
-    } else if(document.getElementById('roleSelect').value == "Shop Manager"){
-        input_role = 1;
-    }
-    var shopId;
-
-    if(role == 0){
-        shopId = document.getElementById('shopNo').value;  
-    } else {
-        shopId = shop_id;
-    }
-
-
- 	// var hash= CryptoJS.SHA3(password);
-	// alert(hash);
-
-    var data = {
-      username: username,
-      password: password,
-      role: input_role,
-      shop_id: shopId
-    }
-
-    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addEmployee/'+JSON.stringify(data);
-    var xhr = createCORSRequest('GET', url);
-
-    if (!xhr) {
-        alert('CORS not supported');
-        return;
-    }
-
-    // Response handlers.
-    xhr.onload = function() {
-       var result = JSON.parse(xhr.responseText);
-       var userExist = result.userExist;
-       
-       if(userExist){
-       	notify('danger','Username exist!');
-       } else {
-       	var shopExist = result.shopExist;
-
-       	if(!shopExist){
-       		notify('danger','Shop is not exist!');
-       	}else{
-       		notify('success','User added successfully!');
-       	}
-       }
-    };
-
-    xhr.onerror = function() {
-       //notify('danger', 'Username not exist!');
-        notify('danger','Something went wrong!');
-    };
-
-    xhr.send(); 
-
-  }
+//-----------------------------INDEX--------------------------------------------------
 
 function loadRecord(){
     if(role==0){
@@ -149,8 +85,7 @@ function loadRecord(){
                 })
             })
         })
-    }else
-    if(role == 1){
+    }else if(role == 1){
         var databaseRef = firebase.database().ref('shop/'+shop_id);
         recordRef = databaseRef.child('record');
         recordRef.on('value',function(snapshot){
@@ -179,10 +114,44 @@ function loadRecord(){
             updateDashboardData("sale",snapshot.val());
         })
     }
-    
 }
 
+function loadStock(){
 
+    if(role == 0){
+        var databaseRef = firebase.database().ref('shop/');
+        databaseRef.on('value', function(snapshot) {
+            var i = 1;
+            $("#stock-val-"+i+" tr").remove();
+            snapshot.forEach(function(shopSnapshot){
+                var rowIndex = 1;
+                var shopId = shopSnapshot.key;
+                databaseRef.child(shopId+'/products').on('value',function(productSnapshot){
+                    productSnapshot.forEach(function(childSnapshot) {
+                        var childKey = childSnapshot.key;
+                        var childData = childSnapshot.val();
+                        insertShopStocks(rowIndex,childKey,childData.price,childData.stock,shopId);
+                        rowIndex ++;
+                    });
+                });
+            });
+        });
+    }else{
+        var databaseRef = firebase.database().ref('shop/'+shop_id+'/products');
+    
+        databaseRef.on('value', function(snapshot) {
+            $("#stock-val tbody tr").remove();
+            var rowIndex = 1;
+            snapshot.forEach(function(childSnapshot) {
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+                insertShopStock(rowIndex,childKey,childData.price,childData.stock);
+                rowIndex ++;
+            });
+        });
+    }
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------
 //Example For Shop Manager Dashboard
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);
@@ -280,7 +249,73 @@ function loadRecord(){
 //     return false;
  
 // }
-  
+//------------------------------------------------------------------------------------------------------------------
+// Add employee
+
+function import_user(){
+    var username= document.getElementById('username').value;
+    var password= document.getElementById('password').value;
+    var input_role = -1;
+
+    if(document.getElementById('roleSelect').value == "Employee"){
+        input_role = 2;
+    } else if(document.getElementById('roleSelect').value == "Shop Manager"){
+        input_role = 1;
+    }
+    var shopId;
+
+    if(role == 0){
+        shopId = document.getElementById('shopNo').value;  
+    } else {
+        shopId = shop_id;
+    }
+
+
+    // var hash= CryptoJS.SHA3(password);
+    // alert(hash);
+
+    var data = {
+        username: username,
+        password: password,
+        role: input_role,
+        shop_id: shopId
+    }
+
+    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addEmployee/'+JSON.stringify(data);
+    var xhr = createCORSRequest('GET', url);
+
+    if (!xhr) {
+        alert('CORS not supported');
+        return;
+    }
+
+    // Response handlers.
+    xhr.onload = function() {
+        var result = JSON.parse(xhr.responseText);
+        var userExist = result.userExist;
+       
+        if(userExist){
+            notify('danger','Username exist!');
+        } else {
+            var shopExist = result.shopExist;
+
+            if(!shopExist){
+               notify('danger','Shop is not exist!');
+            }else{
+               notify('success','User added successfully!');
+            }
+        }
+    };
+
+    xhr.onerror = function() {
+       //notify('danger', 'Username not exist!');
+        notify('danger','Something went wrong!');
+    };
+
+    xhr.send(); 
+
+}
+
 function loadEmployee(){
     if(currentPage=="user-manage"){
         
@@ -404,45 +439,7 @@ function update_user(){
 
 }
   
-  function update_product(){
-	   	var code = document.getElementById('pCode').value;
-	   	var price = document.getElementById('pPrice').value;
-	   	var stock = document.getElementById('pStock').value;
-	   	var type = 0;
-	   	if(code == oldCode){
-	   		type = 1;
-	   	} else {
-	   		type = 2;
-	   	}
 
-	   	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
-        var xhr = createCORSRequest('GET', url);
-
-		if (!xhr) {
-	       	alert('CORS not supported');
-	       	return;
-    	}
-	      	// Response handlers.
-	    xhr.onload = function() {
-	       	var result = (xhr.responseText === "true");
-	    
-	        if(result){
-	        	alert('Product is modified successfully!');
-	        	reload_page();
-	        }else{
-	        	alert('Modified product code is exist!');
-	        }
-	    };
-
-	    xhr.onerror = function() {
-	        //notify('danger', 'Username not exist!');
-	        alert('Something went wrong!');
-	    };
-
-	    xhr.send();
-      	return false;   
-	}
-  
 function delete_user(){
     var username = document.getElementById('username').value;
   
@@ -559,8 +556,8 @@ function password_update(){
 //       	return false;
 // }
 function LoadData(){
-    if(currentPage=="manage-product"){
-      if(role == 0){
+ 
+    if(role == 0){
         var databaseRef = firebase.database().ref('shop/');
         databaseRef.on('value', function(snapshot) {
           $("#tbl_products_list tbody tr").remove();
@@ -590,109 +587,146 @@ function LoadData(){
                 rowIndex ++;
             });
         });
-      }
-    }
+    }   
 }
 
 	// Add Product
-	function import_product(){
-	    var code= document.getElementById('result').innerHTML;
-	    var price= document.getElementById('pPrice').value;
-	    var stock= document.getElementById('pStock').value;
-      var shopID;
+function import_product(){
+	var code= document.getElementById('result').innerHTML;
+	var price= document.getElementById('pPrice').value;
+	var stock= document.getElementById('pStock').value;
+    var shopID;
       
-      if(role == 0){
+    if(role == 0){
         shopID = document.getElementById('pID').value;
-      } else {
+    } else {
         shopID = shop_id;
-      }
-		  var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shopID;
-	     alert(url);
-      var xhr = createCORSRequest('GET', url);
+    }
+	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shopID;
+	
+    var xhr = createCORSRequest('GET', url);
 
-      if (!xhr) {
+    if (!xhr) {
         alert('CORS not supported');
         return;
-      }
+    }
 
       // Response handlers.
-      xhr.onload = function() {
+    xhr.onload = function() {
         var result = (xhr.responseText === "true");
     
         if(result){
         	notify('success','Product is add successfully!');
-          reload_page();
+            reload_page();
         }else{
         	notify('danger','Product is already exist!');
-        }
-        	
-     };
+        }    	
+    };
 
-      xhr.onerror = function() {
+    xhr.onerror = function() {
         //notify('danger', 'Username not exist!');
         alert('Something went wrong!');
-      };
+    };
 
-      xhr.send();
-      return false;
-	}
+    xhr.send();
+    return false;
+}
+
+// function update_product(){
+//         var code = document.getElementById('pCode').value;
+//         var price = document.getElementById('pPrice').value;
+//         var stock = document.getElementById('pStock').value;
+//         var type = 0;
+//         if(code == oldCode){
+//             type = 1;
+//         } else {
+//             type = 2;
+//         }
+
+//         var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
+//         var xhr = createCORSRequest('GET', url);
+
+//         if (!xhr) {
+//             alert('CORS not supported');
+//             return;
+//         }
+//             // Response handlers.
+//         xhr.onload = function() {
+//             var result = (xhr.responseText === "true");
+        
+//             if(result){
+//                 alert('Product is modified successfully!');
+//                 reload_page();
+//             }else{
+//                 alert('Modified product code is exist!');
+//             }
+//         };
+
+//         xhr.onerror = function() {
+//             //notify('danger', 'Username not exist!');
+//             alert('Something went wrong!');
+//         };
+
+//         xhr.send();
+//         return false;   
+//     }
 
 
 	  //Modify Product
-	function update_product(){
-	   	var code = document.getElementById('pCode').value;
-	   	var price = document.getElementById('pPrice').value;
-        var shopId;
+function update_product(){
+	var code = document.getElementById('pCode').value;
+	var price = document.getElementById('pPrice').value;
+    var shopId;
 
-	   	var type = 0;
+	var type = 0;
 
-	   	if(code == oldCode){
-	   		type = 1;
-	   	} else {
-	   		type = 2;
-	   	}
+	if(code == oldCode){
+	   	type = 1;
+	} else {
+	   	type = 2;
+	}
 
-      if(role == 0){
+    if(role == 0){
         shopId = document.getElementById('pShop').value;
-      }else{
+    }else{
         shopId = shop_id;
-      }
+    }
 
-      var data = {
+    var data = {
         code: code,
         price: price,
         type: type,
         oldCode: oldCode,
         shop_id: shopId
-      }
+    }
 
-	   	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+JSON.stringify(data);
+	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+JSON.stringify(data);
       
-      var xhr = createCORSRequest('GET', url);
+    var xhr = createCORSRequest('GET', url);
 
-		if (!xhr) {
-	       	alert('CORS not supported');
-	       	return;
-    	}
+	if (!xhr) {
+	    alert('CORS not supported');
+	    return;
+    }
 	      	// Response handlers.
-	    xhr.onload = function() {
-	       	var result = (xhr.responseText === "true");
+	xhr.onload = function() {
+	    var result = (xhr.responseText === "true");
 	    
-	        if(result){
-	        	notify('success','Product is modified successfully!');
-	        }else{
-	        	notify('danger','Modified product code is exist!');
-	        }
-	    };
+	    if(result){
+	        notify('success','Product is modified successfully!');
+	       }else{
+	        notify('danger','Modified product code is exist!');
+	   }
+	};
 
-	    xhr.onerror = function() {
-	        //notify('danger', 'Username not exist!');
-	        notify('danger','Something went wrong!');
-	    };
+	xhr.onerror = function() {
+	   //notify('danger', 'Username not exist!');
+	   notify('danger','Something went wrong!');
+	};
 
-	    xhr.send();
-      	return false;   
-	}
+	xhr.send();
+    return false;   
+}
   
 	function delete_product(){
 	    var product_code = document.getElementById('pCode').value;
@@ -953,6 +987,7 @@ $(document).ready ( function(){
 
     if(currentPage == "index"){
         loadRecord();
+        loadStock();
     }else if(currentPage == "manage-product-check"){
         $(".new-button").addClass("disabled");
         $(".complete-button").addClass("disabled");
