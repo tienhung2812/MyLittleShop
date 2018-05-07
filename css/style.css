@@ -427,6 +427,19 @@ html {
   display: flex;
 }
 
+.employee-record {
+  padding: 30px;  
+}
+
+
+#employee-section{
+  margin-left: auto;
+}
+
+#shopmanager-section{
+  margin-right: auto;
+}
+
 @media (min-width: 768px) {
     .navbar-header {
         width: 240px;

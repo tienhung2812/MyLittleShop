@@ -87,9 +87,10 @@ function pageWrapper(role,page){
     else if(page =="user-manage"){
         console.log("Loading "+page);
         if(role == 0){
-            $("#content").html('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
-            $("#shopManagerDiv").html(shopManager);
-            $("#employeeDiv").html(employee);
+            $("#content").html(composeUserManage(1))
+            // $("#content").html('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
+            // $("#shopManagerDiv").html(shopManager);
+            // $("#employeeDiv").html(employee);
         } else if (role==1){
             $("#content").html('<div class="col-lg-12" id="employeeDiv"></div>');
             $("#employeeDiv").html(employee);
@@ -222,19 +223,31 @@ function insertUserRecordData(type,id,name,shop){
         role = 1;
     else 
         role = 2;
-    var result = '<tr onclick="userModifyModal('+id+','+role+') id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
+    var result = '<tr onclick="userModifyModal('+id+','+role+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
                 + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
 
-    if(type == "shopmanager"){
-        $("#shopManagertbody").append(result);
-        console.log("Updated shopmanager record value");
-    }else if (type == "employee"){
-        $("#employeetbody").append(result);
-        console.log("Updated employee record value");
-    }else {
-        console.log("Wrong type input");
+    if(role==1){
+        if(type == "shopmanager"){
+            $("#shopManagertbody").append(result);
+            console.log("Updated shopmanager record value");
+        }else if (type == "employee"){
+            $("#employeetbody").append(result);
+            console.log("Updated employee record value");
+        }else {
+            console.log("Wrong type input");
+        }
     }
-    
+    if(role==2){
+        if(type == "shopmanager"){
+            $("#shopManagertbody-"+shop).append(result);
+            console.log("Updated shopmanager record value");
+        }else if (type == "employee"){
+            $("#employeetbody-"+shop).append(result);
+            console.log("Updated employee record value");
+        }else {
+            console.log("Wrong type input");
+        }
+    }
 };
 
 

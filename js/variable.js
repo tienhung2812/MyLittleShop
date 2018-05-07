@@ -29,6 +29,14 @@ function composeShop(id){
 //User Manage
 var shopManager = '<div class="card"><div class="card-table"><div class="card-title"><h4>Shop Manager </h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="shopManagertbody"></tbody></table></div></div></div></div>';
 var employee = '<div class="card"><div class="card-table"><div class="card-title"><h4>Employee </h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="employeetbody"></tbody></table></div></div></div></div>';
+//User manage Mager
+function composeUserManage(id){
+    var result = '<div class="col-lg-12"><div class="card"><div class="employee-record"><div class="card-title"><h4>SHOP '
+    + id +'</h4></div><hr><div class="card-body"><div class="col-lg-6 card-body-section" id="shopmanager-section"><div class="card-table"><div class="card-title"><h4>ShopManager</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="shopManagertbody-'
+    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div><div class="col-lg-6 card-body-section" id="employee-section"><div class="card-table"><div class="card-title"><h4>Stock</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="employeetbody-'
+    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div></div></div></div></div>';
+    return result;
+}
 
 //Add Product
 var addProductShopID = '<div class="form-group col-lg-10"><p class="text-muted m-b-15 f-s-12">ShopID</p><input type="text" class="form-control input-default " id="pID" placeholder=""></div>'
