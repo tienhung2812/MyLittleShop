@@ -343,7 +343,7 @@ function productModifyModal(id){
     if(role==0){
         $("#modal-stock").remove();
     }
-    else {
+    else if(role==1){
         $("#modal-shop").remove();
     }
     oldCode=code;
