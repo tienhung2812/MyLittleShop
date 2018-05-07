@@ -140,7 +140,7 @@ function loadStock(){
         var databaseRef = firebase.database().ref('shop/'+shop_id+'/products');
     
         databaseRef.on('value', function(snapshot) {
-            $("#stock-val tbody tr").remove();
+            $("#stock-val tr").remove();
             var rowIndex = 1;
             snapshot.forEach(function(childSnapshot) {
                 var childKey = childSnapshot.key;
@@ -677,19 +677,25 @@ function update_product(){
 	var code = document.getElementById('pCode').value;
 	var price = document.getElementById('pPrice').value;
     var shopId;
-
+    var stock = 0;
 	var type = 0;
 
-	if(code == oldCode){
-	   	type = 1;
-	} else {
-	   	type = 2;
-	}
 
     if(role == 0){
         shopId = document.getElementById('pShop').value;
     }else{
         shopId = shop_id;
+        stock = document.getElementById('pStock').value;
+    }
+
+    if(code == oldCode && shopId == oldShop){
+        type = 1;                 // Update on current product
+    } else if(code == oldCode && shopId != oldShop){
+        type = 2;                // Same product move to another Shop
+    } else if(code != oldCode && shopId == oldShop){
+        type = 3;
+    } else {
+        type = 4;
     }
 
     var data = {
@@ -697,11 +703,14 @@ function update_product(){
         price: price,
         type: type,
         oldCode: oldCode,
-        shop_id: shopId
+        shop_id: shopId,
+        stock: stock,
+        role: role,
+        oldShop : oldShop
     }
 
 	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+JSON.stringify(data);
-      
+  
     var xhr = createCORSRequest('GET', url);
 
 	if (!xhr) {
@@ -710,13 +719,15 @@ function update_product(){
     }
 	      	// Response handlers.
 	xhr.onload = function() {
-	    var result = (xhr.responseText === "true");
+	    var result = JSON.parse(xhr.responseText);
 	    
-	    if(result){
-	        notify('success','Product is modified successfully!');
-	       }else{
-	        notify('danger','Modified product code is exist!');
-	   }
+	    if(result.productExist){
+	        notify('danger','Modified product is exist!');
+	   }else if (!result.shopExist){
+	        notify('danger','Shop is not exist!');
+	   } else {
+            notify('success','Product is modified successfully!');
+       }
 	};
 
 	xhr.onerror = function() {
@@ -821,18 +832,23 @@ function saveRecord(){
         }
 
         var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
+
         let request = new XMLHttpRequest();
         request.open("GET",url);
         request.onreadystatechange = function() {
             if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
-                
+                var result = (request.responseText === "true");
+                if(result){
+                    notify('success','The record is saved successfully!');
+                } else {
+                    notify('danger','Product out of stock!'); 
+                }
             }
         }
         request.send();
     }
     $('.new-button').removeClass('disabled');
     $('.complete-button').addClass('disabled');
-    notify('success','The record is saved successfully!');
     
     //notify('success','Save Record sucess!');
     return false;  

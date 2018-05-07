@@ -46,5 +46,6 @@ var product=[];
 var total;
 // user modify function
 var oldCode;
-var project_code = "mylittleshop-8086b";
+var oldShop;
+var project_code ;
 

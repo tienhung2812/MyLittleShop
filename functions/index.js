@@ -461,43 +461,139 @@ exports.modifyProduct = functions.https.onRequest((req,res)=>{
         var store_id = product.shop_id;
         var type = product.type;
         var price = product.price;
+        var qty = product.stock;
+        var role = product.role;
+        var old_shop_id = product.oldShop;
         var data;
-
+        var result;
         var updates = {};
-        var result = true;
-
+        var productExist = false;
+        var shopExist = true;
 
         if(type == 1){  // update current product
             admin.database().ref('shop/'+store_id+'/products/'+product_code).once('value',(snapshot)=>{
-                if(snapshot.exists()){
+                if(role == 0){
                     var stock = snapshot.val().stock;
                     data = {
                         price: price,
                         stock: stock
                     }
-                    updates['/shop/'+store_id+'/products/'+product_code] = data;
-                    admin.database().ref().update(updates);
+                } else {
+                    data = {
+                        price: price,
+                        stock: qty
+                    }
+                }
+                updates['/shop/'+store_id+'/products/'+product_code] = data;
+                admin.database().ref().update(updates);
+                result = {
+                    productExist: productExist,
+                    shopExist: shopExist
                 }
                 res.send(result);
             });
-        } else {
-            admin.database().ref('shop/'+store_id+'/products/'+product_code).once('value',(snapshot)=>{
+        } else if(type == 2) { // same product , different shop
+            admin.database().ref('shop/'+store_id).once('value',(snapshot)=>{
                 if(snapshot.exists()){
-                    result = false;
-                } else {
-                    var stock;
-                    admin.database().ref('shop/'+store_id+'/products/'+old_product_code).once('value',(productSnapshot)=>{
-                        stock = productSnapshot.val().stock;
-                        data = {
-                            price: price,
-                            stock:stock
+                    admin.database().ref('shop/'+old_shop_id+'/products/'+product_code).once('value',(productSapshot)=>{
+                        if(role == 0){
+                            var stock = productSapshot.val().stock;
+                            data = {
+                                price: price,
+                                stock: stock
+                            }
+                        } else {
+                            data = {
+                                price: price,
+                                stock: qty
+                            }
                         }
+                        updates['/shop/'+store_id+'/products/'+product_code] = data;
+                        admin.database().ref().update(updates);
+                        admin.database().ref().child('shop/'+old_shop_id+'/products/'+ product_code).remove();
                     });
-                    updates['/shop/'+store_id+'/products/'+product_code] = data;
-                    admin.database().ref().update(updates);
-                    admin.database().ref().child('shop/'+store_id+'/products/'+old_product_code).remove();
+                }else{
+                    shopExist = false;
+                }
+                result = {
+                    productExist: productExist,
+                    shopExist: shopExist
                 }
                 res.send(result);
+            });
+        } else if(type == 3){ // different product, same shop
+            admin.database().ref('shop/'+store_id+'/products/'+product_code).once('value',(snapshot)=>{
+                if(snapshot.exists()){
+                    productExist = true;
+                } else{
+                    admin.database().ref('shop/'+store_id+'/products/'+old_product_code).once('value',(productSnapshot)=>{
+                        if(role == 0){
+                            var stock = productSnapshot.val().stock;
+                            data = {
+                                price: price,
+                                stock: stock
+                            }
+                        } else {
+                            data = {
+                                price: price,
+                                stock: qty
+                            }
+                        }
+                        updates['/shop/'+store_id+'/products/'+product_code] = data;
+                        admin.database().ref().update(updates);
+                        admin.database().ref().child('shop/'+store_id+'/products/'+ old_product_code).remove();
+                    });
+                }
+                result = {
+                    productExist: productExist,
+                    shopExist: shopExist
+                }
+                res.send(result);
+            });
+        } else { // different product, different shop
+            admin.database().ref('shop/'+store_id).once('value',(snapshot)=>{
+                if(snapshot.exists()){
+                    admin.database().ref('shop/'+store_id+'/products/'+product_code).once('value',(productSnapshot)=>{
+                        if(productSnapshot.exists()){
+                            productExist = true;
+                            result = {
+                                productExist: productExist,
+                                shopExist: shopExist
+                            }
+                            res.send(result);      
+                        } else{
+                            admin.database().ref('shop/'+old_shop_id+'/products/'+old_product_code).once('value',(snapshot2)=>{
+                                if(role == 0){
+                                    var stock = snapshot2.val().stock;
+                                    data = {
+                                        price: price,
+                                        stock: stock
+                                    }
+                                } else {
+                                    data = {
+                                        price: price,
+                                        stock: qty
+                                    }
+                                }
+                                updates['/shop/'+store_id+'/products/'+product_code] = data;
+                                admin.database().ref().update(updates);
+                                admin.database().ref().child('shop/'+old_shop_id+'/products/'+ old_product_code).remove();
+                            });
+                            result = {
+                                productExist: productExist,
+                                shopExist: shopExist
+                            }
+                            res.send(result);           
+                        }
+                    });
+                }else{
+                    shopExist = false;
+                    result = {
+                        productExist: productExist,
+                        shopExist: shopExist
+                    }
+                    res.send(result);
+                }
             });
         }
     });
@@ -596,22 +692,36 @@ exports.saveRecord = functions.https.onRequest((req,res)=>{
         var qty = product.qty;
         var code = product.product_code;
         var data;
-        admin.database().ref('shop/'+ shop_id+'/record/'+date+'/'+code).once('value',(snapshot)=>{
-            if(snapshot.exists()){
-                data = {
-                    price: snapshot.val().price + price,                       
-                    qty: snapshot.val().qty + qty
-                }            
-            }else {
-                data = {
-                    price: price,
-                    qty: qty
-                }
-            }  
-            updates['/shop/'+shop_id+'/record/'+date+'/'+code] = data;
-            admin.database().ref().update(updates);
+
+        
+
+        var databaseRef = admin.database().ref('shop/'+shop_id);
+        databaseRef.child('products/'+code).once('value',(snapshot)=>{
+            var stock = snapshot.val().stock;
+            var data;
+            if(stock < qty){
+                res.send(false);
+            }else{
+                databaseRef.child('record/'+date+'/'+code).once('value',(recordSnapshot)=>{
+                    if(recordSnapshot.exists()){
+                         data = {
+                            price: recordSnapshot.val().price + price,                       
+                            qty: recordSnapshot.val().qty + qty
+                        }  
+                    } else {
+                         data = {
+                            price: price,
+                            qty: qty
+                        }
+                    }
+                    updates['/shop/'+shop_id+'/record/'+date+'/'+code] = data;
+                    admin.database().ref().update(updates);
+                });
+                updates['/shop/'+shop_id+'/products/'+code+'/stock'] = stock - qty;
+                admin.database().ref().update(updates); 
+                res.send(true);
+            }
         });
-        res.send('The record is saved successfully!');
     });
 });
 
@@ -629,7 +739,7 @@ exports.checkProduct = functions.https.onRequest((req,res)=>{
         }
 
         admin.database().ref('shop/'+ shop_id + '/products/'+ product_code).once('value',(snapshot)=>{
-            if(snapshot.exists()){
+            if(snapshot.exists){
                 isFound = true;
                 data = {
                     product_code: product_code,

@@ -367,6 +367,7 @@ function productModifyModal(id){
         $("#modal-shop").remove();
     }
     oldCode=code;
+    oldShop = shop;
 }
 
 //Sidebar function

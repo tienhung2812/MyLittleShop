@@ -11,7 +11,7 @@ var app = new Vue({
     var self = this;
     self.scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5 });
     self.scanner.addListener('scan', function (content, image) {
-      self.scans.unshift({ date: +(Date.now()), content: content });
+      self.scans.unshift({ date: +(Date.now()), content: content});
       notify("info","Scanning product");
       if(currentPage == 'manage-product-check'){
 
