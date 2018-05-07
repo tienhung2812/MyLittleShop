@@ -61,7 +61,7 @@ function pageWrapper(role,page){
         $("#content").append(shopSale);
         // $("#content").append(shopStock);
         $("#content").append(shopRecord);
-       
+       $("#content").append(shopStockRecord);
     }
 }
     //User Add
@@ -222,7 +222,7 @@ function insertUserRecordData(type,id,name,shop){
         role = 1;
     else 
         role = 2;
-    var result = '<tr onclick="userModifyModal('+id+','+role+')"><th scope="row">' 
+    var result = '<tr onclick="userModifyModal('+id+','+role+') id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
                 + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
 
     if(type == "shopmanager"){
@@ -236,6 +236,7 @@ function insertUserRecordData(type,id,name,shop){
     }
     
 };
+
 
 //Example for insert User record Data
 // insertUserRecordData("employee",1,"aa",2);
@@ -293,7 +294,7 @@ function productModifyModal(id){
     '                                <p class="text-muted m-b-15 f-s-12">Price</p>'+
     '                                <input type="text" class="form-control input-default " id="pPrice" value="'+price+'">'+
     '                                </div>'+
-    '                                <div class="form-group col-lg-12">'+
+    '                                <div class="form-group col-lg-12" id="modal-stock">'+
     '                                  <p class="text-muted m-b-15 f-s-12">Stock</p>'+
     '                                  <input type="text" class="form-control input-default " id="pStock" value="'+stock+'">'+
     '                                  </div>'+                                
@@ -303,6 +304,9 @@ function productModifyModal(id){
     '                          </div>';
     $(".modal-body").html(html);
     $("#productModifyModal").modal();
+    if(role==0){
+        $("#modal-stock").remove();
+    }
     oldCode=code;
 }
 
