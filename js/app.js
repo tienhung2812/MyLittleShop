@@ -28,7 +28,6 @@ function installContent(callback){
         //Add content by page
         pageWrapper(role,currentPage);
         callback();
-
 }
 
 function checkPageNeedLoadData(){
@@ -89,7 +88,7 @@ function checkPageNeedLoadData(){
        	notify('danger','Username exist!');
        } else {
        	var shopExist = result.shopExist;
-
+      
        	if(!shopExist){
        		notify('danger','Shop is not exist!');
        	}else{
@@ -562,17 +561,17 @@ function password_update(){
 function LoadData(){
     if(currentPage=="manage-product"){
       if(role == 0){
-        var rowIndex = 1;
         var databaseRef = firebase.database().ref('shop/');
         databaseRef.on('value', function(snapshot) {
           $("#tbl_products_list tbody tr").remove();
+         var rowIndex = 1;
           snapshot.forEach(function(shopSnapshot){
             var shopId = shopSnapshot.key;
             databaseRef.child(shopId+'/products').on('value',function(productSnapshot){
               productSnapshot.forEach(function(childSnapshot) {
                 var childKey = childSnapshot.key;
                 var childData = childSnapshot.val();
-                insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
+                insertProductRecordDataManager(rowIndex,childKey,childData.price,childData.stock,shopId);
                 rowIndex ++;
             });
             });
@@ -587,7 +586,7 @@ function LoadData(){
             snapshot.forEach(function(childSnapshot) {
                 var childKey = childSnapshot.key;
                 var childData = childSnapshot.val();
-                insertProductRecordData(rowIndex,childKey,childData.product_price,childData.stock);
+                insertProductRecordData(rowIndex,childKey,childData.price,childData.stock);
                 rowIndex ++;
             });
         });
@@ -643,16 +642,33 @@ function LoadData(){
 	function update_product(){
 	   	var code = document.getElementById('pCode').value;
 	   	var price = document.getElementById('pPrice').value;
-	   	var stock = document.getElementById('pStock').value;
+        var shopId;
+
 	   	var type = 0;
+
 	   	if(code == oldCode){
 	   		type = 1;
 	   	} else {
 	   		type = 2;
 	   	}
 
-	   	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
-        var xhr = createCORSRequest('GET', url);
+      if(role == 0){
+        shopId = document.getElementById('pShop').value;
+      }else{
+        shopId = shop_id;
+      }
+
+      var data = {
+        code: code,
+        price: price,
+        type: type,
+        oldCode: oldCode,
+        shop_id: shopId
+      }
+
+	   	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+JSON.stringify(data);
+      
+      var xhr = createCORSRequest('GET', url);
 
 		if (!xhr) {
 	       	alert('CORS not supported');
@@ -663,16 +679,15 @@ function LoadData(){
 	       	var result = (xhr.responseText === "true");
 	    
 	        if(result){
-	        	alert('Product is modified successfully!');
-	        	reload_page();
+	        	notify('success','Product is modified successfully!');
 	        }else{
-	        	alert('Modified product code is exist!');
+	        	notify('danger','Modified product code is exist!');
 	        }
 	    };
 
 	    xhr.onerror = function() {
 	        //notify('danger', 'Username not exist!');
-	        alert('Something went wrong!');
+	        notify('danger','Something went wrong!');
 	    };
 
 	    xhr.send();
@@ -681,9 +696,14 @@ function LoadData(){
   
 	function delete_product(){
 	    var product_code = document.getElementById('pCode').value;
-	  
-	    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/removeProduct/'+product_code;
-		
+	    var shopId;
+      if(role == 0){
+        shopId = document.getElementById('pShop').value;
+      }else {
+        shopId = shop_id;
+      }
+	    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/removeProduct/'+product_code+'/'+shopId;
+		  alert(url);
 	    var xhr = createCORSRequest('GET', url);
 
       	if (!xhr) {
@@ -696,7 +716,6 @@ function LoadData(){
         	var result = (xhr.responseText === "true");
         	if(result){
         		alert("Delete success!");
-        		reload_page();
         	}
      	};
 
