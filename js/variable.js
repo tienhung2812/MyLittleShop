@@ -14,14 +14,15 @@ var shopTotal = '<div class="col-md-6"><div class="card p-30"><div class="media"
 var shopSale = '<div class="col-md-6"><div class="card p-30"><div class="media"><div class="media-left media media-middle"><span><i class="fa fa-shopping-cart f-s-40 text-warning"></i></span></div><div class="media-body media-text-right"><h2 id="sale-var">0</h2><p class="m-b-0">Sale</p></div></div></div></div>';
 //var shopStock = '<div class="col-md-4"><div class="card p-30"><div class="media"><div class="media-left media media-middle"><span><i class="fa fa-archive f-s-40 text-primary"></i></span></div><div class="media-body media-text-right"><h2 id="stock-var">0</h2><p class="m-b-0">Stock</p></div></div></div></div></div>';
 var shopRecord = '<div class="col-md-12"><div class="card"><div class="card-table"><div class="card-title"><h4>Record</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Product Code</th><th>Date</th><th>Quantity</th><th>Total</th></tr></thead><tbody id="record-val"></tbody></table></div></div></div></div></div>';
+var shopStockRecord = '<div class="col-md-12"><div class="card"><div class="card-table"><div class="card-title"><h4>Stock</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Product Code</th><th>Quantity</th><th>Price</th></tr></thead><tbody id="stock-val"></tbody></table></div></div></div></div></div>';
 
 //Dashboard Manager
 function composeShop(id){
     var result = '<div class="col-lg-12"><div class="card"><div class="shop-record"><div class="card-title"><h4>SHOP '
-                + id +'</h4></div><hr><div class="card-body"><div class="col-lg-4 card-body-section"><div class="media "><div class="media-left media media-middle"><span><i class="fa fa-usd f-s-40 text-success"></i></span></div><div class="media-body media-text-right"><h2 id="total-var-'
-                + id +'">0</h2><p class="m-b-0">Total Revenue</p></div></div><div class="media"><div class="media-left media media-middle"><span><i class="fa fa-archive f-s-40 text-warning"></i></span></div><div class="media-body media-text-right"><h2 id="sale-var-'
-                + id +'">0</h2><p class="m-b-0">Sale</p></div></div></div><div class="col-lg-8 card-body-section"><div class="card-table"><div class="card-title"><h4>Record</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Product Code</th><th>Date</th><th>Qty</th><th>Total</th></tr></thead><tbody id="record-val-'
-                + id +'" class="table-scroll-body"></tbody></table></div></div></div></div></div></div></div></div>';
+    + id +'</h4><div id="shop-revenue-manager"><i class="fa fa-usd f-s-40 text-success"></i><h2 id="total-var-'
+    + id +'">0</h2></div></div><hr><div class="col-lg-8 card-body-section"><div class="card-table"><div class="card-title"><h4>Sale Record</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Product Code</th><th>Date</th><th>Qty</th><th>Total</th></tr></thead><tbody id="record-val-'
+    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div><hr><div class="col-lg-8 card-body-section"><div class="card-table"><div class="card-title"><h4>Stock</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Product Code</th><th>Qty</th><th>Price</th></tr></thead><tbody id="stock-val-'
+    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div></div></div></div>';
     return result;
 }
 

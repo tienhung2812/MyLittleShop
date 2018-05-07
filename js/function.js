@@ -11,7 +11,7 @@ function leftSidebar(role,currentPage){
             $(modifyUser).insertAfter("#sidebar-user");
             $(addUser).insertAfter("#sidebar-user");
             //Product
-            $(checkOut).insertAfter("#sidebar-product");
+            //$(checkOut).insertAfter("#sidebar-product");
             $(modifyProduct).insertAfter("#sidebar-product");
             $(addProduct).insertAfter("#sidebar-product");
             //Shop
