@@ -13,27 +13,33 @@ var app = new Vue({
     self.scanner.addListener('scan', function (content, image) {
       self.scans.unshift({ date: +(Date.now()), content: content });
       notify("info","Scanning product");
-      var databaseRef = firebase.database().ref('product/'+ content);
+      if(currentPage=="manage-product-check"){
+        var databaseRef = firebase.database().ref('product/'+ content);
 
-      databaseRef.once('value').then(function(snapshot){
+        databaseRef.once('value').then(function(snapshot){
 
-          if(snapshot.exists() && (snapshot.val().store_id == shop_id)){
-            
-            insertResultData(content,snapshot.val().product_price);
-            $('.complete-button').removeClass('disabled');
-            notify("success","Product found");
-            console.log("Product found");
-            // document.getElementById("result").innerHTML = content;
-            // document.getElementById("result_price").innerHTML = snapshot.val().product_price;
-            // document.getElementById("result_stock").innerHTML = snapshot.val().stock;
-          }else{
-            console.log("Product not found");
-            notify("danger","Product not found");
-            // document.getElementById("result").innerHTML = "Product Not Found!";
-            // document.getElementById("result_price").innerHTML = "";
-            // document.getElementById("result_stock").innerHTML = "";
-          }
-      });
+            if(snapshot.exists() && (snapshot.val().store_id == shop_id)){
+              
+              insertResultData(content,snapshot.val().product_price);
+              $('.complete-button').removeClass('disabled');
+              notify("success","Product found");
+              console.log("Product found");
+              // document.getElementById("result").innerHTML = content;
+              // document.getElementById("result_price").innerHTML = snapshot.val().product_price;
+              // document.getElementById("result_stock").innerHTML = snapshot.val().stock;
+            }else{
+              console.log("Product not found");
+              notify("danger","Product not found");
+              // document.getElementById("result").innerHTML = "Product Not Found!";
+              // document.getElementById("result_price").innerHTML = "";
+              // document.getElementById("result_stock").innerHTML = "";
+            }
+        });
+      }
+
+      if(currentPage=="manage-product-add"){
+        document.getElementById("result").innerHTML = content;
+      }
     });
     Instascan.Camera.getCameras().then(function (cameras) {
       self.cameras = cameras;

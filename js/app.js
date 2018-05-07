@@ -318,13 +318,13 @@ function LoadData(){
 }
 
 
-	// Add Product
-	function import_product(){
-	    var code= document.getElementById('pCode').value;
+// Add Product
+function import_product(){
+	    var code= document.getElementById('result').innerHTML;
 	    var price= document.getElementById('pPrice').value;
 	    var stock= document.getElementById('pStock').value;
-
-     
+        alert("Import: "+code + " "+ price + " " + stock);
+        
 		var url = 'https://us-central1-my-little-shop-41012.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shop_id;
 	
         var xhr = createCORSRequest('GET', url);
@@ -339,7 +339,10 @@ function LoadData(){
         	var result = (xhr.responseText === "true");
     
         	if(result){
-        		alert('Product is add successfully!');
+                alert('Product is add successfully!');
+                var code= document.getElementById('result').innerHTML = "";
+                var price= document.getElementById('pPrice').value = "";
+                var stock= document.getElementById('pStock').value = "";
         	}else{
         		alert('Product is already exist!');
         	}
@@ -353,7 +356,7 @@ function LoadData(){
 
       	xhr.send();
           return false;
-	}
+}
 
 
 	  //Modify Product
@@ -596,6 +599,11 @@ $(".menu-icon").bind("click", function(){
 $(".logout-icon").bind("click", function(){
     signOut();
 }); 
+
+$("#add-product-button").bind("click", function(){
+    import_product();
+}); 
+
 
 $(document).ready ( function(){
     installContent(function(){
