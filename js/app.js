@@ -253,6 +253,7 @@ function loadStock(){
 // Add employee
 
 function import_user(){
+
     var username= document.getElementById('username').value;
     var password= document.getElementById('password').value;
     var input_role = -1;
@@ -272,6 +273,8 @@ function import_user(){
 
 
     // var hash= CryptoJS.SHA3(password);
+    // alert(hash);
+    // var hash = saltHashPassword(password);
     // alert(hash);
 
     var data = {
