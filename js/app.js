@@ -88,7 +88,7 @@ function checkPageNeedLoadData(){
        	notify('danger','Username exist!');
        } else {
        	var shopExist = result.shopExist;
-      
+
        	if(!shopExist){
        		notify('danger','Shop is not exist!');
        	}else{
@@ -770,39 +770,38 @@ function LoadData(){
 //--------------------------------------------------
 
 function saveRecord(){
-    // var updates = {};
+    var updates = {};
    
-    // for(var i = 0; i < product.length;i++){
+    for(var i = 0; i < product.length;i++){
 
-    //     var code = product[i][0];
-    //     //var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
-    //     var qty = product[i][1];
-    //     var price = product[i][2] * product[i][1];
-
-
-    //     var data = {
-    //     	product_code:code,
-    //     	qty: qty,
-    //     	price: price
-    //     }
-    // }
-    // $('.new-button').removeClass('disabled');
-    // $('.complete-button').addClass('disabled');
-    // notify('success','The record is saved successfully!');
+        var code = product[i][0];
+        //var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
+        var qty = product[i][1];
+        var price = product[i][2] * product[i][1];
 
 
-    //     var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
-    //     let request = new XMLHttpRequest();
-    //     request.open("GET",url);
-    //    	request.onreadystatechange = function() {
-    //     	if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
-            	
-    //     	}
-   	// 	}
-    //     request.send();
-    // }
-    // notify('success','Save Record sucess!');
-    // return false;  
+        var data = {
+        	product_code:code,
+        	qty: qty,
+        	price: price
+        }
+
+        var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
+        let request = new XMLHttpRequest();
+        request.open("GET",url);
+        request.onreadystatechange = function() {
+            if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+                
+            }
+        }
+        request.send();
+    }
+    $('.new-button').removeClass('disabled');
+    $('.complete-button').addClass('disabled');
+    notify('success','The record is saved successfully!');
+    
+    //notify('success','Save Record sucess!');
+    return false;  
 }
 
 

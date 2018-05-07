@@ -14,6 +14,7 @@ var app = new Vue({
       self.scans.unshift({ date: +(Date.now()), content: content });
       notify("info","Scanning product");
       if(currentPage == 'manage-product-check'){
+
       var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/checkProduct/'+content+'/'+shop_id;
       
       var xhr = createCORSRequest('GET', url);
@@ -39,14 +40,14 @@ var app = new Vue({
 
       xhr.onerror = function() {
         //notify('danger', 'Username not exist!');
-        alert('Something went wrong!');
+        notify('danger','Something went wrong!');
       };
 
       xhr.send();
     }else {
       document.getElementById("result").innerHTML = content;
     }
-     });
+    });
 
 
     Instascan.Camera.getCameras().then(function (cameras) {

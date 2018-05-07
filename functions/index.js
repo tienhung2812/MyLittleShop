@@ -628,16 +628,14 @@ exports.checkProduct = functions.https.onRequest((req,res)=>{
             result: isFound
         }
 
-        admin.database().ref('product/'+ product_code).once('value',(snapshot)=>{
-            if(snapshot.exists){
-                if((snapshot.val().store_id == shop_id) || (shop_id == 0)){
-                    isFound = true;
-                    data = {
-                        product_code: product_code,
-                        price: snapshot.val().product_price,
-                        result: isFound
-                    }
-                }
+        admin.database().ref('shop/'+ shop_id + '/products/'+ product_code).once('value',(snapshot)=>{
+            if(snapshot.exists()){
+                isFound = true;
+                data = {
+                    product_code: product_code,
+                    price: snapshot.val().price,
+                    result: isFound
+                }            
             }
             res.send(data);
         });
