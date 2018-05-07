@@ -20,9 +20,9 @@ var shopStockRecord = '<div class="col-md-12"><div class="card"><div class="card
 function composeShop(id){
     var result = '<div class="col-lg-12"><div class="card"><div class="shop-record"><div class="card-title"><h4>SHOP '
     + id +'</h4><div id="shop-revenue-manager"><i class="fa fa-usd f-s-40 text-success"></i><h2 id="total-var-'
-    + id +'">0</h2></div></div><hr><div class="col-lg-8 card-body-section"><div class="card-table"><div class="card-title"><h4>Sale Record</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Product Code</th><th>Date</th><th>Qty</th><th>Total</th></tr></thead><tbody id="record-val-'
-    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div><hr><div class="col-lg-8 card-body-section"><div class="card-table"><div class="card-title"><h4>Stock</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Product Code</th><th>Qty</th><th>Price</th></tr></thead><tbody id="stock-val-'
-    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div></div></div></div>';
+    + id +'">0</h2></div></div><hr><div class="card-body"><div class="col-lg-6 card-body-section"><div class="card-table"><div class="card-title"><h4><i class="fa fa-shopping-cart f-s-40 text-warning"></i>  Sale</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Code</th><th>Date</th><th>Qty</th><th>Total</th></tr></thead><tbody id="record-val-'
+    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div><div class="col-lg-6 card-body-section"><div class="card-table"><div class="card-title"><h4><i class="fa fa-archive f-s-40 text-primary"></i>  Stock</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Code</th><th>Qty</th><th>Price</th></tr></thead><tbody id="stock-val-'
+    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div></div></div></div></div>';
     return result;
 }
 
@@ -32,8 +32,8 @@ var employee = '<div class="card"><div class="card-table"><div class="card-title
 //User manage Mager
 function composeUserManage(id){
     var result = '<div class="col-lg-12"><div class="card"><div class="employee-record"><div class="card-title"><h4>SHOP '
-    + id +'</h4></div><hr><div class="card-body"><div class="col-lg-6 card-body-section" id="shopmanager-section"><div class="card-table"><div class="card-title"><h4>ShopManager</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="shopManagertbody-'
-    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div><div class="col-lg-6 card-body-section" id="employee-section"><div class="card-table"><div class="card-title"><h4>Stock</h4></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="employeetbody-'
+    + id +'</h4></div><hr><div class="card-body"><div class="col-lg-6 card-body-section" id="shopmanager-section"><div class="card-table"><div class="card-title"><h4>ShopManager</h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="shopManagertbody-'
+    + id +'" class="table-scroll-body"></tbody></table></div></div></div></div><div class="col-lg-6 card-body-section" id="employee-section"><div class="card-table"><div class="card-title"><h4>Employee</h4></div><div class="card-body"><div class="table-responsive table-hover"><table class="table"><thead><tr><th>#</th><th>Username</th><th>Shop</th></tr></thead><tbody id="employeetbody-'
     + id +'" class="table-scroll-body"></tbody></table></div></div></div></div></div></div></div></div>';
     return result;
 }

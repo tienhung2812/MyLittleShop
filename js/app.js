@@ -319,6 +319,8 @@ function import_user(){
 
 }
 
+
+
 function loadEmployee(){
     if(currentPage=="user-manage"){
         
@@ -334,11 +336,11 @@ function loadEmployee(){
                 var childData = childSnapshot.val();
                 if(role == 0) {
                     if(childData.role == 1){
-                        insertUserRecordData("shopmanager",rowManager,childKey,childData.shop_id);
+                        insertUserRecordDataManager(childData.role,rowManager,childKey,childData.shop_id);
                         rowManager++;
                     }
                     if (childData.role == 2){
-                        insertUserRecordData("employee",rowEmployee,childKey,childData.shop_id);
+                        insertUserRecordDataManager(childData.role,rowEmployee,childKey,childData.shop_id);
                         rowEmployee++;
                     }
                 }else{

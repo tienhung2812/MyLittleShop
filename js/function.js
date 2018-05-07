@@ -87,7 +87,8 @@ function pageWrapper(role,page){
     else if(page =="user-manage"){
         console.log("Loading "+page);
         if(role == 0){
-            $("#content").html(composeUserManage(1))
+            loadShopEmployee();
+            // $("#content").html(composeUserManage(1))
             // $("#content").html('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
             // $("#shopManagerDiv").html(shopManager);
             // $("#employeeDiv").html(employee);
@@ -274,6 +275,35 @@ function insertUserRecordData(type,id,name,shop){
         }
     }
 };
+
+function insertUserRecordDataManager(type,id,name,shop){
+    var role = type;
+    console.log(type+' id '+id+' name '+name + ' shop ' + shop);
+    var result = '<tr onclick="userModifyModal('+id+','+role+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
+                + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
+
+    if(role==1){
+        $("#shopManagertbody-"+shop).append(result);
+        console.log("Updated shopmanager record value in #shopManagertbody-"+shop);
+    }else if (role==2){
+        $("#employeetbody-"+shop).append(result);
+        console.log("Updated employee record value #employeetbody-"+shop);
+    }else{
+        console.log("Wrong type input aa");
+    }
+    
+
+};
+
+function loadShopEmployee(){
+    var shopRef = firebase.database().ref('shop');
+    shopRef.on('value',function(shopID){
+        shopID.forEach(function(shop){
+            $("#content").append(composeUserManage(shop.key));
+        })
+    });
+    
+}
 
 
 //Example for insert User record Data
