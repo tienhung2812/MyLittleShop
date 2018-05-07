@@ -110,7 +110,7 @@ function pageWrapper(role,page){
     else if(page=="manage-product"){
         console.log("Loading "+page);
         if(role==0){
-            $('#tbl_products_list thead tr').append ('<th>Shop</th>')
+            $('#tbl_products_list thead tr').append('<th>Shop</th>');
         }
     }
 
