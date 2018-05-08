@@ -896,6 +896,10 @@ function saveRecord(){
                 var result = (request.responseText === "true");
                 if(result){
                     notify('success','The record is saved successfully!');
+                    $('.new-button').removeClass('disabled');
+                    $('.new-button').removeAttr('disabled');
+                    $('.complete-button').attr('disabled','');
+                    $('.complete-button').addClass('disabled');
                 } else {
                     notify('danger','Product out of stock!'); 
                 }
@@ -903,8 +907,7 @@ function saveRecord(){
         }
         request.send();
     }
-    $('.new-button').removeClass('disabled');
-    $('.complete-button').addClass('disabled');
+
     
     //notify('success','Save Record sucess!');
     return false;  
@@ -916,7 +919,7 @@ function newRecord(){
     $("#producttbody").html("");
     $("#total").html("");
     $('.new-button').addClass('disabled');
-    $('.complete-button').removeClass('disabled');
+    $('.new-button').attr('disabled','');
 }
 
 function getDate(){
@@ -1063,7 +1066,9 @@ $(document).ready ( function(){
         loadStock();
     }else if(currentPage == "manage-product-check"){
         $(".new-button").addClass("disabled");
+        $(".new-button").attr("disabled",'');
         $(".complete-button").addClass("disabled");
+        $(".complete-button").attr("disabled",'');
     }
 });
 
