@@ -435,6 +435,18 @@ html {
   padding: 30px;  
 }
 
+.product-record {
+  padding: 30px !important;
+}
+
+.product-record .card-body-section{
+  padding: 0 !important;
+}
+
+
+.product-record .card-table{
+  padding: 0 !important;
+}
 
 #employee-section{
   margin-left: auto;

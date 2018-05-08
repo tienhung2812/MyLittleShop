@@ -52,6 +52,8 @@ function pageWrapper(role,page){
     console.log("Loading "+page);
     //Manager
     if (role==0){
+        importShopByID();
+        loadShopDashboard();
     }
 
     //Shop manager
@@ -113,10 +115,12 @@ function pageWrapper(role,page){
     else if(page=="manage-product"){
         console.log("Loading "+page);
         if(role==0){
-            $('#tbl_products_list thead tr').append('<th>Shop</th>');
+            // $('#tbl_products_list thead tr').append('<th>Shop</th>');
+            loadProductShopTable();
+        }else {
+            $("#product-table").html(productManage);
         }
     }
-
 };
 
 var total = "total";
@@ -262,9 +266,10 @@ function insertUserRecordData(type,id,name,shop){
 
 function insertUserRecordDataManager(type,id,name,shop){
     var role = type;
+    id = $("#shopManagertbody-"+shop+" tr").length +1;
     console.log(type+' id '+id+' name '+name + ' shop ' + shop);
-    var result = '<tr onclick="userModifyModal('+id+','+role+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
-                + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
+    var result = '<tr onclick="userModifyShopModal('+id+','+role+','+shop+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'-'+shop+'"><th scope="row">' 
+                + id + '</th><td id="user-'+id+'-'+role+'-name-'+shop+'">' + name + '</td><td id="user-'+id+'-'+role+'-shop-'+shop+'">'+shop+'</td></tr>';
 
     if(role==1){
         $("#shopManagertbody-"+shop).append(result);
@@ -288,6 +293,16 @@ function loadShopEmployee(){
     });
     
 }
+function loadShopDashboard(){
+    var shopRef = firebase.database().ref('shop');
+    shopRef.on('value',function(shopID){
+        shopID.forEach(function(shop){
+            $("#content").append(composeShop(shop.key));
+        })
+    });
+}
+
+
 
 function importShopByID(){
     var shopRef = firebase.database().ref('shop');
@@ -321,14 +336,24 @@ function insertProductRecordData(id,code,price,stock){
 
     $("#producttbody").append(result);
 };
-function insertProductRecordDataManager(id,code,price,stock,shop){
+function insertProductRecordDataManager(code,price,stock,shop){
+    var id = $("#producttbody-"+shop + " tr").length +1;
+    var result = '<tr onclick="productModifyShopModal('+id+','+shop+')" id="product-'+id+'"><th scope="row">' 
+                + id + '</th><td id="product-'+id+'-code-'+shop+'">' + code + '</td><td id="product-'+id+'-price-'+shop+'">'+price+'</td><td id="product-'+id+'-stock-'+shop+'">'+stock+'</td><td id="product-'+id+'-shop-'+shop+'">'+shop+'</td></tr>';
 
-    var result = '<tr onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
-                + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-price">'+price+'</td><td id="product-'+id+'-stock">'+stock+'</td><td id="product-'+id+'-shop">'+shop+'</td></tr>';
 
-
-    $("#producttbody").append(result);
+    $("#producttbody-"+shop).append(result);
 };
+
+function loadProductShopTable(){
+    var shopRef = firebase.database().ref('shop');
+    shopRef.on('value',function(shopID){
+        shopID.forEach(function(shop){
+            $('#product-table').append(composeProductManage(shop.key))
+            console.log("Have shop:"+shop.key);
+        })
+    });
+}
 
 //Example for product record
 // insertProductRecordData(2,342,141,342); 
@@ -357,6 +382,29 @@ function userModifyModal(id,role){
     oldCode=name;
 }
 
+function userModifyShopModal(id,role,shop){
+    var name = $('#user-'+id+'-'+role+'-name-'+shop).text();
+    var shop = $('#user-'+id+'-'+role+'-shop-'+shop).text();
+    var html = '<div class="basic-form">'+
+    '                          <form>'+
+    '                            <div class="form-group col-lg-12">'+
+    '                              <p class="text-muted m-b-15 f-s-12">Name</p>'+
+    '                              <input type="text" class="form-control input-default" id="username" value="'+name+'">'+
+    '                              </div>'+
+    '                              <div class="form-group col-lg-12">'+
+    '                                <p class="text-muted m-b-15 f-s-12">Shop</p>'+
+    '                                <input type="text" class="form-control input-default " id="shop" value="'+shop+'">'+
+    '                                </div>'+                                                             
+    '                                </form>'+
+    '                              </div>'+
+    '                            </div>'+
+    '                          </div>';
+        
+    $(".modal-body").html(html);
+    $("#userModifyModal").modal();
+    oldCode=name;
+}
+
 //Import Product Modal
 function productModifyModal(id){
 
@@ -365,6 +413,51 @@ function productModifyModal(id){
     var stock = $("#product-"+id+"-stock").text();
     if (role==0){
         var shop = $("#product-"+id+"-shop").text();
+    } else {
+        var shop = 0;
+    }
+    var html = '<div class="basic-form">'+
+    '                          <form>'+
+    '                            <div class="form-group col-lg-12">'+
+    '                              <p class="text-muted m-b-15 f-s-12">Product Code</p>'+
+    '                              <input type="text" class="form-control input-default" id="pCode" value="'+code+'">'+
+    '                              </div>'+
+    '                              <div class="form-group col-lg-12">'+
+    '                                <p class="text-muted m-b-15 f-s-12">Price</p>'+
+    '                                <input type="text" class="form-control input-default " id="pPrice" value="'+price+'">'+
+    '                                </div>'+
+    '                                <div class="form-group col-lg-12" id="modal-stock">'+
+    '                                  <p class="text-muted m-b-15 f-s-12">Stock</p>'+
+    '                                  <input type="text" class="form-control input-default " id="pStock" value="'+stock+'">'+
+    '                                  </div>'+  
+    '                                <div class="form-group col-lg-12" id="modal-shop">'+
+    '                                  <p class="text-muted m-b-15 f-s-12">Shop</p>'+
+    '                                  <input type="text" class="form-control input-default " id="pShop" value="'+shop+'">'+
+    '                                  </div>'+  
+    '                                </form>'+
+    '                              </div>'+
+    '                            </div>'+
+    '                          </div>';
+    $(".modal-body").html(html);
+    $("#productModifyModal").modal();
+    if(role==0){
+        $("#modal-stock").remove();
+    }
+    else if(role==1){
+        $("#modal-shop").remove();
+    }
+    oldCode=code;
+    oldShop = shop;
+}
+
+
+function productModifyShopModal(id,shop){
+
+    var code = $("#product-"+id+"-code-"+shop).text();
+    var price = $("#product-"+id+"-price-"+shop).text();
+    var stock = $("#product-"+id+"-stock-"+shop).text();
+    if (role==0){
+        var shop = $("#product-"+id+"-shop-"+shop).text();
     } else {
         var shop = 0;
     }
@@ -431,7 +524,6 @@ function notify(type,content){
     });
     
 }
-
 
 
 //Signout 

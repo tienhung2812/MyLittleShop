@@ -1,2 +1,0 @@
-# MyLittleShop
-POS 

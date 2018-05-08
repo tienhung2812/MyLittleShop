@@ -48,19 +48,7 @@ function checkPageNeedLoadData(){
 
 function loadRecord(){
     if(role==0){
-        var databaseRef = firebase.database().ref('stat');
-        shopNumRef = databaseRef.child('/shop/num');
-        // shopRef = databaseRef.parent.child('shop');
-        shopRef = databaseRef.parent.child("shop");
-        shopNumRef.on('value',function(shopNum){
-            var i=1;
-            for(i;i<=shopNum.val();i++){
-                addShopDashboard(i);
-                console.log("Add shop "+i);
-            }
-        })
-
-        
+        var shopRef = firebase.database().ref('shop');        
         shopRef.on('value',function(shopID){
             shopID.forEach(function(shopSnap){
                 shopSnap.ref.child('record').on('value',function(snapshot){
@@ -577,8 +565,8 @@ function LoadData(){
               productSnapshot.forEach(function(childSnapshot) {
                 var childKey = childSnapshot.key;
                 var childData = childSnapshot.val();
-                insertProductRecordDataManager(rowIndex,childKey,childData.price,childData.stock,shopId);
-                rowIndex ++;
+                insertProductRecordDataManager(childKey,childData.price,childData.stock,shopId);
+                
             });
             });
           });
@@ -608,8 +596,11 @@ function import_product(){
     var haveShopID = true;  
     
     //Check is a number
-    if(isNaN(1)){
+    if(isNaN(price)){
         notify("danger","Invalid price");
+        return false;
+    }else if(price<=0){
+        notify("danger","Price must be larger than 0");
         return false;
     }
 
@@ -720,6 +711,9 @@ function update_product(){
 
     if(isNaN(price)){
         notify("danger","Invalid price");
+        return false;
+    }else if(price<=0){
+        notify("danger","Price must larger than 0");
         return false;
     }
 
