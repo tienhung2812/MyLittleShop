@@ -315,11 +315,14 @@ function import_user(){
 
 function loadEmployee(){
     if(currentPage=="user-manage"){
-        
+        var i = 1;
         var databaseRef = firebase.database().ref('employee/');
         databaseRef.on('value', function(snapshot) {
-            $("#shopManagertbody tr").remove();
-            $("#employeetbody tr").remove();
+            for(var j = 1; j <= i; j++){
+                $("#employeetbody-"+j+" tr").remove();
+                $("#shopManagertbody-"+j+" tr").remove();
+            }
+            i = 1;
             var rowManager = 1;
             var rowEmployee = 1;
             snapshot.forEach(function(childSnapshot) {
@@ -335,13 +338,15 @@ function loadEmployee(){
                         insertUserRecordDataManager(childData.role,rowEmployee,childKey,childData.shop_id);
                         rowEmployee++;
                     }
+                    i++;
                 }else{
+                    $("#employeetbody tr").remove();
                     if(childData.role == 2 && childData.shop_id == shop_id){
                         insertUserRecordData("employee",rowEmployee,childKey,childData.shop_id);
                         rowEmployee++;
                     }
                 }
-            })
+            });
         });
     }
 }
@@ -553,11 +558,14 @@ function password_update(){
 //       	return false;
 // }
 function LoadData(){
- 
+    var i =1;
     if(role == 0){
         var databaseRef = firebase.database().ref('shop/');
         databaseRef.on('value', function(snapshot) {
-          $("#tbl_products_list tbody tr").remove();
+        for(var j = 1; j <= i; j++){
+            $("#producttbody-"+j+" tr").remove();
+        }
+        i = 1;
          var rowIndex = 1;
           snapshot.forEach(function(shopSnapshot){
             var shopId = shopSnapshot.key;
@@ -565,8 +573,8 @@ function LoadData(){
               productSnapshot.forEach(function(childSnapshot) {
                 var childKey = childSnapshot.key;
                 var childData = childSnapshot.val();
-                insertProductRecordDataManager(childKey,childData.price,childData.stock,shopId);
-                
+                insertProductRecordDataManager(childKey,childData.price,childData.stock,shopId);  
+                i++;   
             });
             });
           });
