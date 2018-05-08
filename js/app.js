@@ -392,52 +392,61 @@ function loadEmployee(){
 //       	return false;
 // }
 
+  
 
 //Modify user
 function update_user(){
- //    var username = document.getElementById('username').value;
- //    var shop_id = document.getElementById('shop').value;
- //    var type = 0;
+    var username = document.getElementById('username').value;
+    var shop_id = document.getElementById('shop').value;
+    var type = 0;
    
- //   	if(username == oldCode){
-	//    	type = 1;
-	// } else {
-	//    	type = 2;
-	// }
+    if(username == oldCode && shop_id == oldShop){
+        type = 1;                 // Update on current product
+    } else if(username == oldCode && shop_id != oldShop){
+        type = 2;                // Same product move to another Shop
+    } else if(username != oldCode && shop_id == oldShop){
+        type = 3;
+    } else {
+        type = 4;
+    }
 
-	// var data = {
-	// 	username: username,
-	// 	shop_id: shop_id,
-	// 	type: type,
-	// 	oldUsername: oldCode
-	// }
 
-	// var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyUser/'+JSON.stringify(data);
- //    var xhr = createCORSRequest('GET', url);
+	var data = {
+		username: username,
+		shop_id: shop_id,
+		type: type,
+		oldUsername: oldCode,
+        oldShopId: oldShop
+	}
+
+	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyUser/'+JSON.stringify(data);
+
+    var xhr = createCORSRequest('GET', url);
 	
-	// if (!xhr) {
-	//     alert('CORS not supported');
-	//     return;
- //    }
-	//       	// Response handlers.
-	// xhr.onload = function() {
-	//     var result = (xhr.responseText === "true");
+	if (!xhr) {
+	    alert('CORS not supported');
+	    return;
+    }
+	      	// Response handlers.
+	xhr.onload = function() {
+	    var result = JSON.parse(xhr.responseText);
 	    
-	//     if(result){
-	//         notify('success','User modified successfully!');
-	//         reload_page();
-	//     }else{
-	//         notify('danger','Shop not exist!');
-	//     }
-	// };
+	     if(result.userExist){
+            notify('danger','Modified user exists!');
+       }else if (!result.shopExist){
+            notify('danger','Shop does not exist!');
+       } else {
+            notify('success','User is modified successfully!');
+       }
+	};
 
-	// xhr.onerror = function() {
-	//         //notify('danger', 'Username not exist!');
-	//     notify('danger','Something went wrong!');
-	// };
+	xhr.onerror = function() {
+	        //notify('danger', 'Username not exist!');
+	    notify('danger','Something went wrong!');
+	};
 
-	// xhr.send();
- //    return false;   
+	xhr.send();
+    return false;   
 
 }
   
