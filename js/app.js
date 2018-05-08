@@ -302,14 +302,14 @@ function import_user(){
         var userExist = result.userExist;
        
         if(userExist){
-            notify('danger','Username exist!');
+            notify('danger','Username existed!');
         } else {
             var shopExist = result.shopExist;
 
             if(!shopExist){
-               notify('danger','Shop is not exist!');
+               notify('danger','Shop does not exist!');
             }else{
-               notify('success','User added successfully!');
+               notify('success','User is added successfully!');
             }
         }
     };
@@ -465,7 +465,7 @@ function delete_user(){
     xhr.onload = function() {
     	var result = (xhr.responseText === true);
     	if(result){
-    		notify('success','User delete successfully!');
+    		notify('success','User is deleted successfully!');
     	}
     };
 
@@ -506,7 +506,7 @@ function password_update(){
 		    xhr.onload = function() {
 		    	var result = (xhr.responseText === "true");
 		    	if(result){
-		    		notify('success','Password update successfully!');
+		    		notify('success','Password is updated successfully!');
 		    		localStorage.setItem('password',newPass);
 		    		reload_page();
 		    	}
@@ -519,10 +519,10 @@ function password_update(){
 
     		xhr.send();
         }else{
-            notify("danger","Re-enter password not match!");
+            notify("danger","Re-enter password does not match!");
         }
     }else{
-        notify("danger","Old Password not correct!");
+        notify("danger","Old Password is not correct!");
     }
  
     return false;
@@ -605,40 +605,69 @@ function import_product(){
 	var price= document.getElementById('pPrice').value;
 	var stock= document.getElementById('pStock').value;
     var shopID;
-      
+    var haveShopID = true;  
+    
+    //Check is a number
+    if(isNaN(1)){
+        notify("danger","Invalid price");
+        return false;
+    }
+
+    if(isNaN(stock)){
+        notify("danger","Invalid stock number");
+        return false;
+    } else if(!Number.isInteger(Number(stock))){
+        notify("danger","Stock must be an interger");
+        return false;
+    }else if(stock<0){
+        notify("danger","Stock must larger than 0");
+        return false;
+    }
+
     if(role == 0){
         shopID = document.getElementById('pID').value;
+        haveShopID = checkHaveShopID(shopID);
     } else {
         shopID = shop_id;
     }
-	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shopID;
-	
-    var xhr = createCORSRequest('GET', url);
 
-    if (!xhr) {
-        alert('CORS not supported');
-        return;
+    if(haveShopID){
+        var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shopID;
+        
+        var xhr = createCORSRequest('GET', url);
+
+        if (!xhr) {
+            alert('CORS not supported');
+            return;
+        }
+
+        // Response handlers.
+        xhr.onload = function() {
+            var result = (xhr.responseText === "true");
+        
+            if(result){
+                notify('success','Product is added successfully!');
+                $("#result").html('');
+                $('#pPrice').val('');
+                $('#pStock').val('');
+                if(role==0){
+                    $('#pID').val('');
+                }
+            }else{
+                notify('danger','Product has already existed!');
+            }    	
+        };
+
+        xhr.onerror = function() {
+            //notify('danger', 'Username not exist!');
+            alert('Something went wrong!');
+        };
+
+        xhr.send();
+        return false;
+    }else{
+        notify("danger","Shop does not exist");
     }
-
-      // Response handlers.
-    xhr.onload = function() {
-        var result = (xhr.responseText === "true");
-    
-        if(result){
-        	notify('success','Product is add successfully!');
-            reload_page();
-        }else{
-        	notify('danger','Product is already exist!');
-        }    	
-    };
-
-    xhr.onerror = function() {
-        //notify('danger', 'Username not exist!');
-        alert('Something went wrong!');
-    };
-
-    xhr.send();
-    return false;
 }
 
 // function update_product(){
@@ -689,12 +718,30 @@ function update_product(){
     var stock = 0;
 	var type = 0;
 
+    if(isNaN(price)){
+        notify("danger","Invalid price");
+        return false;
+    }
 
     if(role == 0){
         shopId = document.getElementById('pShop').value;
+        if(isNaN(shopId)){
+            notify("danger","Invalid shopID");
+            return false;
+        }
     }else{
         shopId = shop_id;
         stock = document.getElementById('pStock').value;
+        if(isNaN(stock)){
+            notify("danger","Invalid stock number");
+            return false;
+        } else if(!Number.isInteger(Number(stock))){
+            notify("danger","Stock must be an interger");
+            return false;
+        }else if(stock<0){
+            notify("danger","Stock must larger than 0");
+            return false;
+        }
     }
 
     if(code == oldCode && shopId == oldShop){
@@ -731,9 +778,9 @@ function update_product(){
 	    var result = JSON.parse(xhr.responseText);
 	    
 	    if(result.productExist){
-	        notify('danger','Modified product is exist!');
+	        notify('danger','Modified product exists!');
 	   }else if (!result.shopExist){
-	        notify('danger','Shop is not exist!');
+	        notify('danger','Shop does not exist!');
 	   } else {
             notify('success','Product is modified successfully!');
        }
@@ -806,7 +853,7 @@ function update_product(){
         	var result = (xhr.responseText === "true");
     
         	if(result){
-        		alert('Shop id is exist!');
+        		alert('Shop existed!');
         	}else{
         		alert('Create new shop successfully!');
         	}

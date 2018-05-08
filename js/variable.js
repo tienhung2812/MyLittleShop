@@ -61,3 +61,4 @@ var oldCode;
 var oldShop;
 var project_code ;
 
+var shopByID = [];

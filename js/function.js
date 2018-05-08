@@ -87,6 +87,7 @@ function pageWrapper(role,page){
     else if(page =="user-manage"){
         console.log("Loading "+page);
         if(role == 0){
+            importShopByID();
             loadShopEmployee();
             // $("#content").html(composeUserManage(1))
             // $("#content").html('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
@@ -103,6 +104,7 @@ function pageWrapper(role,page){
     else if(page=="manage-product-add"){
         console.log("Loading "+page);
         if(role==0){
+            importShopByID();
             $(addProductShopID).insertBefore("#add-product-button");
         }
     }
@@ -245,35 +247,17 @@ function insertShopStock(id,code,price,stock){
 //Employee Record
 function insertUserRecordData(type,id,name,shop){
     var role;
-    if(type=="shopmanager")
-        role = 1;
-    else 
-        role = 2;
+    role = 2;
     var result = '<tr onclick="userModifyModal('+id+','+role+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
                 + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
 
-    if(role==1){
-        if(type == "shopmanager"){
-            $("#shopManagertbody").append(result);
-            console.log("Updated shopmanager record value");
-        }else if (type == "employee"){
+  if (type == "employee"){
             $("#employeetbody").append(result);
             console.log("Updated employee record value");
         }else {
             console.log("Wrong type input");
         }
-    }
-    if(role==2){
-        if(type == "shopmanager"){
-            $("#shopManagertbody-"+shop).append(result);
-            console.log("Updated shopmanager record value");
-        }else if (type == "employee"){
-            $("#employeetbody-"+shop).append(result);
-            console.log("Updated employee record value");
-        }else {
-            console.log("Wrong type input");
-        }
-    }
+    
 };
 
 function insertUserRecordDataManager(type,id,name,shop){
@@ -305,7 +289,25 @@ function loadShopEmployee(){
     
 }
 
+function importShopByID(){
+    var shopRef = firebase.database().ref('shop');
+    shopRef.on('value',function(shopID){
+        shopID.forEach(function(shop){
+            shopByID.push(shop.key);
+            console.log("Have shop:"+shop.key);
+        })
+    });
+}
 
+function checkHaveShopID(id){
+    var i=0;
+    for(i;i<shopByID.length;i++){
+        if(id==shopByID[i]){
+            return true;
+        }
+    }
+    return false;
+}
 //Example for insert User record Data
 // insertUserRecordData("employee",1,"aa",2);
 
