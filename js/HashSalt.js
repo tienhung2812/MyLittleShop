@@ -32,6 +32,3 @@ function saltHashPassword(userpassword) {
     console.log('Passwordhash = '+passwordData.passwordHash); /** Show the Hashtext */
     console.log('nSalt = '+passwordData.salt); /** Just to show to random SALT for each Hash process */
 }
-
-saltHashPassword('adafknatg');
-saltHashPassword('gkhkdhodhmh');
