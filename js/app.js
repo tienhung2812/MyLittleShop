@@ -24,9 +24,13 @@ if(screen.width<767){
 
 function installContent(callback){
         //Add Left sidebar
-        leftSidebar(role,currentPage);
+        if(currentPage!='login'){
+            leftSidebar(role,currentPage);
+            pageWrapper(role,currentPage);
+        }
+        
         //Add content by page
-        pageWrapper(role,currentPage);
+        
         callback();
 }
 
