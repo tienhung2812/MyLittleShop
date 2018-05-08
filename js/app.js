@@ -322,6 +322,7 @@ function loadEmployee(){
                 $("#employeetbody-"+j+" tr").remove();
                 $("#shopManagertbody-"+j+" tr").remove();
             }
+            $("#employeetbody tr").remove();
             i = 1;
             var rowManager = 1;
             var rowEmployee = 1;
@@ -340,7 +341,6 @@ function loadEmployee(){
                     }
                     i++;
                 }else{
-                    $("#employeetbody tr").remove();
                     if(childData.role == 2 && childData.shop_id == shop_id){
                         insertUserRecordData("employee",rowEmployee,childKey,childData.shop_id);
                         rowEmployee++;
@@ -668,45 +668,6 @@ function import_product(){
         notify("danger","Shop does not exist");
     }
 }
-
-// function update_product(){
-//         var code = document.getElementById('pCode').value;
-//         var price = document.getElementById('pPrice').value;
-//         var stock = document.getElementById('pStock').value;
-//         var type = 0;
-//         if(code == oldCode){
-//             type = 1;
-//         } else {
-//             type = 2;
-//         }
-
-//         var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+code+'/'+price+'/'+stock+'/'+shop_id+'/'+oldCode+'/'+type;
-//         var xhr = createCORSRequest('GET', url);
-
-//         if (!xhr) {
-//             alert('CORS not supported');
-//             return;
-//         }
-//             // Response handlers.
-//         xhr.onload = function() {
-//             var result = (xhr.responseText === "true");
-        
-//             if(result){
-//                 alert('Product is modified successfully!');
-//                 reload_page();
-//             }else{
-//                 alert('Modified product code is exist!');
-//             }
-//         };
-
-//         xhr.onerror = function() {
-//             //notify('danger', 'Username not exist!');
-//             alert('Something went wrong!');
-//         };
-
-//         xhr.send();
-//         return false;   
-//     }
 
 
 	  //Modify Product
