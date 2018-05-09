@@ -610,32 +610,34 @@ function password_update(){
 //       	return false;
 // }
 function LoadData(){
- 
+    var i =1;
     if(role == 0){
         console.log("Import data role 0")
         var databaseRef = firebase.database().ref('products');
         databaseRef.on('value', function(snapshot) {
-        //   $("#tbl_products_list tbody tr").remove();
-        //  var rowIndex = 1;
-          snapshot.forEach(function(shopSnapshot){
-              console.log(shopSnapshot.key)
+     
+            $("#producttbody tr").remove();
+         	var rowIndex = 1;
+       ;
+          	snapshot.forEach(function(shopSnapshot){
+             	console.log(shopSnapshot.key)
             insertProductRecordDataManager(shopSnapshot.key,shopSnapshot.val().price);
-            
+            i++;
           });
         });
       }else{
-        var databaseRef = firebase.database().ref('shop/'+shop_id+'/products');
+        // var databaseRef = firebase.database().ref('shop/'+shop_id+'/products');
     
-        databaseRef.on('value', function(snapshot) {
-            $("#tbl_products_list tbody tr").remove();
-            var rowIndex = 1;
-            snapshot.forEach(function(childSnapshot) {
-                var childKey = childSnapshot.key;
-                var childData = childSnapshot.val();
-                insertProductRecordData(rowIndex,childKey,childData.price,childData.stock);
-                rowIndex ++;
-            });
-        });
+        // databaseRef.on('value', function(snapshot) {
+        //     $("#tbl_products_list tbody tr").remove();
+        //     var rowIndex = 1;
+        //     snapshot.forEach(function(childSnapshot) {
+        //         var childKey = childSnapshot.key;
+        //         var childData = childSnapshot.val();
+        //         insertProductRecordData(rowIndex,childKey,childData.price,childData.stock);
+        //         rowIndex ++;
+        //     });
+        // });
     }   
 }
 
@@ -843,8 +845,7 @@ function import_product(){
 function update_product(){
 	var code = document.getElementById('pCode').value;
 	var price = document.getElementById('pPrice').value;
-    var shopId;
-    var stock = 0;
+
 	var type = 0;
 
     if(isNaN(price)){
@@ -852,50 +853,21 @@ function update_product(){
         return false;
     }
 
-    if(role == 0){
-        shopId = document.getElementById('pShop').value;
-        if(isNaN(shopId)){
-            notify("danger","Invalid shopID");
-            return false;
-        }
-    }else{
-        shopId = shop_id;
-        stock = document.getElementById('pStock').value;
-        if(isNaN(stock)){
-            notify("danger","Invalid stock number");
-            return false;
-        } else if(!Number.isInteger(Number(stock))){
-            notify("danger","Stock must be an interger");
-            return false;
-        }else if(stock<0){
-            notify("danger","Stock must larger than 0");
-            return false;
-        }
-    }
-
-    if(code == oldCode && shopId == oldShop){
+    if(code == oldCode){
         type = 1;                 // Update on current product
-    } else if(code == oldCode && shopId != oldShop){
+    } else if(code != oldCode ){
         type = 2;                // Same product move to another Shop
-    } else if(code != oldCode && shopId == oldShop){
-        type = 3;
-    } else {
-        type = 4;
-    }
+    } 
 
     var data = {
         code: code,
         price: price,
         type: type,
-        oldCode: oldCode,
-        shop_id: shopId,
-        stock: stock,
-        role: role,
-        oldShop : oldShop
+        oldCode:oldCode
     }
 
 	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+JSON.stringify(data);
-  
+  	alert(url);
     var xhr = createCORSRequest('GET', url);
 
 	if (!xhr) {
@@ -908,8 +880,6 @@ function update_product(){
 	    
 	    if(result.productExist){
 	        notify('danger','Modified product exists!');
-	   }else if (!result.shopExist){
-	        notify('danger','Shop does not exist!');
 	   } else {
             notify('success','Product is modified successfully!');
        }
@@ -927,12 +897,8 @@ function update_product(){
 	function delete_product(){
 	    var product_code = document.getElementById('pCode').value;
 	    var shopId;
-      if(role == 0){
-        shopId = document.getElementById('pShop').value;
-      }else {
-        shopId = shop_id;
-      }
-	    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/removeProduct/'+product_code+'/'+shopId;
+ 
+	    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/removeProduct/'+product_code;
 		  alert(url);
 	    var xhr = createCORSRequest('GET', url);
 
