@@ -49,23 +49,27 @@ function checkPageNeedLoadData(){
 function loadRecord(){
     var importData = [];
     var exportData = [];
-    var total;
+    var total,i=0,j=0;
     var products = [];
+    var shop = [];
+    for(i=0;i<shopByID.length;i++){
+        shop[shopByID[i]] = products;
+    }
     var productRef = firebase.database().ref('products');
-    productsRef.on('value',function(productID){
+    productRef.on('value',function(productID){
         productID.forEach(function(p){
+            
             products.push({
                 code:p.key,
-                price: p.val().price
+                price: p.val().price,
+                import :0,
+                export :0               
             })
         })
     });
     var databaseRef = firebase.database().ref('transaction');
     if(role==0){
-        total = [];
-        var i=0;
-        
-        
+        total = [];       
         databaseRef.on('value',function(transRef){
             transRef.forEach(function(trans){
                 data = trans.val();
@@ -89,24 +93,62 @@ function loadRecord(){
             for(i;i<shopByID.length;i++){
                 total[shopByID[i]]=0;
             }
-            //Export Data
-            var total;
+            
+            for(i=0;i<shopByID.length;i++){
+                shop.push({
+                    products:products,
+                    total:0
+                })
+            }
             
             console.log("Export data length: "+exportData.length);
-            for(i=0;i<exportData.length;i++){
-                var sum;
-                
-                console.log(exportData[i].code +'-'+exportData[i].time+'-'+exportData[i].qty+'-'+exportData[i].price+'-'+exportData[i].shopID)
-                insertRecordShopData(exportData[i].code,exportData[i].time,exportData[i].qty,exportData[i].price,exportData[i].shopID);
-                total[exportData[i].shopID]+=Number(exportData[i].price);
+            for(i=0;i<shopByID.length;i++){
+                for(j=0;j<exportData.length;j++){
+                    if(exportData[j].shopID == shopByID[i]){
+                        var k=0;
+                        for(k;k<shop[i].products.length;k++){
+                            if(exportData[j].code==shop[i].products[k].code){
+                                insertRecordShopData(exportData[j].code,exportData[j].time,exportData[j].qty,exportData[j].qty*shop[i].products[k].price,exportData[j].shopID);
+                                shop[i].total += exportData[j].qty*shop[i].products[k].price,exportData[j];
+                                shop[i].products[k].export += 1;
+                            }
+                        }
+                    }
+                }
             }
-            //ImportData
+
             console.log("import data length: "+importData.length);
-            for(i=0;i<importData.length;i++){
-                console.log(importData[i].code +'-'+importData[i].time+'-'+importData[i].qty+'-'+importData[i].price+'-'+importData[i].shopID)
-                insertShopStocks(importData[i].code,importData[i].time,importData[i].qty,importData[i].price,exportData[i].shopID);
-                
+            for(i=0;i<shopByID.length;i++){
+                for(j=0;j<importData.length;j++){
+                    if(importData[j].shopID == shopByID[i]){
+                        var k=0;
+                        for(k;k<shop[i].products.length;k++){
+                            if(importData[j].code==shop[i].products[k].code){
+                                //insertRecordShopData(importData[j].code,importData[j].time,importData[j].qty,importData[j].qty*shop[i].products[k].price,importData[j].shopID);
+                                //shop[i].total += importData[j].qty*shop[i].products[k].price,importData[j];
+                                shop[i].products[k].import += 1;
+                            }
+                        }
+                    }
+                }
             }
+            
+            //Product Data
+            // console.log("import data length: "+importData.length);
+            // for(i=0;i<importData.length;i++){
+            //     for(j=0;j<products.length;j++){
+            //         if(importData[i].code==products[j].code){
+                        
+            //             products[j].import += importData[i].qty;
+            //             break;
+            //         }
+            //     }
+            //     //console.log(importData[i].code +'-'+importData[i].time+'-'+importData[i].qty+'-'+importData[i].price+'-'+importData[i].shopID)
+            //     // insertShopStocks(importData[i].code,importData[i].time,importData[i].qty,importData[i].price,importData[i].shopID);
+            // }
+            // for(j=0;j<products.length;j++){
+            //     insertShopStocks(products[j].code,products[j].import,products[j].import-products[j].export,importData[i].price,importData[i].shopID);
+            // }
             for(i=1;i<=total.length;i++){
                 updateDashboardShopData("total",total[i],i);
             }
