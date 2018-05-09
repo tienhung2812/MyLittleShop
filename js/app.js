@@ -105,61 +105,40 @@ function loadRecord(){
                         updateDashboardShopData("total",total,Number(id)+1);
                     }                    
                     console.log(shopData);
-                    
-                    
-        
                 });
-                
-                
             }else if(role == 1){
                 databaseRef.on('value',function(transRef){
+                    $("#record-val tr").remove();
+                    $("#stock-val tr").remove();
+                    var revenue=0;
+                    var sale=0;
                     transRef.forEach(function(trans){
                         data = trans.val();
-                        if(data.shopID==shop_id){
-                            if(data.type=="import"){
-                                importData.push({
-                                    shopID: data.shopID,
-                                    code: data.code,
-                                    price: data.price,
-                                    qty: data.qty,
-                                    time: data.time
-                                })
-                            }
-                            if(data.type=="export"){
-                                exportData.push({
-                                    shopID: data.shopID,
-                                    code: data.code,
-                                    price: data.price,
-                                    qty: data.qty,
-                                    time: data.time
-                                })
-                            }
-                        }
-                        
+                        var code = data.code;
+                        var shopId = data.shopID;
+                        var qty = data.qty;
+                        var time = convertTime(data.time);
+                        var type= data.type;
+                        var price;
+                        if(shopId==shop_id){
+                            firebase.database().ref('products/'+code).once('value',function(transactionSnapshot){
+                                if(transactionSnapshot.exists()){
+                                    price = transactionSnapshot.val().price * qty;    
+                                    if(type == "export") {
+                                        insertRecordData(code,time,qty,price);
+                                        revenue += price;
+                                        sale += qty;
+                                        updateDashboardData("total",revenue);
+                                        updateDashboardData("sale",sale);
+                                    } else {
+                                        insertShopStock(code,time,qty,price);                             
+                                    }
+                                }
+                            });
+                        }      
                     });
-                    total = 0;
-                    var remainTotal=0;
-                    var i =0;
-                    //Export
-                    for(i=0;i<exportData.length;i++){
-                        insertRecordData(exportData[i].code,exportData[i].time, exportData[i].qty, exportData[i].price);
-                        total+=exportData[i].price;
-                    }
-                    //IMport
-                    for(i=0;i<importData.length;i++){
-                        insertShopStock(importData[i].code,importData[i].time, importData[i].qty, importData[i].price);
-                        remainTotal += importData[i].price;
-                    }
-                    updateDashboardData("total",total);
-                    updateDashboardData("sale",remainTotal);
-                    for(i=0;i<importData.length;i++){
-                        insertShopStock(importData[i].code,importData[i].time, importData[i].qty, importData[i].price);
-                        //remainTotal += importData[i].price;
-                    }
                 });
-        
-            }
-            
+            }          
         }else if(!(request.status == 200 || request.status == 304)){
             notify('danger','Can not load product!'); 
         }
