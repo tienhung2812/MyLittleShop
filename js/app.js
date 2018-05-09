@@ -116,7 +116,13 @@ function loadRecord(){
                     }
                 }
             }
-
+            setTimeout(function(){
+                for(j=0;j<products.length;j++){
+                    console.log("Insert shop stock",insertProductManagerStock(products[j].code,products[j].import-products[j].export,products[j].price,1))
+                    
+                }
+            }, 1000)
+            
             console.log("import data length: "+importData.length);
             for(i=0;i<shopByID.length;i++){
                 for(j=0;j<importData.length;j++){
@@ -131,7 +137,10 @@ function loadRecord(){
                         }
                     }
                 }
+                
             }
+
+            
             
             //Product Data
             // console.log("import data length: "+importData.length);

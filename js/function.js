@@ -228,6 +228,15 @@ function insertResultData(code,price){
     $(".result-total h4").html(total); 
 }
 
+//Product-----------------------------------------------
+function insertProductManagerStock(code,date,qty,price,shop){
+    var id = $('#stock-val-'+shop+'tr').length+1;
+    var result = '<tr><th scope="row">' 
+                + id + '</th><td>' + code + '</td><td>'+date+'</td><td>'+qty+'</td><td>'+price+'</td></tr>';
+
+
+    $("#stock-val-"+shop).append(result);
+};
 //Stock-----------------------------------------------------
 function insertShopStocks(code,date,qty,price,shop){
     var id = $('#stock-val-'+shop+'tr').length+1;
