@@ -3,7 +3,7 @@ var role=localStorage.getItem("role");
 var shop_id = localStorage.getItem("shop_id");
 var usr = localStorage.getItem("username");
 var pass = localStorage.getItem("password");
-var project_code = "mylittleshop-9d826";
+var project_code = "my-little-shop-final";
 var shopNum = localStorage.getItem("shopNum");
 
 var currentPage=location.pathname.split("/").slice(-1)[0].split(".").slice(0)[0];
@@ -47,76 +47,121 @@ function checkPageNeedLoadData(){
 //-----------------------------INDEX--------------------------------------------------
 
 function loadRecord(){
-    if(role==0){
-        var databaseRef = firebase.database().ref('stat');
-        shopNumRef = databaseRef.child('/shop/num');
-        // shopRef = databaseRef.parent.child('shop');
-        shopRef = databaseRef.parent.child("shop");
-        shopNumRef.on('value',function(shopNum){
-            var i=1;
-            for(i;i<=shopNum.val();i++){
-                addShopDashboard(i);
-                console.log("Add shop "+i);
-            }
-        })
-
-        
-        shopRef.on('value',function(shopID){
-            shopID.forEach(function(shopSnap){
-                shopSnap.ref.child('record').on('value',function(snapshot){
-                    console.log("Update shop "+shopSnap.key);
-                    $('#record-val-'+shopSnap.key+' tr').remove();
-                    var rowIndex = 1;
-                    snapshot.forEach(function(dateSnapshot){
-                        var date = dateSnapshot.key;
-        
-                        dateSnapshot.forEach(function(productSnapshot){
-                            var code = productSnapshot.key;
-                            var price = productSnapshot.val().price;
-                            var qty = productSnapshot.val().qty;
-                            insertRecordShopData(rowIndex,code,date,qty,price,shopSnap.key);
-                            rowIndex++;
-                        });
-                    });
-                });
-
-                shopSnap.ref.child('revenue').on('value',function(snapshot){
-                    updateDashboardShopData("total",snapshot.val(),shopSnap.key);
-                })
-
-                shopSnap.ref.child('sale').on('value',function(snapshot){
-                    updateDashboardShopData("sale",snapshot.val(),shopSnap.key);
-                })
+    var importData = [];
+    var exportData = [];
+    var total;
+    var products = [];
+    var productRef = firebase.database().ref('products');
+    productsRef.on('value',function(productID){
+        productID.forEach(function(p){
+            products.push({
+                code:p.key,
+                price: p.val().price
             })
         })
-    }else if(role == 1){
-        var databaseRef = firebase.database().ref('shop/'+shop_id);
-        recordRef = databaseRef.child('record');
-        recordRef.on('value',function(snapshot){
-            $('#record-val tr').remove();
-            var rowIndex = 1;
-            snapshot.forEach(function(dateSnapshot){
-                var date = dateSnapshot.key;
+    });
+    var databaseRef = firebase.database().ref('transaction');
+    if(role==0){
+        total = [];
+        var i=0;
+        
+        
+        databaseRef.on('value',function(transRef){
+            transRef.forEach(function(trans){
+                data = trans.val();
+                if(data.type=="import"){
+                    importData.push({
+                        shopID: data.shopID,
+                        code: data.code,
+                        qty: data.qty,
+                        time: data.time
+                    })
+                }
+                if(data.type=="export"){
+                    exportData.push({
+                        shopID: data.shopID,
+                        code: data.code,
+                        qty: data.qty,
+                        time: data.time
+                    })
+                }
+            })
+            for(i;i<shopByID.length;i++){
+                total[shopByID[i]]=0;
+            }
+            //Export Data
+            var total;
+            
+            console.log("Export data length: "+exportData.length);
+            for(i=0;i<exportData.length;i++){
+                var sum;
+                
+                console.log(exportData[i].code +'-'+exportData[i].time+'-'+exportData[i].qty+'-'+exportData[i].price+'-'+exportData[i].shopID)
+                insertRecordShopData(exportData[i].code,exportData[i].time,exportData[i].qty,exportData[i].price,exportData[i].shopID);
+                total[exportData[i].shopID]+=Number(exportData[i].price);
+            }
+            //ImportData
+            console.log("import data length: "+importData.length);
+            for(i=0;i<importData.length;i++){
+                console.log(importData[i].code +'-'+importData[i].time+'-'+importData[i].qty+'-'+importData[i].price+'-'+importData[i].shopID)
+                insertShopStocks(importData[i].code,importData[i].time,importData[i].qty,importData[i].price,exportData[i].shopID);
+                
+            }
+            for(i=1;i<=total.length;i++){
+                updateDashboardShopData("total",total[i],i);
+            }
+            
 
-                dateSnapshot.forEach(function(productSnapshot){
-                    var code = productSnapshot.key;
-                    var price = productSnapshot.val().price;
-                    var qty = productSnapshot.val().qty;
-                    insertRecordData(rowIndex,code,date,qty,price);
-                    rowIndex++;
-                });
+        });
+        
+        
+    }else if(role == 1){
+        databaseRef.on('value',function(transRef){
+            transRef.forEach(function(trans){
+                data = trans.val();
+                if(data.shopID==shop_id){
+                    if(data.type=="import"){
+                        importData.push({
+                            shopID: data.shopID,
+                            code: data.code,
+                            price: data.price,
+                            qty: data.qty,
+                            time: data.time
+                        })
+                    }
+                    if(data.type=="export"){
+                        exportData.push({
+                            shopID: data.shopID,
+                            code: data.code,
+                            price: data.price,
+                            qty: data.qty,
+                            time: data.time
+                        })
+                    }
+                }
+                
             });
+            total = 0;
+            var remainTotal=0;
+            var i =0;
+            //Export
+            for(i=0;i<exportData.length;i++){
+                insertRecordData(exportData[i].code,exportData[i].time, exportData[i].qty, exportData[i].price);
+                total+=exportData[i].price;
+            }
+            //IMport
+            for(i=0;i<importData.length;i++){
+                insertShopStock(importData[i].code,importData[i].time, importData[i].qty, importData[i].price);
+                remainTotal += importData[i].price;
+            }
+            updateDashboardData("total",total);
+            updateDashboardData("sale",remainTotal);
+            for(i=0;i<importData.length;i++){
+                insertShopStock(importData[i].code,importData[i].time, importData[i].qty, importData[i].price);
+                //remainTotal += importData[i].price;
+            }
         });
 
-        totalRef = databaseRef.child('revenue');
-        totalRef.on('value',function(snapshot){
-            updateDashboardData("total",snapshot.val());
-        })
-
-        saleRef = databaseRef.child('sale');
-        saleRef.on('value',function(snapshot){
-            updateDashboardData("sale",snapshot.val());
-        })
     }
 }
 
@@ -567,20 +612,15 @@ function password_update(){
 function LoadData(){
  
     if(role == 0){
-        var databaseRef = firebase.database().ref('shop/');
+        console.log("Import data role 0")
+        var databaseRef = firebase.database().ref('products');
         databaseRef.on('value', function(snapshot) {
-          $("#tbl_products_list tbody tr").remove();
-         var rowIndex = 1;
+        //   $("#tbl_products_list tbody tr").remove();
+        //  var rowIndex = 1;
           snapshot.forEach(function(shopSnapshot){
-            var shopId = shopSnapshot.key;
-            databaseRef.child(shopId+'/products').on('value',function(productSnapshot){
-              productSnapshot.forEach(function(childSnapshot) {
-                var childKey = childSnapshot.key;
-                var childData = childSnapshot.val();
-                insertProductRecordDataManager(rowIndex,childKey,childData.price,childData.stock,shopId);
-                rowIndex ++;
-            });
-            });
+              console.log(shopSnapshot.key)
+            insertProductRecordDataManager(shopSnapshot.key,shopSnapshot.val().price);
+            
           });
         });
       }else{
@@ -600,75 +640,164 @@ function LoadData(){
 }
 
 	// Add Product
-function import_product(){
-	var code= document.getElementById('result').innerHTML;
+function add_product(){
+	var code= document.getElementById('pCode').value;
 	var price= document.getElementById('pPrice').value;
-	var stock= document.getElementById('pStock').value;
-    var shopID;
-    var haveShopID = true;  
     
     //Check is a number
-    if(isNaN(1)){
+    if(isNaN(price)){
         notify("danger","Invalid price");
         return false;
+    }else{
+        price = Number(price);
     }
 
-    if(isNaN(stock)){
-        notify("danger","Invalid stock number");
-        return false;
-    } else if(!Number.isInteger(Number(stock))){
-        notify("danger","Stock must be an interger");
-        return false;
-    }else if(stock<0){
-        notify("danger","Stock must larger than 0");
-        return false;
+
+    
+    var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price;
+    
+    var xhr = createCORSRequest('GET', url);
+
+    if (!xhr) {
+        alert('CORS not supported');
+        return;
     }
 
-    if(role == 0){
-        shopID = document.getElementById('pID').value;
-        haveShopID = checkHaveShopID(shopID);
-    } else {
+    // Response handlers.
+    xhr.onload = function() {
+        var result = (xhr.responseText === "true");
+    
+        if(result){
+            notify('success','Product is added successfully!');
+            
+            $('#pPrice').val('');
+            $('#pCode').val('');
+            
+        }else{
+            notify('danger','Product has already existed!');
+        }    	
+    };
+
+    xhr.onerror = function() {
+        //notify('danger', 'Username not exist!');
+        alert('Something went wrong!');
+    };
+
+    xhr.send();
+    return false;
+    
+}
+
+function import_product(){
+	var code= document.getElementById('pCode').value;
+	var qty= document.getElementById('pQty').value;
+    var shopID;
+    var date = Math.floor(Date.now() / 1000);
+    var haveShopID = true;
+    if(role==0){
+        shopID = $('#pID option:selected').val();
+    } else{
         shopID = shop_id;
     }
+    //Check is a number
 
+    if(isNaN(qty)){
+        notify("danger","Invalid quantity number");
+        return false;
+    } else if(!Number.isInteger(Number(qty))){
+        notify("danger","Quantity must be an interger");
+        return false;
+    }else if(qty<0){
+        notify("danger","Quantity must larger than 0");
+        return false;
+    }
+
+   
     if(haveShopID){
-        var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/addProduct/'+code+'/'+price+'/'+stock+'/'+shopID;
-        
-        var xhr = createCORSRequest('GET', url);
+        var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/checkProduct/'+code;
+      
+      var xhr = createCORSRequest('GET', url);
 
-        if (!xhr) {
-            alert('CORS not supported');
-            return;
-        }
 
-        // Response handlers.
-        xhr.onload = function() {
-            var result = (xhr.responseText === "true");
-        
-            if(result){
-                notify('success','Product is added successfully!');
-                $("#result").html('');
-                $('#pPrice').val('');
-                $('#pStock').val('');
-                if(role==0){
-                    $('#pID').val('');
+      if (!xhr) {
+        alert('CORS not supported');
+          return;
+      }
+
+      // Response handlers.
+      xhr.onload = function() {
+        var data = JSON.parse(xhr.responseText);
+        if(data.result){
+            var price = data.price*qty;
+            if(role!=0){
+                var data = {
+                    shopID:shop_id,
+                    time:date,
+                    product_code:code,
+                    qty: qty,
+                    price:price
                 }
             }else{
-                notify('danger','Product has already existed!');
-            }    	
-        };
+                var data = {
+                    shopID:shopID,
+                    time:date,
+                    product_code:code,
+                    qty: qty,
+                    price:price
+                }
+            }
+            
+            var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/importProduct/'+JSON.stringify(data);
+        
+            var xhr1 = createCORSRequest('GET', url);
 
-        xhr.onerror = function() {
-            //notify('danger', 'Username not exist!');
-            alert('Something went wrong!');
-        };
+            if (!xhr1) {
+                alert('CORS not supported');
+                return;
+            }
 
-        xhr.send();
-        return false;
+            // Response handlers.
+            xhr1.onload = function() {
+                var result = (xhr1.responseText === "true");
+            
+                if(result){
+                    notify('success','Product is added successfully!');
+                    $('#pCode').val('');
+                    $('#pQty').val('');
+                    if(role==0){
+                        $('#pID').val('');
+                    }
+                }else{
+                    notify('danger','Product has already existed!');
+                }    	
+            };
+
+            xhr1.onerror = function() {
+                //notify('danger', 'Username not exist!');
+                alert('Something went wrong!');
+            };
+
+            xhr1.send();
+            return false;
+          
+        } else {
+          notify("danger","Product not found");
+        }
+        
+      };
+
+      xhr.onerror = function() {
+        //notify('danger', 'Username not exist!');
+        notify('danger','Something went wrong!');
+      };
+
+      xhr.send();
+        
     }else{
         notify("danger","Shop does not exist");
     }
 }
+
 
 // function update_product(){
 //         var code = document.getElementById('pCode').value;
@@ -872,22 +1001,24 @@ function update_product(){
 
 function saveRecord(){
     var updates = {};
-   
+    console.log("Save record");
     for(var i = 0; i < product.length;i++){
 
         var code = product[i][0];
         //var databaseRef = firebase.database().ref('shop/'+ shop_id+'/record/'+ getDate()+'/'+code);
         var qty = product[i][1];
         var price = product[i][2] * product[i][1];
-
+        var date = Math.floor(Date.now() / 1000);
 
         var data = {
+            shopID:shop_id,
+            time:date,
         	product_code:code,
         	qty: qty,
         	price: price
         }
 
-        var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+shop_id+'/'+getDate()+'/'+JSON.stringify(data);
+        var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/saveRecord/'+JSON.stringify(data);
 
         let request = new XMLHttpRequest();
         request.open("GET",url);
@@ -901,8 +1032,10 @@ function saveRecord(){
                     $('.complete-button').attr('disabled','');
                     $('.complete-button').addClass('disabled');
                 } else {
-                    notify('danger','Product out of stock!'); 
+                    notify('danger','Product is invalid'); 
                 }
+            }else{
+                notify('danger','Something went wrong!'); 
             }
         }
         request.send();

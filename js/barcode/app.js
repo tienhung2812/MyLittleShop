@@ -16,7 +16,7 @@ var app = new Vue({
       if(currentPage == 'manage-product-check'){
         $(".complete-button").removeClass("disabled");
         $('.complete-button').removeAttr('disabled');
-      var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/checkProduct/'+content+'/'+shop_id;
+      var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/checkProduct/'+content;
       
       var xhr = createCORSRequest('GET', url);
 
