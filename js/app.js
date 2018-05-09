@@ -73,18 +73,18 @@ function loadRecord(){
                         data = trans.val();
                         for(pID in products){
                             if(products[pID].code==data.code){
-                                if(data.type=="import"){
-                                    console.log("Import: shop-"+data.shopID+"-id-"+shopData[data.shopID-1][pID].code);
+                                if(data.type=="export"){
+                                    console.log("Export: shop-"+data.shopID+"-id-"+shopData[data.shopID-1][pID].code);
                                     var date = new Date(data.time);
                                     var dateString = date.getDate()+'-'+date.getMonth()+'-'+date.getFullYear();
-                                    shopData[data.shopID-1][pID].import += 1;
+                                    shopData[data.shopID-1][pID].export += data.qty;
                                     insertRecordShopData(data.code,dateString,data.qty,data.qty*shopData[data.shopID-1][pID].price,data.shopID);
                                     //total[data.shopID-1] += Number(data.qty*shopData[data.shopID-1][pID].price);
                                     
-                                }
-                                if(data.type=="export"){
-                                    console.log("Export: shop-"+data.shopID+"-id-"+shopData[data.shopID-1][pID].code);
-                                    shopData[data.shopID-1][pID].export += 1;
+                                }else 
+                                if(data.type=="import"){
+                                    console.log("Import: shop-"+data.shopID+"-id-"+shopData[data.shopID-1][pID].code);
+                                    shopData[data.shopID-1][pID].import += data.qty;
                                     
                                 }
                             }
@@ -94,10 +94,11 @@ function loadRecord(){
                         
                     })
                     for(id in shopData){
+                        
                         total = 0;
                         for(pID in products){
                             console.log(id);
-                            insertShopStocks(shopData[id][pID].code,shopData[id][pID].import,shopData[id][pID].import-shopData[id][pID].export,shopData[id][pID].price,Number(id)+1);
+                            insertShopStocks(shopData[id][pID].code,Number(shopData[id][pID].import),shopData[id][pID].import-shopData[id][pID].export,shopData[id][pID].price,Number(id)+1);
                             total += shopData[id][pID].price*shopData[id][pID].export;
                         }
                         console.log(id +" "+total); 
