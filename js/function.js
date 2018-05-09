@@ -266,7 +266,12 @@ function insertUserRecordData(type,id,name,shop){
 
 function insertUserRecordDataManager(type,id,name,shop){
     var role = type;
-    id = $("#shopManagertbody-"+shop+" tr").length +1;
+    if(role==1){
+        id = $("#shopManagertbody-"+shop+" tr").length +1;
+    }else {
+        id = $("#employeetbody-"+shop+" tr").length +1;
+    }
+    
     console.log(type+' id '+id+' name '+name + ' shop ' + shop);
     var result = '<tr onclick="userModifyShopModal('+id+','+role+','+shop+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'-'+shop+'"><th scope="row">' 
                 + id + '</th><td id="user-'+id+'-'+role+'-name-'+shop+'">' + name + '</td><td id="user-'+id+'-'+role+'-shop-'+shop+'">'+shop+'</td></tr>';
