@@ -428,11 +428,15 @@ function import_user(){
 
 function loadEmployee(){
     if(currentPage=="user-manage"){
-        
+        var i = 1;
         var databaseRef = firebase.database().ref('employee/');
         databaseRef.on('value', function(snapshot) {
-            $("#shopManagertbody tr").remove();
+            for(var j = 1; j <= i; j++){
+                $("#employeetbody-"+j+" tr").remove();
+                $("#shopManagertbody-"+j+" tr").remove();
+            }
             $("#employeetbody tr").remove();
+            i = 1;
             var rowManager = 1;
             var rowEmployee = 1;
             snapshot.forEach(function(childSnapshot) {
@@ -448,13 +452,14 @@ function loadEmployee(){
                         insertUserRecordDataManager(childData.role,rowEmployee,childKey,childData.shop_id);
                         rowEmployee++;
                     }
+                    i++;
                 }else{
                     if(childData.role == 2 && childData.shop_id == shop_id){
                         insertUserRecordData("employee",rowEmployee,childKey,childData.shop_id);
                         rowEmployee++;
                     }
                 }
-            })
+            });
         });
     }
 }
@@ -502,7 +507,6 @@ function loadEmployee(){
 
 
 //Modify user
-/Modify user
 function update_user(){
     var username = document.getElementById('username').value;
     var shop_id = document.getElementById('shop').value;
@@ -802,16 +806,14 @@ function import_product(){
                     shopID:shop_id,
                     time:date,
                     product_code:code,
-                    qty: qty,
-                    price:price
+                    qty: qty
                 }
             }else{
                 var data = {
                     shopID:shopID,
                     time:date,
                     product_code:code,
-                    qty: qty,
-                    price:price
+                    qty: qty
                 }
             }
             
@@ -893,7 +895,7 @@ function update_product(){
     }
 
 	var url =  'https://us-central1-'+project_code+'.cloudfunctions.net/modifyProduct/'+JSON.stringify(data);
-  	alert(url);
+
     var xhr = createCORSRequest('GET', url);
 
 	if (!xhr) {
@@ -974,16 +976,16 @@ function update_product(){
         	var result = (xhr.responseText === "true");
     
         	if(result){
-        		alert('Shop existed!');
+        		notify('danger','Shop existed!');
         	}else{
-        		alert('Create new shop successfully!');
+        		notify('success','Create new shop successfully!');
         	}
         	
      	};
 
       	xhr.onerror = function() {
         	//notify('danger', 'Username not exist!');
-        	alert('Something went wrong!');
+        	notify('danger','Something went wrong!');
       	};
 
       	xhr.send();

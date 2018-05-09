@@ -150,7 +150,7 @@ exports.importProduct = functions.https.onRequest((req,res)=>{
         var time = product.time;
         var code = product.product_code; 
         var qty = product.qty;
-        var price = product.price;
+       
         var type = 'import';
         var data;
 
@@ -168,14 +168,11 @@ exports.importProduct = functions.https.onRequest((req,res)=>{
         console.log('Add transaction: '+newTransactionKey);
         updates['/transaction/'+newTransactionKey] = data;
         admin.database().ref().update(updates); 
-        res.send(true); 
-
-        
-        
+        res.send(true);        
     });
 });
-// change Product code still not work
-// type 1 work
+
+
 exports.modifyProduct = functions.https.onRequest((req,res)=>{
     cors(req,res,() =>{
         const params = req.url.split("/");
@@ -445,44 +442,120 @@ exports.updatePass = functions.https.onRequest((req,res)=>{
     });
 });
 
-// exports.modifyUser= functions.https.onRequest((req,res)=>{
-//     cors(req,res,() =>{
-//         const params = req.url.split("/");
-//         const data = JSON.parse(decodeURI(params[1]));
+exports.modifyUser= functions.https.onRequest((req,res)=>{
+    cors(req,res,() =>{
+        const params = req.url.split("/");
+        const employee = JSON.parse(decodeURI(params[1]));
 
-//         var updates = {};
-//         var username = data.username;
-//         var shop_id = data.shop_id;
-//         var oldUsername = data.oldUsername;
-//         var shopExist = true;
+        var updates = {};
+        var username = employee.username;
+        var shop_id = employee.shop_id;
+        var oldUsername = employee.oldUsername;
+        var oldShop = employee.oldShop;
+        var type = employee.type;
+
+        var data;
+        var result;
+        var updates = {};
+        var userExist = false;
+        var shopExist = true;
             
 
-//         if(type == 1){  // update current product
-//             admin.database().ref('employee/'+username).once('value',(snapshot)=>{
-//                 admin.database().ref('shop/'+shop_id).once('value',(shopSnapshot)=>{
-//                     if(!shopSnapshot.exists()){
-//                         shopExist = false;
-//                         res.send(shopExist);
-//                     }else{
-//                         updates['/product/' + username +'/shop_id'] = shop_id;
-//                         admin.database().ref().update(updates);
-//                         res.send(true);
-//                     }
-//                 });
-//             });
-//         } else {
-//             var data1;
-//             admin.database().ref('employee/'+oldUsername).once('value',(snapshot)=>{
-//                 data1 = {
-//                     password: snapshot.val().password,
-//                     role: snapshot.val().role,
-//                     shop_id: snapshot.val().shop_id
-//                 }
-//                 updates['/employee/' + username] = data1;
-//                 admin.database().ref().update(updates);
-//             });
-//             admin.database().ref().child('/employee/'+oldUsername).remove();
-//             res.send(true);
-//         }
-//     });
-// });
+        if(type == 1){  // update current user
+            result = {
+                userExist: userExist,
+                shopExist: shopExist
+            }
+            res.send(result);
+        } else if(type == 2) { // same username , different shop
+            admin.database().ref('shop/'+shop_id).once('value',(snapshot)=>{
+                if(snapshot.exists()){
+                    admin.database().ref('employee/'+username).once('value',(employeeSnapshot)=>{
+                        var role = employeeSnapshot.val().role;
+                        var password = employeeSnapshot.val().password;
+                        data = {
+                            password: password,
+                            role: role,
+                            shop_id: shop_id
+                        }
+                        admin.database().ref().child('employee/'+username).remove();
+                        updates['/employee/'+username] = data;
+                        admin.database().ref().update(updates);
+                    });
+                }else{
+                    shopExist = false;
+                }
+                result = {
+                    userExist: userExist,
+                    shopExist: shopExist
+                }
+                res.send(result);
+            });
+        } else if(type == 3){ // different username, same shop
+            admin.database().ref('employee/'+username).once('value',(snapshot)=>{
+                if(snapshot.exists()){
+                    userExist = true;
+                } else{
+                    admin.database().ref('employee/'+oldUsername).once('value',(employeeSnapshot)=>{
+                        var role = employeeSnapshot.val().role;
+                        var password = employeeSnapshot.val().password;
+                        data = {
+                            password: password,
+                            role: role,
+                            shop_id: shop_id
+                        }
+                        admin.database().ref().child('employee/'+oldUsername).remove();
+                        updates['/employee/'+username] = data;
+                        admin.database().ref().update(updates);
+                    });
+                }
+                result = {
+                    userExist: userExist,
+                    shopExist: shopExist
+                }
+                res.send(result);
+            });
+        } else { // different username, different shop
+            admin.database().ref('shop/'+shop_id).once('value',(snapshot)=>{
+                if(snapshot.exists()){
+                    admin.database().ref('employee/'+username).once('value',(employeeSnapshot)=>{
+                        if(employeeSnapshot.exists()){
+                            userExist = true;
+                            result = {
+                                userExist: userExist,
+                                shopExist: shopExist
+                            }
+                            res.send(result);      
+                        } else{
+                            admin.database().ref('employee/'+oldUsername).once('value',(snapshot2)=>{
+                                 var role = snapshot2.val().role;
+                                var password = snapshot2.val().password;
+                                data = {
+                                    password: password,
+                                    role: role,
+                                    shop_id: shop_id
+                                }
+                                admin.database().ref().child('employee/'+oldUsername).remove();
+                                updates['/employee/'+username] = data;
+                                admin.database().ref().update(updates);
+                            });
+                            result = {
+                                userExist: userExist,
+                                shopExist: shopExist
+                            }
+                            res.send(result);           
+                        }
+                    });
+                }else{
+                    shopExist = false;
+                    result = {
+                        userExist: userExist,
+                        shopExist: shopExist
+                    }
+                    res.send(result);
+                }
+            });
+        }
+    });
+});
+
