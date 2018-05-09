@@ -238,12 +238,13 @@ function insertProductManagerStock(code,date,qty,price,shop){
     $("#stock-val-"+shop).append(result);
 };
 //Stock-----------------------------------------------------
-function insertShopStocks(code,date,qty,price,shop){
-    var id = $('#stock-val-'+shop+'tr').length+1;
+function insertShopStocks(code,stock,left,price,shop){
+    var id = $('#stock-val-'+shop+' tr').length+1;
+    // console.log(id);
     var result = '<tr><th scope="row">' 
-                + id + '</th><td>' + code + '</td><td>'+date+'</td><td>'+qty+'</td><td>'+price+'</td></tr>';
+                + id + '</th><td>' + code + '</td><td>'+stock+'</td><td>'+left+'</td><td>'+price+'</td></tr>';
 
-
+    
     $("#stock-val-"+shop).append(result);
 };
 
@@ -275,7 +276,13 @@ function insertUserRecordData(type,id,name,shop){
 };
 
 function insertUserRecordDataManager(type,id,name,shop){
+    
     var role = type;
+    if(role ==1){
+        id = $("#shopManagertbody-"+shop+' tr').length +1;
+    }else {
+        id = $("#employeetbody-"+shop+' tr').length+1;
+    }
     console.log(type+' id '+id+' name '+name + ' shop ' + shop);
     var result = '<tr onclick="userModifyModal('+id+','+role+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
                 + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
@@ -313,6 +320,14 @@ function importShopByID(){
             
         })
     });
+}
+
+function importShopByIDReturn(callback){
+    var shopRef = firebase.database().ref('shop');
+    shopRef.once('value',function(shopID){
+        return shopID.numChildren();
+    });
+    callback();
 }
 
 function loadShopDashboard(){
@@ -461,3 +476,4 @@ function signOut(){
     localStorage.removeItem("role");
     window.location.href = "login.html";
 }
+

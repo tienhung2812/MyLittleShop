@@ -369,7 +369,27 @@ exports.checkProduct = functions.https.onRequest((req,res)=>{
     });
 });
 
-
+exports.loadProduct = functions.https.onRequest((req,res)=>{
+    cors(req,res,() =>{
+        const params = req.url.split("/");
+        var products = [];
+        admin.database().ref('products').once('value',(snapshot)=>{
+            snapshot.forEach(function(p){
+                products.push({
+                    code:p.key,
+                    price: p.val().price,
+                    import :0,
+                    export :0 
+                })
+                
+                
+                
+            })
+            res.send(products);
+            return;
+        });
+    });
+});
 //----------------------------------------------------
 
 
@@ -489,3 +509,4 @@ exports.updatePass = functions.https.onRequest((req,res)=>{
 //         }
 //     });
 // });
+ 
