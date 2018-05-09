@@ -312,11 +312,12 @@ exports.saveRecord = functions.https.onRequest((req,res)=>{
 
         var shop_id = product.shopID;
         var time = product.time;
-        var code = product.product_code; 
-        var price = product.price;
+        var code = product.product_code;
         var qty = product.qty;
+        
         var type = 'export';
         var data;
+
         data = {
             shopID : shop_id,
             code: code,
@@ -331,13 +332,9 @@ exports.saveRecord = functions.https.onRequest((req,res)=>{
         console.log('Add transaction: '+newTransactionKey);
         updates['/transaction/'+newTransactionKey] = data;
         admin.database().ref().update(updates); 
-        res.send(true); 
-
-        
-        
+        res.send(true);                
     });
 });
-
 
 exports.checkProduct = functions.https.onRequest((req,res)=>{
     cors(req,res,() =>{

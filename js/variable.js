@@ -65,5 +65,5 @@ var total;
 var oldCode;
 var oldShop;
 var project_code ;
-
+var checkOut_qty;
 var shopByID = [];
