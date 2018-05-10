@@ -1342,7 +1342,7 @@ function sortByDate(id,type) {
     }else{
         tbody = document.querySelector("#record-val");
     }
-    alert(tbody);
+   
   // get trs as array for ease of use
   var rows = [].slice.call(tbody.querySelectorAll("tr"));
   
