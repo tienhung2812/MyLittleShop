@@ -50,8 +50,8 @@ function loadRecord(){
     var importData = [];
     var exportData = [];
     var total,i=0,j=0;
-    
-
+    var dateData = [];
+    var dateInfo = [];
     var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadProduct/';
 
     let request = new XMLHttpRequest();
@@ -60,7 +60,7 @@ function loadRecord(){
         if(request.readyState === XMLHttpRequest.DONE && (request.status == 200 || request.status == 304)) {
             var products = JSON.parse(request.responseText);
             var databaseRef = firebase.database().ref('transaction');
-                           
+                          
             if(role==0){
                 
                 databaseRef.on('value',function(transRef){ 
@@ -71,40 +71,40 @@ function loadRecord(){
                    
                     transRef.forEach(function(trans){
                         data = trans.val();
-                        for(pID in products){
-                            if(products[pID].code==data.code){
-                                if(data.type=="export"){
-                                    console.log("Export: shop-"+data.shopID+"-id-"+shopData[data.shopID-1][pID].code);
-                                    var date = new Date(data.time);
-                                    var dateString = date.getDate()+'-'+date.getMonth()+'-'+date.getFullYear();
-                                    shopData[data.shopID-1][pID].export += data.qty;
-                                    insertRecordShopData(data.code,dateString,data.qty,data.qty*shopData[data.shopID-1][pID].price,data.shopID);
-                                    //total[data.shopID-1] += Number(data.qty*shopData[data.shopID-1][pID].price);
-                                    
-                                }else 
-                                if(data.type=="import"){
-                                    console.log("Import: shop-"+data.shopID+"-id-"+shopData[data.shopID-1][pID].code);
-                                    shopData[data.shopID-1][pID].import += data.qty;
-                                    
-                                }
+                        var newDate = true;
+                        var d = new Date(data.date);
+                        var dataDate = d.getDate()+'-'+d.getMonth()+'-'+d.getFullYear();
+                        if(dateData.length==0){
+                            dateData.push({
+                                date: dataDate,
+                                data: JSON.parse(JSON.stringify(shopData))});
+                        }
+                        for(singleDate in dateData){
+                            if(dateData[singleDate].date == dataDate){
+                                newDate = false;
                             }
-                            
+                        }
+                        if(newDate){
+                            dateData.push({
+                                date: dataDate,
+                                data: JSON.parse(JSON.stringify(shopData))
+                            });
                         }
                     
                         
                     })
-                    for(id in shopData){
+                    // for(id in shopData){
                         
-                        total = 0;
-                        for(pID in products){
-                            console.log(id);
-                            insertShopStocks(shopData[id][pID].code,Number(shopData[id][pID].import),shopData[id][pID].import-shopData[id][pID].export,shopData[id][pID].price,Number(id)+1);
-                            total += shopData[id][pID].price*shopData[id][pID].export;
-                        }
-                        console.log(id +" "+total); 
-                        updateDashboardShopData("total",total,Number(id)+1);
-                    }                    
-                    console.log(shopData);
+                    //     total = 0;
+                    //     for(pID in products){
+                    //         console.log(id);
+                    //         insertShopStocks(shopData[id][pID].code,Number(shopData[id][pID].import),shopData[id][pID].import-shopData[id][pID].export,shopData[id][pID].price,Number(id)+1);
+                    //         total += shopData[id][pID].price*shopData[id][pID].export;
+                    //     }
+                    //     console.log(id +" "+total); 
+                    //     updateDashboardShopData("total",total,Number(id)+1);
+                    // }                    
+                    console.log(dateData);
                     
                     
         

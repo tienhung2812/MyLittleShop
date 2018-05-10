@@ -168,9 +168,9 @@ function updateDashboardShopData(type,value,shop) {
 }
 
 //insert Record Data
-function insertRecordShopData(code,date,quantity,price,shop){
+function insertRecordShopData(date,code,price,IN,OUT,balance,income,shop){
     var id = $('#record-val-'+shop+' tr').length+1;
-    var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>'+quantity+'</td><td>$'+price+'</td></tr>';
+    var insert = '<tr><th scope="row">'+id+'</th><td>'+date+'</td><td>'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
     $("#record-val-"+shop).append(insert);
     console.log("Updated record value at shop"+shop);
 };
