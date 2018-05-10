@@ -191,6 +191,7 @@ function loadRecord(){
                                 sortByDate(Number(id)+1,0);     
                             }
                         }
+                        trackingSortID(id);
                     }                    
                     console.log(dateInfo);
                     console.log(shopData);
@@ -216,6 +217,7 @@ function loadRecord(){
                     productFilter($(this).val(),0)
                 });
                 databaseRef.on('value',function(transRef){ 
+                    $('#record-val tr').remove();
                     total = 0;
                     var sale = 0;           
                     //console.log(dateInfo);
@@ -326,6 +328,7 @@ function loadRecord(){
                         }
                         
                     }
+                    trackingSortID(0);
                                       
                     console.log(dateInfo);
                     console.log(shopData);
