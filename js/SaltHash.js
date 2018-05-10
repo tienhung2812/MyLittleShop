@@ -27,11 +27,3 @@ var sha512 = function(password, salt){
         passwordHash:value
     };
 };
-
-function saltHashPassword(userpassword) {
-    var salt = genRandomString(16); /** Salt of length 16 */
-    var passwordData = sha512(userpassword, salt);
-    console.log('UserPassword = '+userpassword); /** Show the plaintext */
-    console.log('Passwordhash = '+passwordData.passwordHash); /** Show the Hashtext */
-    console.log('nSalt = '+passwordData.salt); /** Just to show to random SALT for each Hash process */
-}
