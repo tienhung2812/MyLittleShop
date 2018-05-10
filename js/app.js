@@ -62,9 +62,11 @@ function loadRecord(){
             var databaseRef = firebase.database().ref('transaction');              
             if(role==0){
                 
+                
                 databaseRef.on('value',function(transRef){ 
                     
                     for(i=0;i<shopByID.length;i++){
+                        $("#record-val-"+(i+1)+" tr").remove();
                         $('input[name="daterange-'+(i+1)+'"]').daterangepicker({
                             opens: 'left'
                           }, function(start, end, label) {
@@ -73,6 +75,13 @@ function loadRecord(){
                         $('#filter-'+(i+1)).on('change keyup paste', function() {
                             dateFilter($(this).val(),$(this).attr('id').substring(7,$(this).attr('id').length))
                         });
+                        for(p in products){
+                            $('#productfilter-'+(i+1)).append('<option>'+products[p].code+'</option>')
+                        }
+                        $('#filter-'+(i+1)).on('change keyup paste', function() {
+                            dateFilter($(this).val(),$(this).attr('id').substring(7,$(this).attr('id').length))
+                        });
+
                         shopData.push({
                             products:JSON.parse(JSON.stringify(products)),
                             total :0
@@ -177,7 +186,7 @@ function loadRecord(){
                                         shopData[id].products[pID].transaction[date].import,
                                         shopData[id].products[pID].transaction[date].export,
                                         shopData[id].products[pID].transaction[date].balance,
-                                        shopData[id].products[pID].transaction[date].import*shopData[id].products[pID].price,
+                                        shopData[id].products[pID].transaction[date].export*shopData[id].products[pID].price,
                                         Number(id)+1
                                     )
                                     sortByDate(Number(id)+1,0);   
@@ -235,7 +244,6 @@ function loadRecord(){
                                                 compoundKeys.push(compoundKey);
                                                 sortByDate(0,1);
                                             }
-                                        
                                         });                          
                                     }
                                 }

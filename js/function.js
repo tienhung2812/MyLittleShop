@@ -63,7 +63,7 @@ function pageWrapper(role,page){
             $("#content").append(shopSale);
             // $("#content").append(shopStock);
             $("#content").append(shopRecord);
-            $("#content").append(shopStockRecord);
+            //$("#content").append(shopStockRecord);
         }
     }
     //User Add
