@@ -109,57 +109,64 @@ function loadRecord(){
                     
         
                 });
-                
-                
             }else if(role == 1){
+                $("#record-val tr").remove();
+                $("#stock-val tr").remove();
                 databaseRef.on('value',function(transRef){
+                    $("#record-val tr").remove();
+                    $("#stock-val tr").remove();
+                    var revenue=0;
+                    var sale=0;
+                    var importProductNames = [];
                     transRef.forEach(function(trans){
                         data = trans.val();
-                        if(data.shopID==shop_id){
-                            if(data.type=="import"){
-                                importData.push({
-                                    shopID: data.shopID,
-                                    code: data.code,
-                                    price: data.price,
-                                    qty: data.qty,
-                                    time: data.time
-                                })
-                            }
-                            if(data.type=="export"){
-                                exportData.push({
-                                    shopID: data.shopID,
-                                    code: data.code,
-                                    price: data.price,
-                                    qty: data.qty,
-                                    time: data.time
-                                })
-                            }
-                        }
-                        
+                        var code = data.code;
+                        var shopId = data.shopID;
+                        var qty = data.qty;
+                        var time = convertTime(data.time);
+                        var type= data.type;
+                        var price;
+                        if(shopId==shop_id){
+                            firebase.database().ref('products/'+code).once('value',function(productSnapshot){
+                                if(productSnapshot.exists()){
+                                    var product_price = productSnapshot.val().price;
+                                    price = product_price * qty;    
+                                    if(type == "export") {
+                                        insertRecordData(code,time,qty,price);
+                                        revenue += price;
+                                        sale += qty;
+                                        updateDashboardData("total",revenue);
+                                        updateDashboardData("sale",sale);
+                                    } else {
+                                        var totalExport = 0;
+                                        var totalImport = 0;
+                                      
+                                        var importProducts = [];
+                                    
+                                        firebase.database().ref('transaction').once('value',function(snapshot){
+                                            snapshot.forEach(function(snapshot2){
+                                           
+                                                if(shopId == snapshot2.val().shopID && code == snapshot2.val().code){
+                                                    if(snapshot2.val().type == "export"){
+                                                        totalExport += snapshot2.val().qty;
+                                                    }else if(snapshot2.val().type == "import"){
+                                                            totalImport += snapshot2.val().qty;
+                                                    }
+                                                }
+
+                                            });
+                                            if(!importProductNames.includes(code)){
+                                                insertShopStock(code,totalImport,totalImport-totalExport,price);
+                                                importProductNames.push(code);
+                                            }
+                                        });                          
+                                    }
+                                }
+                            });
+                        }      
                     });
-                    total = 0;
-                    var remainTotal=0;
-                    var i =0;
-                    //Export
-                    for(i=0;i<exportData.length;i++){
-                        insertRecordData(exportData[i].code,exportData[i].time, exportData[i].qty, exportData[i].price);
-                        total+=exportData[i].price;
-                    }
-                    //IMport
-                    for(i=0;i<importData.length;i++){
-                        insertShopStock(importData[i].code,importData[i].time, importData[i].qty, importData[i].price);
-                        remainTotal += importData[i].price;
-                    }
-                    updateDashboardData("total",total);
-                    updateDashboardData("sale",remainTotal);
-                    for(i=0;i<importData.length;i++){
-                        insertShopStock(importData[i].code,importData[i].time, importData[i].qty, importData[i].price);
-                        //remainTotal += importData[i].price;
-                    }
                 });
-        
-            }
-            
+            }          
         }else if(!(request.status == 200 || request.status == 304)){
             notify('danger','Can not load product!'); 
         }
@@ -945,30 +952,38 @@ function saveRecord(){
     // Concept: load all import and export
     // Then compare qty vs (import-export)
     var available = 0;
-   
+    
+    var j = 0;
     for(var i = 0; i < product.length;i++){
-        oldCode = product[i][0];
-        checkOut_qty = product[i][1];
-
+        // oldCode = product[i][0];
+        // checkOut_qty = product[i][1];
+    
         firebase.database().ref('transaction').once('value',function(snapshot){
+            oldCode = product[j][0];
+            checkOut_qty = product[j][1];
             var export_qty = 0;
             var import_qty = 0;
             var isOutOfStock = false;
+         
             snapshot.forEach(function(transactionSnapshot){
                 var transaction = transactionSnapshot.val();
-                if(transaction.type=="import") {
-                    import_qty += transaction.qty;
-                } else {
-                    export_qty += transaction.qty;
+                if(transaction.shopID == shop_id && transaction.code == oldCode){
+                    if(transaction.type=="import") {
+                        import_qty += transaction.qty;
+                    } else {
+                        export_qty += transaction.qty;
+                    }
                 }
             });
+            j++;
+           
             if(checkOut_qty > (import_qty-export_qty)) {
-                notify('danger','Product '+oldCode+' is out of stocK! Just '+(import_qty-export_qty) +' left');
+                alert('Product '+oldCode+' is out of stocK! Just '+(import_qty-export_qty) +' left');
                 isOutOfStock = true;
             }else{ 
                 available++;
             }
-
+      
             // All Product are available
             if(available == product.length){
                 var updates = {};
@@ -1002,8 +1017,6 @@ function saveRecord(){
                             } else {
                               notify('danger','The record is not saved successfully!');
                             }
-                        }else{
-                            notify('danger','Something went wrong!'); 
                         }
                     }
                     request.send();
@@ -1013,7 +1026,7 @@ function saveRecord(){
                 $('.new-button').removeAttr('disabled');
                 $('.complete-button').attr('disabled','');
                 $('.complete-button').addClass('disabled');
-                //notify('danger','Record cannot be executed!');
+                notify('danger','Record cannot be executed!');
             }
         });
     }  
