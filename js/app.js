@@ -191,6 +191,7 @@ function loadRecord(){
                                 sortByDate(Number(id)+1,0);     
                             }
                         }
+                        updateDashboardShopData("total",shopData[id].total,Number(id)+1);
                         trackingSortID(id);
                     }                    
                     console.log(dateInfo);
