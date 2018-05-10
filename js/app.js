@@ -179,7 +179,8 @@ function loadRecord(){
                                         shopData[id].products[pID].transaction[date].balance,
                                         shopData[id].products[pID].transaction[date].import*shopData[id].products[pID].price,
                                         Number(id)+1
-                                    )   
+                                    )
+                                    sortByDate(Number(id)+1,0);   
                                 }
                             }
                         }
@@ -188,14 +189,12 @@ function loadRecord(){
         
                 });
             }else if(role == 1){
-                $("#record-val tr").remove();
-                $("#stock-val tr").remove();
                 databaseRef.on('value',function(transRef){
                     $("#record-val tr").remove();
                     $("#stock-val tr").remove();
                     var revenue=0;
                     var sale=0;
-                    var importProductNames = [];
+                    var compoundKeys = [];
                     transRef.forEach(function(trans){
                         data = trans.val();
                         var code = data.code;
@@ -209,8 +208,6 @@ function loadRecord(){
                                 if(productSnapshot.exists()){
                                     var product_price = productSnapshot.val().price;  // price
                                     price = product_price * qty; // Income
-
-
                                     if(type == "export") {
                                         // insertRecordData(code,time,qty,price);
                                         revenue += price;
@@ -220,11 +217,11 @@ function loadRecord(){
                                     } else {
                                         var totalExport = 0;
                                         var totalImport = 0;
-                                    
+                                        var compoundKey = code.concat(time);
                                         firebase.database().ref('transaction').once('value',function(snapshot){
                                             snapshot.forEach(function(snapshot2){
                                            
-                                                if(shopId == snapshot2.val().shopID && code == snapshot2.val().code){
+                                                if(shopId == snapshot2.val().shopID && code == snapshot2.val().code && time == convertTime(snapshot2.val().time)){
                                                     if(snapshot2.val().type == "export"){
                                                         totalExport += snapshot2.val().qty;
                                                     }else if(snapshot2.val().type == "import"){
@@ -233,11 +230,12 @@ function loadRecord(){
                                                 }
 
                                             });
-                                            if(!importProductNames.includes(code)){
+                                           if(!compoundKeys.includes(compoundKey)){
                                                 insertRecordData(time,code,product_price,totalImport,totalExport,totalImport-totalExport,totalImport*product_price);
-                                                importProductNames.push(code);
+                                                compoundKeys.push(compoundKey);
+                                                sortByDate(0,1);
                                             }
-                                            alert(importProductNames.length);
+                                        
                                         });                          
                                     }
                                 }
@@ -1329,4 +1327,30 @@ function notify(type,content){
         $("#alert").fadeOut(500);
     });
     
+}
+
+//--------------------------------
+function convertDate(d) {
+  var p = d.split("-");
+  return +(p[2]+p[1]+p[0]);
+}
+
+function sortByDate(id,type) {
+    var tbody;
+    if(type == 0){
+        tbody = document.querySelector("#record-val-"+id);
+    }else{
+        tbody = document.querySelector("#record-val");
+    }
+    alert(tbody);
+  // get trs as array for ease of use
+  var rows = [].slice.call(tbody.querySelectorAll("tr"));
+  
+  rows.sort(function(a,b) {
+    return convertDate(a.cells[1].innerHTML) - convertDate(b.cells[1].innerHTML);
+  });
+  
+  rows.forEach(function(v) {
+    tbody.appendChild(v); // note that .appendChild() *moves* elements
+  });
 }
