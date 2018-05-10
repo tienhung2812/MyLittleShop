@@ -59,52 +59,169 @@ function loadRecord(){
     request.onreadystatechange = function() {
         if(request.readyState === XMLHttpRequest.DONE && (request.status == 200 || request.status == 304)) {
             var products = JSON.parse(request.responseText);
-            var databaseRef = firebase.database().ref('transaction');
-                          
+            var databaseRef = firebase.database().ref('transaction');              
             if(role==0){
                 
                 databaseRef.on('value',function(transRef){ 
                     for(i=0;i<shopByID.length;i++){
-                        shopData.push(JSON.parse(JSON.stringify(products)));
-        
+                        shopData.push({
+                            products:JSON.parse(JSON.stringify(products)),
+                            total :0
+                        });
+                        dateInfo.push([]);
                     }
-                   
+                    
+                    
+                    //console.log(dateInfo);
                     transRef.forEach(function(trans){
                         data = trans.val();
                         var newDate = true;
-                        var d = new Date(data.date);
-                        var dataDate = d.getDate()+'-'+d.getMonth()+'-'+d.getFullYear();
-                        if(dateData.length==0){
-                            dateData.push({
-                                date: dataDate,
-                                data: JSON.parse(JSON.stringify(shopData))});
+                        var d = new Date(data.time);
+                        var dataDate = d.getDate()+'-'+Number(d.getMonth()+1)+'-'+d.getFullYear();
+                        if(data.qty==="251009"){
+                            console.log(dataDate +"-" + data.code + "- "+ data.shopID)
                         }
-                        for(singleDate in dateData){
-                            if(dateData[singleDate].date == dataDate){
-                                newDate = false;
+                        data.qty = Number(data.qty);
+                        data.shopID = Number(data.shopID);
+                        
+                        for(pID in products){
+                            if(shopData[data.shopID-1].products[pID].code==data.code){
+                                //When product transation is null
+                                if(shopData[data.shopID-1].products[pID].transaction.length==0){
+                                    shopData[data.shopID-1].products[pID].transaction.push({
+                                        date: dataDate,
+                                        import:0,
+                                        export:0,
+                                        balance: shopData[data.shopID-1].products[pID].balance
+                                    });
+                                    
+                                    var samedate = false;
+                                    for(b in dateInfo[data.shopID-1]){
+                                        
+                                        if(dataDate==dateInfo[data.shopID-1][b])
+                                            samedate = true;
+                                    }
+                                    if(!samedate)
+                                        dateInfo[data.shopID-1].push(dataDate);
+                                    
+                                }
+                            
+                                for(d in shopData[data.shopID-1].products[pID].transaction){
+                                    if(dataDate=shopData[data.shopID-1].products[pID].transaction[d].date){
+                                        newDate = false;
+                                        if(data.type=="import"){
+                                            shopData[data.shopID-1].products[pID].transaction[d].import+=data.qty;
+                                            shopData[data.shopID-1].products[pID].transaction[d].balance+=data.qty;
+                                            shopData[data.shopID-1].products[pID].balance +=data.qty;
+                                            shopData[data.shopID-1].total += shopData[data.shopID-1].products[pID].price*data.qty;
+                                        }else{
+                                            shopData[data.shopID-1].products[pID].transaction[d].export+=data.qty;
+                                            shopData[data.shopID-1].products[pID].transaction[d].balance-=data.qty;
+                                            shopData[data.shopID-1].products[pID].balance -=data.qty;
+                                        }
+                                        break;
+                                    }
+                                }
+                                if(newDate){
+                                    
+                                    for(b in dateInfo[data.shopID-1]){
+                                        
+                                        if(dataDate==dateInfo[data.shopID-1][b])
+                                            samedate = true;
+                                    }
+                                    if(!samedate)
+                                        dateInfo[data.shopID-1].push(dataDate);
+                                    
+                                    shopData[data.shopID-1].products[pID].transaction.push({
+                                        date: dataDate,
+                                        import:0,
+                                        export:0,
+                                        balance: shopData[data.shopID-1].products[pID].balance
+                                    });
+                                    var lastID = shopData[data.shopID-1].products[pID].transaction.length-1;
+                                    if(data.type=="import"){
+                                        shopData[data.shopID-1].products[pID].transaction[lastID].import+=data.qty;
+                                        shopData[data.shopID-1].products[pID].transaction[d].balance+=data.qty;
+                                        shopData[data.shopID-1].products[pID].balance +=data.qty;
+                                        shopData[data.shopID-1].total += shopData[data.shopID-1].products[pID].price*data.qty;
+                                    }else{
+                                        shopData[data.shopID-1].products[pID].transaction[lastID].export+=data.qty;
+                                        shopData[data.shopID-1].products[pID].transaction[d].balance-=data.qty;
+                                        shopData[data.shopID-1].products[pID].balance -=data.qty;
+                                    }
+                                }
                             }
                         }
-                        if(newDate){
-                            dateData.push({
-                                date: dataDate,
-                                data: JSON.parse(JSON.stringify(shopData))
-                            });
-                        }
-                    
                         
                     })
-                    // for(id in shopData){
-                        
-                    //     total = 0;
-                    //     for(pID in products){
-                    //         console.log(id);
-                    //         insertShopStocks(shopData[id][pID].code,Number(shopData[id][pID].import),shopData[id][pID].import-shopData[id][pID].export,shopData[id][pID].price,Number(id)+1);
-                    //         total += shopData[id][pID].price*shopData[id][pID].export;
+
+                    
+                    console.log(dateInfo);
+                    console.log(shopData);
+                    for(id in dateInfo){
+                        for(date in dateInfo[id]){
+                            for(pID in products){
+                                if(shopData[id].products[pID].transaction.length>=(date+1)){
+                                    insertRecordShopData(
+                                        shopData[id].products[pID].transaction[date].date,
+                                        shopData[id].products[pID].code,
+                                        shopData[id].products[pID].price,
+                                        shopData[id].products[pID].transaction[date].import,
+                                        shopData[id].products[pID].transaction[date].export,
+                                        shopData[id].products[pID].transaction[date].balance,
+                                        shopData[id].products[pID].transaction[date].import*shopData[id].products[pID].price,
+                                        Number(id)+1
+                                    )   
+                                }
+                            }
+                        }
+                    }
+                    // for(id in dateInfo){
+                    //     for(pID in dateInfo[id]){
+                    //         for (date in dateInfo[id][pID]){
+                    //             if(dateInfo[id][pID].length>0){
+                    //                 insertRecordShopData(
+                    //                     dateInfo[id][pID][date],
+                    //                     shopData[id].products[pID].code,
+                    //                     shopData[id].products[pID].price,
+                    //                     shopData[id].products[pID].transaction[date].import,
+                    //                     shopData[id].products[pID].transaction[date].export,
+                    //                     shopData[id].products[pID].transaction[date].balance,
+                    //                     shopData[id].products[pID].transaction[date].import*shopData[id].products[pID].price,
+                    //                     Number(id)+1
+
+                    //                 )       
+                    //             }
+                    //         }
                     //     }
-                    //     console.log(id +" "+total); 
-                    //     updateDashboardShopData("total",total,Number(id)+1);
-                    // }                    
-                    console.log(dateData);
+                        // for(var date =0;date<dateInfo[id].length;date++){
+                        //     console.log("Var:"+ date+" in "+dateInfo[id].length+" shop "+ id)
+                        //     for(pID in products){
+                        //         if(shopData[id].products[pID].transaction.length>0){
+                        //             console.log("Transation :"+date + " product: "+pID);
+                        //             if(shopData[id].products[pID].transaction[date].date == dateInfo[id][date]){
+                        //                 console.log(true);
+                        //             }
+                        //         }
+                        //     }
+                        // }
+                    // }
+
+                    // for(id in shopData){
+                       
+                    //         for(var date =0;date<dateInfo[id];date++){
+                    //             var today;
+                    //             //updateDashboardShopData("total",shopData[id].total,Number(id)+1);
+                    //             var productNum = products.length;
+                                
+                                
+                                    
+                            
+                    //     }
+                    // }
+                               
+                          
+                    
                     
                     
         
@@ -674,7 +791,11 @@ function add_product(){
     if(isNaN(price)){
         notify("danger","Invalid price");
         return false;
-    }else{
+    }else if(Number(price)<=0){
+        notify("danger","Invalid price");
+        return false;
+    }
+    else{
         price = Number(price);
     }
 

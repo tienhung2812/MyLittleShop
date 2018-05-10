@@ -372,8 +372,8 @@ exports.loadProduct = functions.https.onRequest((req,res)=>{
                 products.push({
                     code:p.key,
                     price: p.val().price,
-                    import :0,
-                    export :0 
+                    transaction:[],
+                    balance:0
                 })
                 
                 
