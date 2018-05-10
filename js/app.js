@@ -246,10 +246,12 @@ function loadRecord(){
                         if(shopId==shop_id){
                             firebase.database().ref('products/'+code).once('value',function(productSnapshot){
                                 if(productSnapshot.exists()){
-                                    var product_price = productSnapshot.val().price;
-                                    price = product_price * qty;    
+                                    var product_price = productSnapshot.val().price;  // price
+                                    price = product_price * qty; // Income
+
+
                                     if(type == "export") {
-                                        insertRecordData(code,time,qty,price);
+                                        // insertRecordData(code,time,qty,price);
                                         revenue += price;
                                         sale += qty;
                                         updateDashboardData("total",revenue);
@@ -257,8 +259,6 @@ function loadRecord(){
                                     } else {
                                         var totalExport = 0;
                                         var totalImport = 0;
-                                      
-                                        var importProducts = [];
                                     
                                         firebase.database().ref('transaction').once('value',function(snapshot){
                                             snapshot.forEach(function(snapshot2){
@@ -267,15 +267,16 @@ function loadRecord(){
                                                     if(snapshot2.val().type == "export"){
                                                         totalExport += snapshot2.val().qty;
                                                     }else if(snapshot2.val().type == "import"){
-                                                            totalImport += snapshot2.val().qty;
+                                                        totalImport += snapshot2.val().qty;
                                                     }
                                                 }
 
                                             });
                                             if(!importProductNames.includes(code)){
-                                                insertShopStock(code,totalImport,totalImport-totalExport,price);
+                                                insertRecordData(time,code,product_price,totalImport,totalExport,totalImport-totalExport,totalImport*product_price);
                                                 importProductNames.push(code);
                                             }
+                                            alert(importProductNames.length);
                                         });                          
                                     }
                                 }
@@ -1186,7 +1187,7 @@ function getTime(){
 
 function convertTime(time){
     var date = new Date(time);
-    return date.toLocaleString();
+    return date.toLocaleDateString();
 }
 
 function reload_page(){

@@ -141,13 +141,13 @@ function updateDashboardData(type,value) {
     $("#"+type+"-var").text(value);
     console.log("Updated "+type+" value: "+ value);
 }
-//Record Data
-function insertRecordData(code,date,quantity,price){
-    var id = $("#record-val tr").length+1;
-    var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>'+quantity+'</td><td>$'+price+'</td></tr>';
-    $("#record-val").append(insert);   
-    console.log("Updated record value");
-};
+// //Record Data
+// function insertRecordData(code,date,quantity,price){
+//     var id = $("#record-val tr").length+1;
+//     var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>'+quantity+'</td><td>$'+price+'</td></tr>';
+//     $("#record-val").append(insert);   
+//     console.log("Updated record value");
+// };
 //Example For Shop Manager Dashboard
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);
@@ -254,6 +254,14 @@ function insertShopStock(code,date,qty,price){
                 + id + '</th><td>' + code + '</td><td>'+date+'</td><td>'+qty+'</td><td>'+price+'</td></tr>';
     $("#stock-val").append(result);
     console.log("Update stock value" + result);
+};
+
+//insert Record Data
+function insertRecordData(date,code,price,IN,OUT,balance,income){
+    var id = $('#record-val tr').length+1;
+    var insert = '<tr><th scope="row">'+id+'</th><td>'+date+'</td><td>'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
+    $("#record-val").append(insert);
+    //console.log("Updated record value at shop"+shop +" date "+date+" code "+code);
 };
 
 //-------------------------------------------------
