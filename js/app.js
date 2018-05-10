@@ -263,9 +263,6 @@ function import_user(){
         shopId = shop_id;
     }
 
-
-    // var hash= CryptoJS.SHA3(password);
-    // alert(hash);
     // var hash = saltHashPassword(password);
     // alert(hash);
 
