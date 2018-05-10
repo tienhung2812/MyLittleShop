@@ -11,7 +11,7 @@ function leftSidebar(role,currentPage){
             $(modifyUser).insertAfter("#sidebar-user");
             $(addUser).insertAfter("#sidebar-user");
             //Product
-            //$(checkOut).insertAfter("#sidebar-product");
+          
             $(importProduct).insertAfter("#sidebar-product");
             $(modifyProduct).insertAfter("#sidebar-product");
             $(addProduct).insertAfter("#sidebar-product");
@@ -28,8 +28,6 @@ function leftSidebar(role,currentPage){
             //Product
             $(checkOut).insertAfter("#sidebar-product");
             $(importProduct).insertAfter("#sidebar-product");
-            //$(modifyProduct).insertAfter("#sidebar-product");
-            //$(addProduct).insertAfter("#sidebar-product");
 
             $("#sidebar-shop").remove();
         } else if(role==2){
@@ -91,10 +89,6 @@ function pageWrapper(role,page){
         if(role == 0){
             importShopByID();
             loadShopEmployee();
-            // $("#content").html(composeUserManage(1))
-            // $("#content").html('<div class="col-lg-6" id="shopManagerDiv"></div><div class="col-lg-6" id="employeeDiv"></div>');
-            // $("#shopManagerDiv").html(shopManager);
-            // $("#employeeDiv").html(employee);
         } else if (role==1){
             $("#content").html('<div class="col-lg-12" id="employeeDiv"></div>');
             $("#employeeDiv").html(employee);
@@ -141,13 +135,7 @@ function updateDashboardData(type,value) {
     $("#"+type+"-var").text(value);
     console.log("Updated "+type+" value: "+ value);
 }
-// //Record Data
-// function insertRecordData(code,date,quantity,price){
-//     var id = $("#record-val tr").length+1;
-//     var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td>'+date+'</td><td>'+quantity+'</td><td>$'+price+'</td></tr>';
-//     $("#record-val").append(insert);   
-//     console.log("Updated record value");
-// };
+
 //Example For Shop Manager Dashboard
 // updateDashboardData(total,3);
 // updateDashboardData(sale,13);

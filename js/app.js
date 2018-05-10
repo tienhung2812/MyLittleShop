@@ -465,104 +465,7 @@ function loadStock(){
         });
     }
 }
-//-----------------------------------------------------------------------------------------------------------------------------------------------
-//Example For Shop Manager Dashboard
-// updateDashboardData(total,3);
-// updateDashboardData(sale,13);
-// updateDashboardData(stock,33);
-// insertRecordData(2,64645,"Jan 11",51);
-// function loadRecord(){
-// 	var shopRecords = [];
-//     if(role==0){
-        
-//         for(var i = 0; i < shopNum; i++){
-        
-//         	addShopDashboard(i+1);
-//         	console.log("Add shop " + (i+1));
-        	
-//         	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+(i+1);
 
-//         	let request = new XMLHttpRequest();
-//         	request.open("GET",url,false);
-//        		request.onreadystatechange = function() {
-//         		if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
-//         			var shopId = 1;
-//             		var data = JSON.parse(request.responseText);
-//             		shopRecords.push(data);  	
-//         		}
-//    			}
-//    			request.send();
-//         }
-
-//        	for(var i = 0; i < shopRecords.length;i++){
-//       		var rowIndex = 1;
-//        		var records = shopRecords[i].records;
-//        		var revenue = shopRecords[i].revenue;
-//             var sale = shopRecords[i].sale;
-
-//             updateDashboardShopData("total",revenue,(i+1));
-//             updateDashboardShopData("sale",sale,(i+1));
-
-//             for(var j = 0; j < records.length ; j++){
-//             	var date = records[j].date;
-//             	var products = records[j].products;
-            	
-//             	for (var k = 0; k < products.length; k++){
-            		
-//             		var product_code = products[k].product_code;
-//             		var price = products[k].price;
-//             		var qty = products[k].qty;
-//             		insertRecordShopData(rowIndex,product_code,date,qty,price,(i+1));
-//             		rowIndex++;
-//             	}
-//             }   		
-//        	}    
-//     } else {
-//     	var rowIndex = 1;
-//     	var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadRecord/'+shop_id;
-//     	var xhr = createCORSRequest('GET', url);
-
-//       	if (!xhr) {
-//         	alert('CORS not supported');
-//         	return;
-//       	}
-
-//       	// Response handlers.
-//       	xhr.onload = function() {
-//         	var data = JSON.parse(xhr.responseText);
-
-//         	var records = data.records;
-//        		var revenue = data.revenue;
-//             var sale = data.sale;
-
-//             updateDashboardData("total",revenue);
-//             updateDashboardData("sale",sale);
-
-//             for(var j = 0; j < records.length ; j++){
-//             	var date = records[j].date;
-//             	var products = records[j].products;
-            	
-//             	for (var k = 0; k < products.length; k++){
-            		
-//             		var product_code = products[k].product_code;
-//             		var price = products[k].price;
-//             		var qty = products[k].qty;
-//             		insertRecordData(rowIndex,product_code,date,qty,price);
-//             		rowIndex++;
-//             	}
-//             }
-//      	};
-
-//       	xhr.onerror = function() {
-//         	//notify('danger', 'Username not exist!');
-//         	alert('Something went wrong!');
-//       	};
-
-//       	xhr.send();
-//     }
-//     return false;
- 
-// }
 //------------------------------------------------------------------------------------------------------------------
 // Add employee
 
@@ -672,48 +575,6 @@ function loadEmployee(){
         });
     }
 }
-
-// function loadEmployee(){
-//         $("#shopManagertbody tr").remove();
-//         $("#employeetbody tr").remove();
-
-//         var rowEmployee = 1;
-//         var rowManager = 1;
-
-// 		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadEmployee/'+role+'/'+shop_id;
-		
-//         var xhr = createCORSRequest('GET', url);
-
-//       	if (!xhr) {
-//         	alert('CORS not supported');
-//         	return;
-//       	}
-
-//       	// Response handlers.
-//       	xhr.onload = function() {
-//         	var data = JSON.parse(xhr.responseText);
-
-//         	var managers = data.managers;
-//         	var employees = data.employees;
-//         	for (var i = 0; i < employees.length; i++){
-//         		insertUserRecordData("employee",rowEmployee,employees[i].username,employees[i].shop_id);
-//         		rowEmployee++;
-//         	}
-//         	for (var i = 0; i < managers.length;i++){
-//         		insertUserRecordData("shopmanager",rowManager,managers[i].username,managers[i].shop_id);
-//         		rowManager++;
-//         	}
-//      	};
-
-//       	xhr.onerror = function() {
-//         	//notify('danger', 'Username not exist!');
-//         	alert('Something went wrong!');
-//       	};
-
-//       	xhr.send();
-//       	return false;
-// }
-
 
 //Modify user
 function update_user(){
@@ -853,41 +714,7 @@ function password_update(){
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
-//Product record 
-//Example for product record
-// insertProductRecordData(2,342,141,342); 
-// function LoadData(){
-//         $("#tbl_products_list tbody tr").remove();
-//         var rowIndex = 1;
-// 		var url = 'https://us-central1-'+project_code+'.cloudfunctions.net/loadProduct/'+shop_id;
-	
-//         var xhr = createCORSRequest('GET', url);
 
-//       	if (!xhr) {
-//         	alert('CORS not supported');
-//         	return;
-//       	}
-
-//       	// Response handlers.
-//       	xhr.onload = function() {
-//         	var data = JSON.parse(xhr.responseText);
-//         	for(var i = 0; i < data.length; i++){
-//         		var price = data[i].price;
-//         		var stock = data[i].stock;
-//         		var product_code = data[i].product_code;
-//         		insertProductRecordData(rowIndex,product_code,price,stock);
-//         		rowIndex +=1;
-//         	}
-//      	};
-
-//       	xhr.onerror = function() {
-//         	//notify('danger', 'Username not exist!');
-//         	alert('Something went wrong!');
-//       	};
-
-//       	xhr.send();
-//       	return false;
-// }
 function LoadData(){
     var i =1;
     if(role == 0){
@@ -904,20 +731,7 @@ function LoadData(){
             i++;
           });
         });
-      }else{
-        // var databaseRef = firebase.database().ref('shop/'+shop_id+'/products');
-    
-        // databaseRef.on('value', function(snapshot) {
-        //     $("#tbl_products_list tbody tr").remove();
-        //     var rowIndex = 1;
-        //     snapshot.forEach(function(childSnapshot) {
-        //         var childKey = childSnapshot.key;
-        //         var childData = childSnapshot.val();
-        //         insertProductRecordData(rowIndex,childKey,childData.price,childData.stock);
-        //         rowIndex ++;
-        //     });
-        // });
-    }   
+      }
 }
 
 	// Add Product
