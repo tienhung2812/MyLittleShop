@@ -33,7 +33,7 @@ var shopStockRecord = '<div class="col-md-12"><div class="card"><div class="card
 function composeShop(id){
     var result = '<div class="col-lg-12"><div class="card"><div class="shop-record"><div class="card-title"><h4>SHOP '
     + id +'</h4><div id="shop-revenue-manager"><i class="fa fa-usd f-s-40 text-success"></i><h2 id="total-var-'
-    + id +'">0</h2></div></div><hr><div class="card-body"><div class="col-lg-12 card-body-section"><div class="card-table"><div class="card-title"></div><div class="card-body"><div class="table-responsive"><table class="table sortable"><thead><tr><th>#</th><th>Date</th><th>Code</th><th>Price</th><th>IN</th><th>OUT</th><th>Balance</th><th>Income</th></tr></thead><tbody id="record-val-'
+    + id +'">0</h2></div></div><hr><div class="card-body"><div class="col-lg-12 card-body-section"><div class="card-table"><div class="card-title"><div class="form-group"><label for="usr">Filter :</label><input type="text" class="form-control" id="filter-'+id+'" name="daterange-'+id+'" value="01/01/2018 - 01/15/2018" /></div><div></div></div><div class="card-body"><div class="table-responsive"><table class="table"><thead><tr><th>#</th><th>Date</th><th>Code</th><th>Price</th><th>IN</th><th>OUT</th><th>Balance</th><th>Income</th></tr></thead><tbody id="record-val-'
     + id +'" class="table-scroll-body"></tbody></table></div></div></div></div></div></div></div></div>';
     return result;
 }
