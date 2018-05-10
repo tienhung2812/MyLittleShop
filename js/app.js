@@ -215,58 +215,125 @@ function loadRecord(){
                 $('#productfilter').on('change keyup paste', function() {
                     productFilter($(this).val(),0)
                 });
-             databaseRef.on('value',function(transRef){
-                    $("#record-val tr").remove();
-                    $("#stock-val tr").remove();
-                    var revenue=0;
-                    var sale=0;
-                    var compoundKeys = [];
+                databaseRef.on('value',function(transRef){ 
+                    total = 0;
+                    var sale = 0;           
+                    //console.log(dateInfo);
                     transRef.forEach(function(trans){
                         data = trans.val();
-                        var code = data.code;
-                        var shopId = data.shopID;
-                        var qty = data.qty;
-                        var time = convertTime(data.time);
-                        var type= data.type;
-                        var price;
-                        if(shopId==shop_id){
-                            firebase.database().ref('products/'+code).once('value',function(productSnapshot){
-                                if(productSnapshot.exists()){
-                                    var product_price = productSnapshot.val().price;  // price
-                                    price = product_price * qty; // Income
-                                    if(type == "export") {
-                                        // insertRecordData(code,time,qty,price);
-                                        revenue += price;
-                                        sale += qty;
-                                        updateDashboardData("total",revenue);
-                                        updateDashboardData("sale",sale);
-                                    } else {
-                                        var totalExport = 0;
-                                        var totalImport = 0;
-                                        var compoundKey = code.concat(time);
-                                        firebase.database().ref('transaction').once('value',function(snapshot){
-                                            snapshot.forEach(function(snapshot2){
-                                           
-                                                if(shopId == snapshot2.val().shopID && code == snapshot2.val().code && time == convertTime(snapshot2.val().time)){
-                                                    if(snapshot2.val().type == "export"){
-                                                        totalExport += snapshot2.val().qty;
-                                                    }else if(snapshot2.val().type == "import"){
-                                                        totalImport += snapshot2.val().qty;
-                                                    }
-                                                }
+                        if(data.shopID==shop_id){
+                            var newDate = true;
+                            //var dataDate = d.getDate()+'-'+Number(d.getMonth()+1)+'-'+d.getFullYear();
+                            var dataDate = convertTime(data.time);
+                            data.qty = Number(data.qty);
+                            var codeID;
+                            
+                            for(p in products){
+                                //console.log("Compare: "+products[p].code+" and "+data.code);
+                                if(data.code==products[p].code){
+                                    codeID=p;
+                                    break;
+                                }
+                            }
 
-                                            });
-                                           if(!compoundKeys.includes(compoundKey)){
-                                                insertRecordData(time,code,product_price,totalImport,totalExport,totalImport-totalExport,totalExport*product_price);
-                                                compoundKeys.push(compoundKey);
-                                                sortByDate(0,1);
-                                            }
-                                        });                          
+                            if(products[codeID].transaction.length==0){
+                                products[codeID].transaction.push({
+                                    date: dataDate,
+                                    import:0,
+                                    export:0,
+                                    balance: 0
+                                })
+                                if(data.type=="import"){
+                                    products[codeID].transaction[0].import+=data.qty;
+                                    products[codeID].transaction[0].balance+=data.qty;
+                                    products[codeID].balance +=data.qty;
+                                    
+                                }else{
+                                    products[codeID].transaction[0].export+=data.qty;
+                                    products[codeID].transaction[0].balance-=data.qty;
+                                    products[codeID].balance -=data.qty;
+                                    total += products[codeID].price*data.qty;
+                                    
+                                    sale += data.qty;
+                                    
+                                }
+
+                            }else{
+                                var sameDay = false;
+                                for (date in products[codeID].transaction){
+                                    if(dataDate==products[codeID].transaction[date].date){
+                                        sameDay = true;
+                                        if(data.type=="import"){
+                                            products[codeID].transaction[date].import+=data.qty;
+                                            products[codeID].transaction[date].balance+=data.qty;
+                                            products[codeID].balance +=data.qty;
+                                            
+                                        }else{
+                                            products[codeID].transaction[date].export+=data.qty;
+                                            products[codeID].transaction[date].balance-=data.qty;
+                                            products[codeID].balance -=data.qty;
+                                            total += products[codeID].price*data.qty;
+                                            sale += data.qty;
+                                            
+                                        }
+                                    }
+                                    
+                                }
+                                if(!sameDay){
+                                    products[codeID].transaction.push({
+                                        date: dataDate,
+                                        import:0,
+                                        export:0,
+                                        balance: products[codeID].balance
+                                    });
+                                    var date = products[codeID].transaction.length-1;
+                                    if(data.type=="import"){
+                                        products[codeID].transaction[date].import+=data.qty;
+                                        products[codeID].transaction[date].balance+=data.qty;
+                                        products[codeID].balance +=data.qty;
+                                        
+                                    }else{
+                                        products[codeID].transaction[date].export+=data.qty;
+                                        products[codeID].transaction[date].balance-=data.qty;
+                                        products[codeID].balance -=data.qty;
+                                        total += products[codeID].price*data.qty;
+                                        sale += data.qty;
+                                        
                                     }
                                 }
-                            });
-                        }      
-                    });
+                            }
+                        }
+                                             
+                    })
+                    
+                    updateDashboardData("total",total);
+                    updateDashboardData("sale",sale);
+                    //console.log(id);
+                    for(var pID=0; pID < products.length;pID ++){
+                        console.log(products[pID].transaction.length);
+                        for(var date=0;date< products[pID].transaction.length ; date++){
+                            //console.log("Import: "+id+" product "+ pID +" date "+date)
+                            insertRecordData(
+                                products[pID].transaction[date].date,
+                                products[pID].code,
+                                products[pID].price,
+                                products[pID].transaction[date].import,
+                                products[pID].transaction[date].export,
+                                products[pID].transaction[date].balance,
+                                products[pID].transaction[date].export*products[pID].price
+                            )
+                            sortByDate(0,1);  
+                        }
+                        
+                    }
+                                      
+                    console.log(dateInfo);
+                    console.log(shopData);
+                    // for(id in shopData){
+                    //     for(p in products)
+                    // }
+                    
+        
                 });
             }          
         }else if(!(request.status == 200 || request.status == 304)){
