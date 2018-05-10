@@ -188,6 +188,7 @@ function loadRecord(){
                                     shopData[id].products[pID].transaction[date].export*products[pID].price,
                                     Number(id)+1
                                 )
+                                sortByDate(Number(id)+1,0);  
                             }
                         }
                     }                    
@@ -1341,4 +1342,24 @@ function notify(type,content){
         $("#alert").fadeOut(500);
     });
     
+}
+
+function sortByDate(id,type) {
+    var tbody;
+    if(type == 0){
+        tbody = document.querySelector("#record-val-"+id);
+    }else{
+        tbody = document.querySelector("#record-val");
+    }
+   
+  // get trs as array for ease of use
+  var rows = [].slice.call(tbody.querySelectorAll("tr"));
+  
+  rows.sort(function(a,b) {
+    return convertDate(a.cells[1].innerHTML) - convertDate(b.cells[1].innerHTML);
+  });
+  
+  rows.forEach(function(v) {
+    tbody.appendChild(v); // note that .appendChild() *moves* elements
+  });
 }
