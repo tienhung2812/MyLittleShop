@@ -85,7 +85,9 @@ function loadRecord(){
                         $('#productfilter-'+(i+1)).on('change keyup paste', function() {
                             productFilter($(this).val(),$(this).attr('id').substring(14,$(this).attr('id').length))
                         });
-
+                        $('#typefilter-'+(i+1)).on('change keyup paste', function() {
+                            typeFilter($(this).val(),$(this).attr('id').substring(11,$(this).attr('id').length))
+                        });
                         
                         dateInfo.push([]);
                         
@@ -217,6 +219,9 @@ function loadRecord(){
                 $('#productfilter').on('change keyup paste', function() {
                     productFilter($(this).val(),0)
                 });
+                $('#typefilter').on('change keyup paste', function() {
+                    typeFilter($(this).val(),0)
+                });
                 databaseRef.on('value',function(transRef){ 
                     $('#record-val tr').remove();
                     total = 0;
@@ -346,6 +351,58 @@ function loadRecord(){
     }
     request.send();
 
+}
+
+function typeFilter(value,shop){
+    var table;
+    if (shop==0){
+        table = '#record-head-val tr';
+        var length = $("#record-val tr").length;
+    }else{
+        table = '#record-head-val-'+shop+' tr';
+        var length = $("#record-val-"+shop+" tr").length;
+    }
+
+    var i=0;
+    var type;
+    $(table+" .OUT").css("display","");
+    $(table+" .IN").css("display","");
+    for(var j=1;j<=length;j++){
+        $("#"+shop+"-"+j +" .OUT").css("display","");                        
+    }
+    for(var j=1;j<=length;j++){
+        $("#"+shop+"-"+j +" .IN").css("display","");                        
+    }
+
+
+    if(value=="IN"){
+        type = 6;
+        $(table+" .OUT").css("display","none");
+            
+        for(var j=1;j<=length;j++){
+            $("#"+shop+"-"+j +" .OUT").css("display","none");                        
+        }
+        
+    }else if(value=="OUT"){
+        type = 5;
+        $(table+" .IN").css("display","none");
+        
+        for(var j=1;j<=length;j++){
+            $("#"+shop+"-"+j +" .IN").css("display","none");                        
+        }
+        
+    }
+    // if(shop==0){
+    //     $("#record-val tr").find("th").each(function(){
+    //         i++;
+    //         $(this).html(i);
+    //     })
+    // }else{
+    //     $("#record-val-"+shop+" tr").find("th").each(function(){
+    //         i++;
+    //         $(this).html(i);
+    //     })
+    // }
 }
 
 function productFilter(value,shop){
@@ -729,6 +786,21 @@ function LoadData(){
           	snapshot.forEach(function(shopSnapshot){
              	console.log(shopSnapshot.key)
             insertProductRecordDataManager(shopSnapshot.key,shopSnapshot.val().price);
+            i++;
+          });
+        });
+      }
+      if(role==1){
+        console.log("Import data role 1")
+        var databaseRef = firebase.database().ref('products');
+        databaseRef.on('value', function(snapshot) {
+     
+            $("#producttbody tr").remove();
+         	var rowIndex = 1;
+       ;
+          	snapshot.forEach(function(shopSnapshot){
+             	console.log(shopSnapshot.key)
+            insertProductRecordData(shopSnapshot.key,shopSnapshot.val().price);
             i++;
           });
         });

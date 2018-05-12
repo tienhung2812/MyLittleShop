@@ -27,6 +27,7 @@ function leftSidebar(role,currentPage){
             
             //Product
             $(checkOut).insertAfter("#sidebar-product");
+            $(viewProduct).insertAfter("#sidebar-product");
             $(importProduct).insertAfter("#sidebar-product");
 
             $("#sidebar-shop").remove();
@@ -115,6 +116,7 @@ function pageWrapper(role,page){
         }
     }
 
+
 };
 
 var total = "total";
@@ -158,7 +160,7 @@ function updateDashboardShopData(type,value,shop) {
 //insert Record Data
 function insertRecordShopData(date,code,price,IN,OUT,balance,income,shop){
     var id = $('#record-val-'+shop+' tr').length+1;
-    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
+    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td class="IN">'+IN+'</td><td class="OUT">'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
     $("#record-val-"+shop).append(insert);
     console.log("Updated record value at shop"+shop +" date "+date+" code "+code);
 };
@@ -248,7 +250,7 @@ function insertShopStock(code,date,qty,price){
 function insertRecordData(date,code,price,IN,OUT,balance,income){
     var id = $('#record-val tr').length+1;
     var shop = 0;
-    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
+    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td class="IN">'+IN+'</td><td class="OUT">'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
     $("#record-val").append(insert);
     //console.log("Updated record value at shop"+shop +" date "+date+" code "+code);
 };
@@ -366,10 +368,10 @@ function checkHaveShopID(id){
 
 
 //Product record 
-function insertProductRecordData(id,code,price,stock){
-
-    var result = '<tr onclick="productModifyModal('+id+')" id="product-'+id+'"><th scope="row">' 
-                + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-price">'+price+'</td><td id="product-'+id+'-stock">'+stock+'</td></tr>';
+function insertProductRecordData(code,price){
+    var id = $('#producttbody tr').length+1;
+    var result = '<tr id="product-'+id+'"><th scope="row">' 
+                + id + '</th><td id="product-'+id+'-code">' + code + '</td><td id="product-'+id+'-price">'+price+'</td></tr>';
 
 
     $("#producttbody").append(result);
