@@ -188,7 +188,7 @@ function loadRecord(){
                                     shopData[id].products[pID].transaction[date].export*products[pID].price,
                                     Number(id)+1
                                 )
-                                sortByDate(Number(id)+1,0);  
+                                sortByDate(Number(id)+1,0);     
                             }
                         }
                     }                    
