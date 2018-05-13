@@ -66,6 +66,10 @@ function loadRecord(){
                 databaseRef.on('value',function(transRef){ 
                     
                     for(i=0;i<shopByID.length;i++){
+                        shopData.push({
+                            products:JSON.parse(JSON.stringify(products)),
+                            total :0
+                        });
                         $("#record-val-"+(i+1)+" tr").remove();
                         $('input[name="daterange-'+(i+1)+'"]').daterangepicker({
                             opens: 'left'
@@ -82,10 +86,7 @@ function loadRecord(){
                             dateFilter($(this).val(),$(this).attr('id').substring(7,$(this).attr('id').length))
                         });
 
-                        shopData.push({
-                            products:JSON.parse(JSON.stringify(products)),
-                            total :0
-                        });
+                        
                         dateInfo.push([]);
                         
                     }
@@ -95,105 +96,107 @@ function loadRecord(){
                     transRef.forEach(function(trans){
                         data = trans.val();
                         var newDate = true;
-                        var d = new Date(data.time);
-                        var dataDate = d.getDate()+'-'+Number(d.getMonth()+1)+'-'+d.getFullYear();
-                        
+                        //var dataDate = d.getDate()+'-'+Number(d.getMonth()+1)+'-'+d.getFullYear();
+                        var dataDate = convertTime(data.time);
                         data.qty = Number(data.qty);
                         data.shopID = Number(data.shopID);
-                        
-                        for(pID in products){
-                            if(shopData[data.shopID-1].products[pID].code==data.code){
-                                //When product transation is null
-                                if(shopData[data.shopID-1].products[pID].transaction.length==0){
-                                    shopData[data.shopID-1].products[pID].transaction.push({
-                                        date: dataDate,
-                                        import:0,
-                                        export:0,
-                                        balance: shopData[data.shopID-1].products[pID].balance
-                                    });
-                                    
-                                    var samedate = false;
-                                    for(b in dateInfo[data.shopID-1]){
-                                        
-                                        if(dataDate==dateInfo[data.shopID-1][b])
-                                            samedate = true;
-                                    }
-                                    if(!samedate)
-                                        dateInfo[data.shopID-1].push(dataDate);
-                                    
-                                }
-                            
-                                for(d in shopData[data.shopID-1].products[pID].transaction){
-                                    if(dataDate=shopData[data.shopID-1].products[pID].transaction[d].date){
-                                        newDate = false;
-                                        if(data.type=="import"){
-                                            shopData[data.shopID-1].products[pID].transaction[d].import+=data.qty;
-                                            shopData[data.shopID-1].products[pID].transaction[d].balance+=data.qty;
-                                            shopData[data.shopID-1].products[pID].balance +=data.qty;
-                                            shopData[data.shopID-1].total += shopData[data.shopID-1].products[pID].price*data.qty;
-                                        }else{
-                                            shopData[data.shopID-1].products[pID].transaction[d].export+=data.qty;
-                                            shopData[data.shopID-1].products[pID].transaction[d].balance-=data.qty;
-                                            shopData[data.shopID-1].products[pID].balance -=data.qty;
-                                        }
-                                        break;
-                                    }
-                                }
-                                if(newDate){
-                                    
-                                    for(b in dateInfo[data.shopID-1]){
-                                        
-                                        if(dataDate==dateInfo[data.shopID-1][b])
-                                            samedate = true;
-                                    }
-                                    if(!samedate)
-                                        dateInfo[data.shopID-1].push(dataDate);
-                                    
-                                    shopData[data.shopID-1].products[pID].transaction.push({
-                                        date: dataDate,
-                                        import:0,
-                                        export:0,
-                                        balance: shopData[data.shopID-1].products[pID].balance
-                                    });
-                                    var lastID = shopData[data.shopID-1].products[pID].transaction.length-1;
+                        console.log(convertTime(data.time));
+                        console.log(data);
+                        //Find data code ID
+                        var codeID;
+                        for(p in products){
+                            //console.log("Compare: "+products[p].code+" and "+data.code);
+                            if(data.code==products[p].code){
+                                codeID=p;
+                                break;
+                            }
+                        }
+                        console.log("Product: "+codeID);
+                        console.log(shopData);
+                        if(shopData[data.shopID-1].products[codeID].transaction.length==0){
+                            shopData[data.shopID-1].products[codeID].transaction.push({
+                                date: dataDate,
+                                import:0,
+                                export:0,
+                                balance: shopData[data.shopID-1].products[codeID].balance
+                            });
+                            if(data.type=="import"){
+                                shopData[data.shopID-1].products[codeID].transaction[0].import+=data.qty;
+                                shopData[data.shopID-1].products[codeID].transaction[0].balance+=data.qty;
+                                shopData[data.shopID-1].products[codeID].balance +=data.qty;
+                                
+                            }else{
+                                shopData[data.shopID-1].products[codeID].transaction[0].export+=data.qty;
+                                shopData[data.shopID-1].products[codeID].transaction[0].balance-=data.qty;
+                                shopData[data.shopID-1].products[codeID].balance -=data.qty;
+                                shopData[data.shopID-1].total += products[codeID].price*data.qty;
+                            }
+                        }else{
+                            var sameDay = false;
+                            for (date in shopData[data.shopID-1].products[codeID].transaction){
+                                if(dataDate==shopData[data.shopID-1].products[codeID].transaction[date].date){
+                                    sameDay = true;
                                     if(data.type=="import"){
-                                        shopData[data.shopID-1].products[pID].transaction[lastID].import+=data.qty;
-                                        shopData[data.shopID-1].products[pID].transaction[d].balance+=data.qty;
-                                        shopData[data.shopID-1].products[pID].balance +=data.qty;
-                                        shopData[data.shopID-1].total += shopData[data.shopID-1].products[pID].price*data.qty;
+                                        shopData[data.shopID-1].products[codeID].transaction[date].import+=data.qty;
+                                        shopData[data.shopID-1].products[codeID].transaction[date].balance+=data.qty;
+                                        shopData[data.shopID-1].products[codeID].balance +=data.qty;
+                                        
                                     }else{
-                                        shopData[data.shopID-1].products[pID].transaction[lastID].export+=data.qty;
-                                        shopData[data.shopID-1].products[pID].transaction[d].balance-=data.qty;
-                                        shopData[data.shopID-1].products[pID].balance -=data.qty;
+                                        shopData[data.shopID-1].products[codeID].transaction[date].export+=data.qty;
+                                        shopData[data.shopID-1].products[codeID].transaction[date].balance-=data.qty;
+                                        shopData[data.shopID-1].products[codeID].balance -=data.qty;
+                                        shopData[data.shopID-1].total += products[codeID].price*data.qty;
                                     }
                                 }
                             }
-                        }
-                        
+                            if(!sameDay){
+                                shopData[data.shopID-1].products[codeID].transaction.push({
+                                    date: dataDate,
+                                    import:0,
+                                    export:0,
+                                    balance: shopData[data.shopID-1].products[codeID].balance
+                                });
+                                var date = shopData[data.shopID-1].products[codeID].transaction.length-1;
+                                if(data.type=="import"){
+                                    shopData[data.shopID-1].products[codeID].transaction[date].import+=data.qty;
+                                    shopData[data.shopID-1].products[codeID].transaction[date].balance+=data.qty;
+                                    shopData[data.shopID-1].products[codeID].balance +=data.qty;
+                                    
+                                }else{
+                                    shopData[data.shopID-1].products[codeID].transaction[date].export+=data.qty;
+                                    shopData[data.shopID-1].products[codeID].transaction[date].balance-=data.qty;
+                                    shopData[data.shopID-1].products[codeID].balance -=data.qty;
+                                    shopData[data.shopID-1].total += products[codeID].price*data.qty;
+                                }
+                            }
+                        }                        
                     })
 
-                    
-                    console.log(dateInfo);
-                    console.log(shopData);
-                    for(id in dateInfo){
-                        for(date in dateInfo[id]){
-                            for(pID in products){
-                                if(shopData[id].products[pID].transaction.length>=(date+1)){
-                                    insertRecordShopData(
-                                        shopData[id].products[pID].transaction[date].date,
-                                        shopData[id].products[pID].code,
-                                        shopData[id].products[pID].price,
-                                        shopData[id].products[pID].transaction[date].import,
-                                        shopData[id].products[pID].transaction[date].export,
-                                        shopData[id].products[pID].transaction[date].balance,
-                                        shopData[id].products[pID].transaction[date].export*shopData[id].products[pID].price,
-                                        Number(id)+1
-                                    )   
-                                }
+                    for(id in shopData){
+                        //console.log(id);
+                        for(var pID=0; pID < products.length;pID ++){
+                            console.log(shopData[id].products[pID].transaction.length);
+                            for(var date=0;date< shopData[id].products[pID].transaction.length ; date++){
+                                console.log("Import: "+id+" product "+ pID +" date "+date)
+                                insertRecordShopData(
+                                    shopData[id].products[pID].transaction[date].date,
+                                    products[pID].code,
+                                    products[pID].price,
+                                    shopData[id].products[pID].transaction[date].import,
+                                    shopData[id].products[pID].transaction[date].export,
+                                    shopData[id].products[pID].transaction[date].balance,
+                                    shopData[id].products[pID].transaction[date].export*products[pID].price,
+                                    Number(id)+1
+                                )
                             }
                         }
-                        updateDashboardShopData("total",shopData[id].total,Number(id)+1)
-                    }
+                    }                    
+                    console.log(dateInfo);
+                    console.log(shopData);
+                    // for(id in shopData){
+                    //     for(p in products)
+                    // }
+                    
         
                 });
             }else if(role == 1){
@@ -288,7 +291,7 @@ function dateFilter(data,shop){
         $("#"+shop+"-"+(i+1)).css("display","");
     }
     for(var i=0;i<length; i++){
-        var date = stringToDate($("#"+shop+"-"+(i+1)+" .date").html(),"dd-mm-yyyy","-");
+        var date = stringToDate($("#"+shop+"-"+(i+1)+" .date").html(),"mm/dd/yyyy","/");
         if(date<startDate){
             $("#"+shop+"-"+(i+1)).css("display","none");
         }
