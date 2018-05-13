@@ -170,7 +170,7 @@ function updateDashboardShopData(type,value,shop) {
 //insert Record Data
 function insertRecordShopData(date,code,price,IN,OUT,balance,income,shop){
     var id = $('#record-val-'+shop+' tr').length+1;
-    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td>'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
+    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
     $("#record-val-"+shop).append(insert);
     console.log("Updated record value at shop"+shop +" date "+date+" code "+code);
 };
@@ -259,7 +259,8 @@ function insertShopStock(code,date,qty,price){
 //insert Record Data
 function insertRecordData(date,code,price,IN,OUT,balance,income){
     var id = $('#record-val tr').length+1;
-    var insert = '<tr><th scope="row">'+id+'</th><td>'+date+'</td><td>'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
+    var shop = 0;
+    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td>'+IN+'</td><td>'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
     $("#record-val").append(insert);
     //console.log("Updated record value at shop"+shop +" date "+date+" code "+code);
 };

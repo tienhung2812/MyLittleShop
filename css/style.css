@@ -444,6 +444,10 @@ html {
   margin-right: auto;
 }
 
+.shopManagerRecord{
+  display: flex;
+}
+
 @media (min-width: 768px) {
     .navbar-header {
         width: 240px;

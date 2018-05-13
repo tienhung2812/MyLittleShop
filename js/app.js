@@ -82,8 +82,8 @@ function loadRecord(){
                         for(p in products){
                             $('#productfilter-'+(i+1)).append('<option>'+products[p].code+'</option>')
                         }
-                        $('#filter-'+(i+1)).on('change keyup paste', function() {
-                            dateFilter($(this).val(),$(this).attr('id').substring(7,$(this).attr('id').length))
+                        $('#productfilter-'+(i+1)).on('change keyup paste', function() {
+                            productFilter($(this).val(),$(this).attr('id').substring(14,$(this).attr('id').length))
                         });
 
                         
@@ -201,7 +201,21 @@ function loadRecord(){
         
                 });
             }else if(role == 1){
-                        databaseRef.on('value',function(transRef){
+                $('input[name="daterange"]').daterangepicker({
+                    opens: 'left'
+                  }, function(start, end, label) {
+                    console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                });
+                $('#filter').on('change keyup paste', function() {
+                    dateFilter($(this).val(),0)
+                });
+                for(p in products){
+                    $('#productfilter').append('<option>'+products[p].code+'</option>')
+                }
+                $('#productfilter').on('change keyup paste', function() {
+                    productFilter($(this).val(),0)
+                });
+             databaseRef.on('value',function(transRef){
                     $("#record-val tr").remove();
                     $("#stock-val tr").remove();
                     var revenue=0;
@@ -243,7 +257,7 @@ function loadRecord(){
 
                                             });
                                            if(!compoundKeys.includes(compoundKey)){
-                                                insertRecordData(time,code,product_price,totalImport,totalExport,totalImport-totalExport,totalImport*product_price);
+                                                insertRecordData(time,code,product_price,totalImport,totalExport,totalImport-totalExport,totalExport*product_price);
                                                 compoundKeys.push(compoundKey);
                                                 sortByDate(0,1);
                                             }
@@ -262,6 +276,29 @@ function loadRecord(){
     request.send();
 
 }
+
+function productFilter(value,shop){
+    console.log(value +"-"+shop)
+    if (shop==0){
+        var length = $("#record-val tr").length;
+    }else{
+        var length = $("#record-val-"+shop+" tr").length;
+    }
+    
+    for(var i=0;i<length; i++){
+        $("#"+shop+"-"+(i+1)).css("display","");
+    }
+    if(value != "All"){
+        for(var i=0;i<length; i++){
+            if( $("#"+shop+"-"+(i+1)+" .code").html()!=value){
+                console.log(value + " & "+$("#"+shop+"-"+(i+1)+" .code").html())
+                $("#"+shop+"-"+(i+1)).css("display","none");
+            }
+                
+        }
+    }
+    
+}
 function stringToDate(_date,_format,_delimiter)
 {
             var formatLowerCase=_format.toLowerCase();
@@ -276,6 +313,25 @@ function stringToDate(_date,_format,_delimiter)
             return formatedDate;
 }
 
+
+function trackingSortID(shop){
+    var i=0;
+    if(shop==0){
+        $("#record-val tr").find("th").each(function(){
+            i++;
+            $(this).html(i);
+        })
+    }else{
+        $("#record-val-"+shop+" tr").find("th").each(function(){
+            i++;
+            $(this).html(i);
+        })
+    }
+    
+    
+    
+}
+
 function dateFilter(data,shop){
     var start = data.substring(0,10);
     var end = data.substring(13,data.length);
@@ -283,7 +339,12 @@ function dateFilter(data,shop){
     var endDate = stringToDate(end,"mm/dd/yyyy","/");
     console.log(startDate);
     console.log(end);
-    var length = $("#record-val-"+shop+" tr").length;
+    if(shop==0){
+        var length = $("#record-val tr").length;
+    }else{
+        var length = $("#record-val-"+shop+" tr").length;
+    }
+    
     for(var i=0;i<length; i++){
         $("#"+shop+"-"+(i+1)).css("display","");
     }
@@ -1340,7 +1401,13 @@ function notify(type,content){
     
 }
 
+function convertDate(d) {
+    var p = d.split("/");
+    return +(p[1]+p[2]+p[0]);
+  }
+
 function sortByDate(id,type) {
+    trackingSortID(id);
     var tbody;
     if(type == 0){
         tbody = document.querySelector("#record-val-"+id);
