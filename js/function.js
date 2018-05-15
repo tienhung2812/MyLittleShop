@@ -218,33 +218,6 @@ function insertResultData(code,price){
     $(".result-total h4").html(total); 
 }
 
-//Product-----------------------------------------------
-function insertProductManagerStock(code,date,qty,price,shop){
-    var id = $('#stock-val-'+shop+'tr').length+1;
-    var result = '<tr><th scope="row">' 
-                + id + '</th><td>' + code + '</td><td>'+date+'</td><td>'+qty+'</td><td>'+price+'</td></tr>';
-
-
-    $("#stock-val-"+shop).append(result);
-};
-//Stock-----------------------------------------------------
-function insertShopStocks(code,stock,left,price,shop){
-    var id = $('#stock-val-'+shop+' tr').length+1;
-    // console.log(id);
-    var result = '<tr><th scope="row">' 
-                + id + '</th><td>' + code + '</td><td>'+stock+'</td><td>'+left+'</td><td>'+price+'</td></tr>';
-
-    
-    $("#stock-val-"+shop).append(result);
-};
-
-function insertShopStock(code,date,qty,price){
-    var id = $('#stock-val tr').length+1;
-    var result = '<tr><th scope="row">' 
-                + id + '</th><td>' + code + '</td><td>'+date+'</td><td>'+qty+'</td><td>'+price+'</td></tr>';
-    $("#stock-val").append(result);
-    console.log("Update stock value" + result);
-};
 
 //insert Record Data
 function insertRecordData(date,code,price,IN,OUT,balance,income){
@@ -309,6 +282,7 @@ function loadShopEmployee(){
     
 }
 
+//Return number of shop
 function importShopByID(){
     var shopRef = firebase.database().ref('shop');
     shopRef.on('value',function(shopID){
@@ -321,13 +295,6 @@ function importShopByID(){
     });
 }
 
-function importShopByIDReturn(callback){
-    var shopRef = firebase.database().ref('shop');
-    shopRef.once('value',function(shopID){
-        return shopID.numChildren();
-    });
-    callback();
-}
 
 function loadShopDashboard(){
     var shopRef = firebase.database().ref('shop');
