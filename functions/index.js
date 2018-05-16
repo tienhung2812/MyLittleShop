@@ -149,7 +149,7 @@ exports.importProduct = functions.https.onRequest((req,res)=>{
         var shop_id = product.shopID;
         var time = product.time;
         var code = product.product_code; 
-        var qty = product.qty;
+        var qty = parseInt(product.qty);
        
         var type = 'import';
         var data;
@@ -202,7 +202,6 @@ exports.modifyProduct = functions.https.onRequest((req,res)=>{
 
                     data = {
                         price: price
-
                     }
                     
                     updates['/products/'+product_code] = data;
@@ -211,8 +210,7 @@ exports.modifyProduct = functions.https.onRequest((req,res)=>{
                 });
             }
             result = {
-                productExist: productExist,
-                shopExist: shopExist
+                productExist: productExist
             }
             res.send(result);
         });

@@ -1107,6 +1107,7 @@ function saveRecord(){
         firebase.database().ref('transaction').once('value',function(snapshot){
             oldCode = product[j][0];
             checkOut_qty = product[j][1];
+
             var export_qty = 0;
             var import_qty = 0;
             var isOutOfStock = false;
@@ -1121,8 +1122,9 @@ function saveRecord(){
                     }
                 }
             });
+
             j++;
-           
+          
             if(checkOut_qty > (import_qty-export_qty)) {
                 alert('Product '+oldCode+' is out of stocK! Just '+(import_qty-export_qty) +' left');
                 isOutOfStock = true;
