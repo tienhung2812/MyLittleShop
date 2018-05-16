@@ -498,6 +498,7 @@ function dateFilter(data,shop){
     console.log(startDate);
     console.log(end);
     var filterTotal = 0;
+    var filterSale =0;
     if(shop==0){
         var length = $("#record-val tr").length;
     }else{
@@ -507,23 +508,33 @@ function dateFilter(data,shop){
     for(var i=0;i<length; i++){
         $("#"+shop+"-"+(i+1)).css("display","");
         filterTotal += Number($("#"+shop+"-"+(i+1)+" .income").html());
+        filterSale += Number($("#"+shop+"-"+(i+1)+" .OUT").html());
     }
     for(var i=0;i<length; i++){
         var date = stringToDate($("#"+shop+"-"+(i+1)+" .date").html(),"mm/dd/yyyy","/");
         if(date<startDate){
             $("#"+shop+"-"+(i+1)).css("display","none");
             filterTotal -= Number($("#"+shop+"-"+(i+1)+" .income").html());
+            if(shop==0){
+                filterSale -= Number($("#"+shop+"-"+(i+1)+" .OUT").html());
+            }
         }
         if(date>endDate){
             $("#"+shop+"-"+(i+1)).css("display","none");
             filterTotal -= Number($("#"+shop+"-"+(i+1)+" .income").html());
+            if(shop==0){
+                filterSale -= Number($("#"+shop+"-"+(i+1)+" .OUT").html());
+            }
         }
         
     }
     if(shop!=0)
         updateDashboardShopData("total",filterTotal,shop);
-    else
+    else{
         updateDashboardData("total",filterTotal);
+        updateDashboardData("sale",filterSale);
+    }
+        
 }
 
 function loadStock(){
