@@ -160,7 +160,7 @@ function updateDashboardShopData(type,value,shop) {
 //insert Record Data
 function insertRecordShopData(date,code,price,IN,OUT,balance,income,shop){
     var id = $('#record-val-'+shop+' tr').length+1;
-    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td class="IN">'+IN+'</td><td class="OUT">'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
+    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td class="IN">'+IN+'</td><td class="OUT">'+OUT+'</td><td>'+balance+'</td><td class="income">'+income+'</td></tr>';
     $("#record-val-"+shop).append(insert);
     console.log("Updated record value at shop"+shop +" date "+date+" code "+code);
 };
@@ -223,7 +223,7 @@ function insertResultData(code,price){
 function insertRecordData(date,code,price,IN,OUT,balance,income){
     var id = $('#record-val tr').length+1;
     var shop = 0;
-    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td class="IN">'+IN+'</td><td class="OUT">'+OUT+'</td><td>'+balance+'</td><td>'+income+'</td></tr>';
+    var insert = '<tr id="'+shop+'-'+id+'"><th scope="row">'+id+'</th><td class="date">'+date+'</td><td class="code">'+code+'</td><td>$ '+price+'</td><td class="IN">'+IN+'</td><td class="OUT">'+OUT+'</td><td>'+balance+'</td><td class="income">'+income+'</td></tr>';
     $("#record-val").append(insert);
     //console.log("Updated record value at shop"+shop +" date "+date+" code "+code);
 };
@@ -441,7 +441,25 @@ function notify(type,content){
     
 }
 
-
+//Reset filter
+function resetFilter(shop){
+    if (shop==0){
+        $('#productfilter').val('All');
+        productFilter('All',shop);
+        $('#typefilter').val('Both');
+        typeFilter('Both',shop);
+        $('#filter').data('daterangepicker').setStartDate(startDate);
+        $('#filter').data('daterangepicker').setEndDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
+    }
+    else{
+        $('#productfilter-'+shop).val('All');
+        productFilter('All',shop);
+        $('#typefilter-'+shop).val('Both');
+        typeFilter('Both',shop);
+        $('#filter-'+shop).data('daterangepicker').setStartDate(startDate[shop-1]);
+        $('#filter-'+shop).data('daterangepicker').setEndDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
+    }
+}
 
 //Signout 
 function signOut(){

@@ -65,19 +65,17 @@ function loadRecord(){
                 
                 databaseRef.on('value',function(transRef){ 
                     notify("info","Updating...");
+                    startDate=[];
                     var products = JSON.parse(request.responseText);
                     var shopData = [];
                     for(i=0;i<shopByID.length;i++){
+                        startDate.push(new Date())
                         shopData.push({
                             products:JSON.parse(JSON.stringify(products)),
                             total :0
                         });
                         $("#record-val-"+(i+1)+" tr").remove();
-                        $('input[name="daterange-'+(i+1)+'"]').daterangepicker({
-                            opens: 'left'
-                          }, function(start, end, label) {
-                            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-                        });
+                        
                         $('#filter-'+(i+1)).on('change keyup paste', function() {
                             dateFilter($(this).val(),$(this).attr('id').substring(7,$(this).attr('id').length))
                         });
@@ -104,6 +102,8 @@ function loadRecord(){
                         var dataDate = convertTime(data.time);
                         data.qty = Number(data.qty);
                         data.shopID = Number(data.shopID);
+                        if(startDate[data.shopID-1]>stringToDate(dataDate,"mm/dd/yyyy","/"))
+                            startDate[data.shopID-1]=stringToDate(dataDate,"mm/dd/yyyy","/");
                         console.log(convertTime(data.time));
                         console.log(data);
                         //Find data code ID
@@ -177,6 +177,15 @@ function loadRecord(){
                     })
 
                     for(id in shopData){
+                        $('input[name="daterange-'+(Number(id)+1)+'"]').daterangepicker({
+                            autoApply: true,
+                            startDate: startDate[Number(id)],
+                            endDate: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+                            minDate:startDate[Number(id)],
+                            opens: 'left'
+                          }, function(start, end, label) {
+                            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                        });
                         //console.log(id);
                         for(var pID=0; pID < products.length;pID ++){
                             console.log(shopData[id].products[pID].transaction.length);
@@ -194,12 +203,15 @@ function loadRecord(){
                                 )
                                 sortByDate(Number(id)+1,0);     
                             }
+                            
                         }
+                        trackingSortID(Number(id)+1);
                         updateDashboardShopData("total",shopData[id].total,Number(id)+1);
-                        trackingSortID(id);
+                        
                     }                    
                     console.log(dateInfo);
                     console.log(shopData);
+                    console.log(startDate)
                     // for(id in shopData){
                     //     for(p in products)
                     // }
@@ -207,32 +219,30 @@ function loadRecord(){
         
                 });
             }else if(role == 1){
-
-                $('input[name="daterange"]').daterangepicker({
-                    opens: 'left'
-                  }, function(start, end, label) {
-                    console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-                });
-                $('#filter').on('change keyup paste', function() {
-                    dateFilter($(this).val(),0)
-                });
-                for(p in products){
-                    $('#productfilter').append('<option>'+products[p].code+'</option>')
-                }
-                $('#productfilter').on('change keyup paste', function() {
-                    productFilter($(this).val(),0)
-                });
-                $('#typefilter').on('change keyup paste', function() {
-                    typeFilter($(this).val(),0)
-                });
+                //console.log('a')
+                
                 databaseRef.on('value',function(transRef){ 
                     notify("info","Updating...");
                     var products = JSON.parse(request.responseText);
+                    for(p in products){
                     
+                        $('#productfilter').append('<option>'+products[p].code+'</option>')
+                    }
+                    $('#productfilter').on('change keyup paste', function() {
+                        productFilter($(this).val(),0)
+                    });
+                    
+                    $('#filter').on('change keyup paste', function() {
+                        dateFilter($(this).val(),0)
+                    });
+                    
+                    $('#typefilter').on('change keyup paste', function() {
+                        typeFilter($(this).val(),0)
+                    });
                     $('#record-val tr').remove();
                     total = 0;
                     var sale = 0; 
-
+                    startDate = new Date();
                     //console.log(dateInfo);
                     transRef.forEach(function(trans){
                         data = trans.val();
@@ -240,6 +250,9 @@ function loadRecord(){
                             var newDate = true;
                             //var dataDate = d.getDate()+'-'+Number(d.getMonth()+1)+'-'+d.getFullYear();
                             var dataDate = convertTime(data.time);
+                            if(startDate>stringToDate(dataDate,"mm/dd/yyyy","/")){
+                                startDate = stringToDate(dataDate,"mm/dd/yyyy","/");
+                            }
                             data.qty = Number(data.qty);
                             var codeID;
                             
@@ -259,6 +272,7 @@ function loadRecord(){
                                     balance: 0
                                 })
                                 if(data.type=="import"){
+                                    
                                     products[codeID].transaction[0].import+=data.qty;
                                     products[codeID].transaction[0].balance+=data.qty;
                                     products[codeID].balance +=data.qty;
@@ -325,7 +339,7 @@ function loadRecord(){
                     updateDashboardData("sale",sale);
                     //console.log(id);
                     for(var pID=0; pID < products.length;pID ++){
-                        console.log(products[pID].transaction.length);
+                        //console.log(products[pID].transaction.length);
                         for(var date=0;date< products[pID].transaction.length ; date++){
                             //console.log("Import: "+id+" product "+ pID +" date "+date)
                             insertRecordData(
@@ -341,10 +355,19 @@ function loadRecord(){
                         }
                         
                     }
+                    $('input[name="daterange"]').daterangepicker({
+                        autoApply: true,
+                        startDate: startDate,
+                        endDate: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+                        minDate:startDate,
+                        opens: 'left'
+                      }, function(start, end, label) {
+                        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                    });
                     trackingSortID(0);
                                       
-                    console.log(dateInfo);
-                    console.log(shopData);
+                    //console.log(dateInfo);
+                    //console.log(shopData);
                     // for(id in shopData){
                     //     for(p in products)
                     // }
@@ -474,6 +497,7 @@ function dateFilter(data,shop){
     var endDate = stringToDate(end,"mm/dd/yyyy","/");
     console.log(startDate);
     console.log(end);
+    var filterTotal = 0;
     if(shop==0){
         var length = $("#record-val tr").length;
     }else{
@@ -482,17 +506,24 @@ function dateFilter(data,shop){
     
     for(var i=0;i<length; i++){
         $("#"+shop+"-"+(i+1)).css("display","");
+        filterTotal += Number($("#"+shop+"-"+(i+1)+" .income").html());
     }
     for(var i=0;i<length; i++){
         var date = stringToDate($("#"+shop+"-"+(i+1)+" .date").html(),"mm/dd/yyyy","/");
         if(date<startDate){
             $("#"+shop+"-"+(i+1)).css("display","none");
+            filterTotal -= Number($("#"+shop+"-"+(i+1)+" .income").html());
         }
         if(date>endDate){
             $("#"+shop+"-"+(i+1)).css("display","none");
+            filterTotal -= Number($("#"+shop+"-"+(i+1)+" .income").html());
         }
         
     }
+    if(shop!=0)
+        updateDashboardShopData("total",filterTotal,shop);
+    else
+        updateDashboardData("total",filterTotal);
 }
 
 function loadStock(){
