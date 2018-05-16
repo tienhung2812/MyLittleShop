@@ -64,8 +64,9 @@ function loadRecord(){
                 
                 
                 databaseRef.on('value',function(transRef){ 
+                    notify("info","Updating...");
                     var products = JSON.parse(request.responseText);
-                    
+                    var shopData = [];
                     for(i=0;i<shopByID.length;i++){
                         shopData.push({
                             products:JSON.parse(JSON.stringify(products)),
@@ -225,6 +226,7 @@ function loadRecord(){
                     typeFilter($(this).val(),0)
                 });
                 databaseRef.on('value',function(transRef){ 
+                    notify("info","Updating...");
                     var products = JSON.parse(request.responseText);
                     
                     $('#record-val tr').remove();
