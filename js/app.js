@@ -58,12 +58,13 @@ function loadRecord(){
     request.open("GET",url);
     request.onreadystatechange = function() {
         if(request.readyState === XMLHttpRequest.DONE && (request.status == 200 || request.status == 304)) {
-            var products = JSON.parse(request.responseText);
+            
             var databaseRef = firebase.database().ref('transaction');              
             if(role==0){
                 
                 
                 databaseRef.on('value',function(transRef){ 
+                    var products = JSON.parse(request.responseText);
                     
                     for(i=0;i<shopByID.length;i++){
                         shopData.push({
@@ -205,6 +206,7 @@ function loadRecord(){
         
                 });
             }else if(role == 1){
+
                 $('input[name="daterange"]').daterangepicker({
                     opens: 'left'
                   }, function(start, end, label) {
@@ -223,9 +225,12 @@ function loadRecord(){
                     typeFilter($(this).val(),0)
                 });
                 databaseRef.on('value',function(transRef){ 
+                    var products = JSON.parse(request.responseText);
+                    
                     $('#record-val tr').remove();
                     total = 0;
-                    var sale = 0;           
+                    var sale = 0; 
+
                     //console.log(dateInfo);
                     transRef.forEach(function(trans){
                         data = trans.val();
