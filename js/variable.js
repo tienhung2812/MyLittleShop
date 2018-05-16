@@ -68,6 +68,6 @@ var project_code ;
 
 var shopByID = [];
 var products=[];
-var shopData = [];
+
 var currentPage=location.pathname.split("/").slice(-1)[0].split(".").slice(0)[0];
 var checkOut_qty;

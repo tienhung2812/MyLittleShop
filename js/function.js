@@ -235,7 +235,7 @@ function insertRecordData(date,code,price,IN,OUT,balance,income){
 function insertUserRecordData(type,id,name,shop){
     var role;
     role = 2;
-    var result = '<tr onclick="userModifyModal('+id+','+role+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
+    var result = '<tr onclick="userModifyModal('+id+','+role+',0)" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
                 + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
 
   if (type == "employee"){
@@ -256,8 +256,8 @@ function insertUserRecordDataManager(type,id,name,shop){
         id = $("#employeetbody-"+shop+' tr').length+1;
     }
     console.log(type+' id '+id+' name '+name + ' shop ' + shop);
-    var result = '<tr onclick="userModifyModal('+id+','+role+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
-                + id + '</th><td id="user-'+id+'-'+role+'-name">' + name + '</td><td id="user-'+id+'-'+role+'-shop">'+shop+'</td></tr>';
+    var result = '<tr onclick="userModifyModal('+id+','+role+','+shop+')" id="type-'+type+'-shop-'+shop+'-id-'+id+'"><th scope="row">' 
+                + id + '</th><td id="user-'+id+'-'+role+'-name-'+shop+'">' + name + '</td><td id="user-'+id+'-'+role+'-shop-'+shop+'">'+shop+'</td></tr>';
 
     if(role==1){
         $("#shopManagertbody-"+shop).append(result);
@@ -356,9 +356,15 @@ function insertProductRecordDataManager(code,price){
 // insertProductRecordData(2,342,141,342); 
 
 //Import UserModal
-function userModifyModal(id,role){
-    var name = $('#user-'+id+'-'+role+'-name').text();
-    var shop = $('#user-'+id+'-'+role+'-shop').text();
+function userModifyModal(id,role,shop){
+    if(shop==0){
+        var name = $('#user-'+id+'-'+role+'-name').text();
+        var shop = $('#user-'+id+'-'+role+'-shop').text();
+    }else{
+        var name = $('#user-'+id+'-'+role+'-name-'+shop).text();
+        var shop = $('#user-'+id+'-'+role+'-shop-'+shop).text();
+    }
+    
     var html = '<div class="basic-form">'+
     '                          <form>'+
     '                            <div class="form-group col-lg-12">'+
