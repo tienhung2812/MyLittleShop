@@ -406,7 +406,7 @@ function productModifyModal(id){
     '                          <form>'+
     '                            <div class="form-group col-lg-12">'+
     '                              <p class="text-muted m-b-15 f-s-12">Product Code</p>'+
-    '                              <input type="text" class="form-control input-default" id="pCode" value="'+code+'">'+
+    '                              <input type="text" class="form-control input-default " id="pCode" value="'+code+'" disabled>'+
     '                              </div>'+
     '                              <div class="form-group col-lg-12">'+
     '                                <p class="text-muted m-b-15 f-s-12">Price</p>'+
