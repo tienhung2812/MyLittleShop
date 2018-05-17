@@ -8,11 +8,8 @@ var CreateSalt = function(length){
 };
 
 var sha512 = function(UsersPassword, Salt){
-    var hash = crypto.createHmac('sha512', Salt); /** Hashing algorithm sha512 */
+    var Hash = crypto.createHmac('sha512', Salt); /** Hashing algorithm sha512 */
     hash.update(UsersPassword);
-    var value = hash.digest('hex');
-    return {
-        salt:Salt,
-        passwordHash:value
-    };
+    var FinalHash = Hash.digest('hex');
+    return FinalHash;
 };
