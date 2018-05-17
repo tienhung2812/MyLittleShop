@@ -269,7 +269,7 @@ function import_user(){
     var data = {
         username: username,
         // password: hashpassword,
-	// salt = saltperuser
+	// salt: saltperuser,
         role: input_role,
         shop_id: shopId
     }
