@@ -263,13 +263,13 @@ function import_user(){
         shopId = shop_id;
     }
 
-    // var salt = CreateSalt(16);
-    // var PasswordData = sha512(password, salt);
-    // alert(hash);
+    // var saltperuser = CreateSalt(16);
+    // var hashpassword = sha512(password, saltperuser);
 
     var data = {
         username: username,
-        password: password,
+        // password: hashpassword,
+	// salt = saltperuser
         role: input_role,
         shop_id: shopId
     }
