@@ -171,6 +171,7 @@ function insertRecordShopData(date,code,price,IN,OUT,balance,income,shop){
 
 //Insert result record data
 function insertResultData(code,price){
+    var id;
     var haveProduct = false;
     var quantity;
     if (product.length>0){
@@ -182,30 +183,30 @@ function insertResultData(code,price){
                 console.log("Found same product");                
                 quantity = product[i][1] + 1;
                 product[i][1]=quantity;
-                var id = i+1;
+                id = i+1;
                 console.log(quantity +" - "+id);
-                $("#"+id+"-quantity").text(quantity);
+                $("#"+id+"-quantity .qty").val(quantity);
                 haveProduct=true;
                 break;
             }
         }
         // If not
         if(!haveProduct){
-            var id = product.length+1;
+            id = product.length+1;
             quantity=1;
             product[product.length] = [code,quantity,price];
-            var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity">'+quantity+'</td><td>$'+price+'</td></tr>';
+            var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity"><div class="form-group row"><div class="col-xs-3"><input class="form-control input-sm qty" type="text" value="'+quantity+'"></div></div></td><td>$'+price+'</td></tr>';
             $("#producttbody").append(insert);
         }
         
     }
     else{
         //First quantity
-        var id = product.length+1;
+        id = product.length+1;
         console.log("First product");
         quantity=1;
         product[0] = [code,quantity,price];
-        var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity">'+quantity+'</td><td>$'+price+'</td></tr>';
+        var insert = '<tr><th scope="row">'+id+'</th><td>'+code+'</td><td id="'+id+'-quantity"><div class="form-group row"><div class="col-xs-3"><input class="form-control input-sm qty" type="text" value="'+quantity+'"></div></div></td><td>$'+price+'</td></tr>';
         $("#producttbody").append(insert);
 
     }
@@ -214,7 +215,17 @@ function insertResultData(code,price){
     for(i=0;i<product.length;i++){
         total += product[i][2]*product[i][1];
     }
-    console.log(total);
+    $('#'+id+'-quantity').on('change keyup paste', function() {
+        var tempid = ($(this).attr('id').substring(0,$(this).attr('id').indexOf("-")));
+        product[tempid-1][1] = Number($('#'+id+'-quantity .qty').val());
+        total = 0;
+        for(i=0;i<product.length;i++){
+            total += product[i][2]*product[i][1];
+        }
+        $(".result-total h4").html(total); 
+        console.log(product);
+    });
+    console.log(product);
     $(".result-total h4").html(total); 
 }
 

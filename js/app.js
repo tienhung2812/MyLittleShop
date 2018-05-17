@@ -1177,9 +1177,12 @@ function saveRecord(){
             if(checkOut_qty > (import_qty-export_qty)) {
                 alert('Product '+oldCode+' is out of stocK! Just '+(import_qty-export_qty) +' left');
                 isOutOfStock = true;
-            }else{ 
+             }else if(isNaN(checkOut_qty) ||!Number.isInteger(Number(checkOut_qty)) || checkOut_qty<1) {
+                 alert('Product ' + oldCode + ' invalid quantity!');
+             } else{ 
                 available++;
             }
+
       
             // All Product are available
             if(available == product.length){
@@ -1219,10 +1222,10 @@ function saveRecord(){
                     request.send();
                 }   
             }else if(available != product.length && isOutOfStock){
-                $('.new-button').removeClass('disabled');
-                $('.new-button').removeAttr('disabled');
-                $('.complete-button').attr('disabled','');
-                $('.complete-button').addClass('disabled');
+                // $('.new-button').removeClass('disabled');
+                // $('.new-button').removeAttr('disabled');
+                // $('.complete-button').attr('disabled','');
+                // $('.complete-button').addClass('disabled');
                 notify('danger','Record cannot be executed!');
             }
         });
