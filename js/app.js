@@ -263,7 +263,7 @@ function import_user(){
         shopId = shop_id;
     }
 
-    // var salt = getRandomString(16);
+    // var salt = CreateSalt(16);
     // var PasswordData = sha512(password, salt);
     // alert(hash);
 
